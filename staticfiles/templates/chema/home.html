@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block sidebar-left %}
+ <!--------------------------------left sidebar ----------------------------->
+ <div class=" pt-3 m-3 mb-5 pb-5 left-sidebar">
+    <div class="aside ">
+        
+        <div class="pt-3 mt-5 bg-light rounded p-2">
+            <div class="d-grid ">
+               <button class="btn btn-success">
+                 <img src="static\icon_pngs\groups_FILL0_wght300_GRAD0_opsz24.png" alt="">
+                  My groups
+               </button>
+            </div>
+             <p class="bg-secondary mt-3">Group Names</p>
+             {% for group in groups.all %}
+             <ul class="list-unstyled ">
+                <li><img src="static\icon_pngs\group_FILL0_wght400_GRAD0_opsz24.png" alt="">&nbsp;{{ group.name }}</li>
+                {% endfor %}  
+             </ul>
+        </div>
+        
+        <div class="pt-3 mt-5 bg-light rounded p-2 ">
+            <div class="d-grid">
+                <button class="btn btn-primary" > <img src="static\icon_pngs\groups_FILL0_wght300_GRAD0_opsz24.png"  alt="">Group Detail</button>
+            </div>
+            {% for group in groups.all%}
+             
+                 <ul class="list-unstyled ">
+                    <p class="bg-secondary mt-3"><strong>Group Name :&nbsp;</strong></p>
+                        <img src="static\icon_pngs\group_FILL0_wght400_GRAD0_opsz24.png" alt="">&nbsp;&nbsp; 
+                        {{group.name}}
+                        <p class="bg-secondary mt-3"><strong>Group Admin :&nbsp;</strong></p>
+                        {% for admin in group.admins_as_members.all%}
+                        <img src="static\icon_pngs\group_FILL0_wght400_GRAD0_opsz24.png" alt="">&nbsp;&nbsp; 
+                        {{admin.username}}
+                        {% endfor%}
+                    <p class="bg-secondary"><strong><img src="static\icon_pngs\description_FILL0_wght300_GRAD0_opsz24.png" alt="">Description:</strong></p>
+                       <div class="card p-2">
+                        {{ group.description }}
+                       </div> 
+                    <h3>Members</h3>
+                 
+                    {% for member in group.members.all %}
+                    <a href="{% url 'member_detail' pk=member.id %}">
+                        <img src="{{member.profile.profile_pic.url}}" width="30" class="rounded-circle">{{ member.username }}
+                    </a>
+                    {% endfor %}
+                    
+                </ul>
+            {% endfor %}
+        </div>
+     </div>
+ </div>
+    
+{% endblock %}
+<!-------------------------------main content ------------------------------------>
+{% block content %}
+<style>
+    .group_cover{
+        background-image: url("{{group.cover_image.url}}");
+    }
+</style>
+<div class="main w-50 mt-5 pt-5">
+       <span>
+            <div class="group_cover">
+                Welcome,
+                <img class="rounded-circle account-img" width="60" src="{{ user.profile.profile_pic.url }}">
+                {{ user.username }}
+            </div>
+              {% for group_data in grouped_data %}
+                <div class="btn btn-secondary w-100 d-flex justify-content-center" style="background-image: url('{{group.cover_image.url}}');">
+                    <h1>{{group_data.group}}&nbsp;&nbsp;</h1>
+                    <a href="{% url 'createPost' group_id=group_data.group.id %}" class="btn btn-light">
+                        Create Post <img src="{% static 'icon_pngs/post_add_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">
+                    </a>
+                    
+                    <a href="{% url 'add_member' group_id=group_data.group.id  %}" class="btn btn-primary">
+                     <img src="{%static 'icon_pngs\person_add_FILL0_wght400_GRAD0_opsz24.png'%}" alt="">Add Member
+                    </a>
+
+                    <a href="{% url 'add_admin' group_id=group_data.group.id %}" class="btn btn-primary">
+                      <img src="{%static 'icon_pngs\person_add_FILL0_wght400_GRAD0_opsz24.png'%}" alt="">Add Admin
+                    </a>
+                </div>
+       </span> 
+    
+     <div>
+        {% if group_data.minimized %}
+            <p>This group has no new posts or comments.</p>
+        {% else %}
+            <div class="post border rounded p-3 mb-3 ">
+                <h3> <img src="static/icon_pngs/post_add_FILL0_wght300_GRAD0_opsz24.png" alt="">Recent Posts:</h3>
+                {% for post in group_data.posts %}
+                    {% if post.approved %}
+
+            <!------------------------------- Display approved post content --------------------------------->
+
+                        <div class=" list-unstyled group shadow p-3  bg-body-tertiary rounded">
+                                <div class="group bg-success-subtle text-emphasis-success rounded  shadow p-3 mb-1 bg-body-tertiary rounded "> 
+                                        <img class="rounded-circle account-img" width="30" src="{{ post.author.profile.profile_pic.url }}">
+                                     <strong>{{ post.author.username }} </strong>
+                                     <small class="text-muted">{{post.created_at}}</small>
+                                      <p class="post">{{ post.content }}</p> 
+
+                                    <div class="d-flex  bg-light rounded pt-1">
+                                         <a href="{% url 'create_comment' post.id %}" class="p-1">
+                                           <div class="btn btn-sm ">Condolences&nbsp;
+                                            <span class="badge text-bg-dark">{{ post.comment_set.count }}</span>
+                                           </div> 
+                                        </a>&nbsp;
+                                         {% if user == post.author %}
+                                        <a href="{% url 'delete_post' post.id %}" >
+                                            <div class="btn btn-sm text-danger">
+                                                <img src="static\icon_pngs\delete_FILL0_wght300_GRAD0_opsz24.png"  alt="">&nbsp;delete 
+                                            </div>
+                                        </a>&nbsp;
+                                        <a href="{% url 'edit_post' post.id %}" ></a>
+                                            <div class="btn btn-sm text-success">
+                                                <img src="static\icon_pngs\edit_note_FILL0_wght300_GRAD0_opsz24.png"  alt="">&nbsp;edit
+                                            </div>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                        
+      <!-------------------------------------- Add border around comments ---------------------------------------->
+
+                                <ul class="list-unstyled border rounded p-3 mb-3 ml-4"> 
+                                    {% for comment in group_data.comments %}
+                                        {% if comment.post == post %}
+                                            <li>
+                                                <div class="  bg-info-subtle text-emphasis-info  p-1 mb-1 shadow p-3 mb-1 bg-body-tertiary rounded">
+                                                    <img class="rounded-circle account-img" width="30" src="{{ comment.author.profile.profile_pic.url }}">
+                                                    <strong>{{ comment.author.username }}</strong>
+                                                    <small class="text-muted">{{comment.created_at}}:</small>
+                                                    <div><small class="comment">{{ comment.content }}</small></div> 
+
+                                                   <div class="d-flex bg-light rounded pt-1">
+                                                        <a href="{% url 'add_reply' comment_id=comment.id %}">
+                                                            <div class="btn btn-sm "><img src="static\icon_pngs\reply_FILL0_wght300_GRAD0_opsz24.png"  alt="">&nbsp;reply</div> 
+                                                            <h6><span class="badge text-bg-dark"></span></h6>
+                                                        </a>&nbsp;
+                                                                                                     <!-- the edit_comment will only display if the user is the author -->
+                                                                {% if user == comment.author %}
+                                                        <a href="{% url 'edit_comment' comment.id %}">
+                                                            
+                                                            <div class="btn btn-sm text-success"><img src="static\icon_pngs\edit_note_FILL0_wght300_GRAD0_opsz24.png"  alt="">&nbsp;edit</div>
+
+                                                        </a>&nbsp;
+                                                        <a href="{% url 'delete_comment' comment.id %}" >
+                                                            
+                                                            <div class="btn btn-sm text-danger"><img src="static\icon_pngs\delete_FILL0_wght300_GRAD0_opsz24.png"  alt="">&nbsp;delete </div>
+                                                         </a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                
+                        <!---------------------------- Indent for replies--------------------------------->
+
+                                                <ul class="list-unstyled  rounded  px-5 mx-5"> 
+                                                    <!-- Indent for replies -->
+                                                    {% for reply in comment.replies.all %}
+                                                        <li>
+                                                            <div class=" bg-warning-subtle text-emphasis-warning p-3  shadow p-3 mb-2 bg-body-tertiary rounded">
+                                                                <img class="rounded-circle account-img" width="30" src="{{ reply.author.profile.profile_pic.url }}">
+                                                                   <strong>{{ reply.author.username }}</strong>
+                                                                <small class="text-muted">{{ reply.created_at }}:</small>
+                                                                <div class="text-small">
+                                                                     <small class="comment">{{ reply.content }}</small>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                                
+          <!------------------------------ Indent for replies-------------------------------------- -->
+
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        </div>
+
+                        <!----------------------------- Add border around comments ------------------------->  
+                    
+                        {% else %}
+                        {% if user == group_data.group.admin %}
+                            <!-- Show approval form to group admin -->
+                            <div class="alert alert-danger" role="alert">
+                                This post is pending approval. It will be displayed to all members after approval.
+                            </div>
+                            <form method="post" action="{% url 'approve_post' post.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">Approve</button>
+                            </form>
+                        {% else %}
+
+        <!---------------------- Show pending approval message to non-admin users------------------------- -->
+
+                            <div class="alert alert-danger" role="alert">
+                                This post is pending approval by the group admin.
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+<!--------------------------------------right sidebar--------------------------------------->
+
+{% block sidebar-right %}
+    <div class=" w-100 mt-5 pt-5">
+        <form id="search-form" >
+            {% csrf_token %}
+          <input type="text" id="search-input" maxlength="100"placeholder="Search..." class="textinput textInput form-control" required="" id="id_name">
+        </form>
+    </div>
+    <div class="card mt-3 p-2 h-25 overflow-auto">
+       <div id="search-results"></div>
+    </div>
+        
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Attach an event listener to the search input field
+    $('#search-input').on('input', function() {
+        var query = $(this).val();  // Get the search query from the input
+        
+        // Make an AJAX request to the search view
+        $.ajax({
+            url: '/search/',  // Replace with your search view URL
+            data: {
+                'q': query
+            },
+            success: function(response) {
+                var resultsContainer = $('#search-results');
+                resultsContainer.empty();  // Clear previous results
+                
+                // Loop through the results and add them to the container
+                $.each(response.results, function(index, result) {
+                    var link = '<a href="/group_detail_view/' + result.id + '/">' + result.name + '</a>';
+                    resultsContainer.append('<p>' + link + '</p>');
+                });
+            }
+        });
+    });
+});
+</script>
+    
+{% endblock %}

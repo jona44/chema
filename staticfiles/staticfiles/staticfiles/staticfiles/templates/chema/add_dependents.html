@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+   <div class="mt-5 pt-5">
+        <h1>Add Dependents</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            {% for form in formset %}
+            <div class="d-flex gap-3 shadow p-3 mb-5 bg-body-tertiary rounded">
+               {{form|crispy}}
+            </div>
+            
+            {% endfor %}
+            <button type="submit" class="btn  bg-success-subtle ">Save</button>
+        </form>
+   </div>
+   
+{% endblock %}

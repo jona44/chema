@@ -1,0 +1,66 @@
+<!-- search_results.html -->
+{% extends 'base.html' %}
+
+{% block content %}<div class=" pt-5 m-5">
+    <form id="search-form" method="get" >
+        {% csrf_token %}
+        <input type="text" id="id_query"class="form-control" name="query" placeholder="&#128269;Search...">
+        <button type="submit"class="btn">Search</button>
+    </form>
+
+    <!-- Search Results Container -->
+    <div id="search-results-container"class="card bg-light">
+        card
+        <!-- Results will be displayed here -->
+    </div>
+
+    <!-- JavaScript to Handle Search -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Attach an event listener to the search form submission
+            $('#search-form').on('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+                
+                // Get the form data
+                var formData = $(this).serialize();
+                
+                // Make an AJAX request to the search view
+                $.ajax({
+                    type: 'GET',
+                    url: '{% url "search_view" %}',
+                    data: formData,
+                    success: function(data) {
+                        // Insert the search results into the container
+                        $('#search-results-container').html(data);
+                        // Return true to indicate that the request was successful
+                        return true;
+                    },
+                    error: function() {
+                        console.log('Error occurred during search.');
+                    }
+                });
+            });
+        });
+        
+    </script>
+
+<div class="mt-5 pt-5 w-50">
+    <h1>Search Results</h1>
+    <p>You searched for: "{{ query }}"</p>
+
+    {% if search_results %}
+        <ul>
+            {% for result in search_results %}
+                <li>
+                    card
+                    {{ result}}</a><!-- Display the search result details -->
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+   
+{% endblock %}
+

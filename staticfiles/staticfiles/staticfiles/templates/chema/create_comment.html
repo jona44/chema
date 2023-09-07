@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+ {% block content %}
+<title>Create Comment</title>
+    <div class="mt-5 pt-5">
+        <h1>Create Comment for Post</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-secondary">Create Comment</button>
+        </form>
+    </div>
+{% endblock %}

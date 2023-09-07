@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block sidebar-left %}
+    <div class="mt-5 pt-5 m-5">
+        <div>
+            <h2>My groups</h2>
+            {% for group in groups.all %}
+                <div>
+                    {{ group.name }}
+                </div>
+            {% endfor %}  
+        </div>
+        
+        <div class="pt-5 mt-5">
+            <h2>Group Detail</h2>
+            {% for group in groups.all%}
+                <p><strong>Name:</strong> {{ group.name }}</p>
+                <p><strong>Description:</strong> {{ group.description }}</p>
+                <h3>Members</h3>
+                <ul>
+                    {% for member in group.members.all %}
+                        <li>{{ member.username }}</li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </div>
+    </div>
+    
+{% endblock %}
+
+
+{% block content %}
+<div class="main w-50 mt-5 pt-5">
+    
+       <span style="background-image: url({{ group.cover_image.url }); background-size: cover;">
+        <div>
+           Welcome,
+            <img class="rounded-circle account-img" width="60" src="{{ user.profile.profile_pic.url }}">
+            {{ user.username }}
+          
+        </div>
+           
+
+            {% for group_data in grouped_data %}
+        
+            
+                <div class="btn btn-secondary">
+                    {{group_data.group}}
+                
+                <a href="{% url 'createPost' group_id=group_data.group.id %}" class="btn btn-secondary">
+                    Create Post
+                </a>
+                <a href="{% url 'add_member' group_id=group_data.group.id  %}" class="btn btn-primary">
+                    Add Member
+                </a>
+                </div>
+       </span> 
+    
+     <div>
+        {% if group_data.minimized %}
+            <p>This group has no new posts or comments.</p>
+        {% else %}
+            <div class="post border rounded p-3 mb-3 ">
+                <h3>Recent Posts:</h3>
+                {% for post in group_data.posts %}
+                    {% if post.approved %}
+                        <!-- Display approved post content -->
+                        <div class=" list-unstyled  p-3 mb-3 shadow p-3 mb-5 bg-body-tertiary rounded">
+                            <li><img class="rounded-circle account-img" width="30" src="{{ post.author.profile.profile_pic.url }}">
+                                <strong>{{ post.author.username }} </strong>
+                                <small class="text-muted">{{post.created_at}}</small>
+                                <div class="p-3  bg-success-subtle text-emphasis-success rounded p-3  shadow p-3 mb-1 bg-body-tertiary rounded ">
+                                    <p class="post">{{ post.content }}</p>  
+                                </div>
+                                <a href="{% url 'create_comment' post.id %}" class="">
+                                    <h6><span class="badge bg-secondary">Comment</span></h6>
+                                </a>
+
+                                <!-- Add border around comments -->
+
+                                <ul class="list-unstyled border rounded p-3 mb-3 ml-4"> 
+                                    {% for comment in group_data.comments %}
+                                        {% if comment.post == post %}
+                                            <li>
+                                                <img class="rounded-circle account-img" width="30" src="{{ comment.author.profile.profile_pic.url }}">
+                                                <strong>{{ comment.author.username }}</strong>
+                                                <small class="text-muted">{{comment.created_at}}:</small>
+                                                <div class=" mb-2 bg-info-subtle text-emphasis-info  p-3 mb-3 shadow p-3 mb-1 bg-body-tertiary rounded">
+                                                    <small class="comment">{{ comment.content }}</small>
+                                                </div>
+                                                <div class="d-flex">
+                                                    <a href="{% url 'add_reply' comment_id=comment.id %}">
+                                                        <h6><span class="badge text-bg-dark">reply</span></h6>
+                                                    </a>&nbsp;
+                                                    <a href="{% url 'edit_comment' comment.id %}">
+                                                        <h6><span class="badge text-bg-dark">edit_comment</span></h6>
+                                                    </a>
+                                                </div>
+
+                                                <!-- Indent for replies -->
+
+                                                <ul class="list-unstyled  rounded  px-5 mx-5"> 
+                                                    <!-- Indent for replies -->
+                                                    {% for reply in comment.replies.all %}
+                                                
+                                                        <li>
+                                                            <img class="rounded-circle account-img" width="30" src="{{ reply.author.profile.profile_pic.url }}">
+                                                            <strong>{{ reply.author.username }}</strong>
+                                                            <small class="text-muted">{{ reply.created_at }}:</small>
+                                                            <div class="mb-2 bg-warning-subtle text-emphasis-warning p-3 mb-3 shadow p-3 mb-5 bg-body-tertiary rounded">
+                                                                <small class="comment">{{ reply.content }}</small>
+                                                            </div>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                                
+
+                                                 <!-- Indent for replies -->
+
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+
+                                <!-- Add border around comments -->  
+
+                            </li>
+                        </div>
+                    {% else %}
+                        {% if user == group_data.group.admin %}
+                            <!-- Show approval form to group admin -->
+                            <div class="alert alert-danger" role="alert">
+                                This post is pending approval. It will be displayed to all members after approval.
+                            </div>
+                            <form method="post" action="{% url 'approve_post' post.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">Approve</button>
+                            </form>
+                        {% else %}
+                            <!-- Show pending approval message to non-admin users -->
+                            <div class="alert alert-danger" role="alert">
+                                This post is pending approval by the group admin.
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block sidebar-right %}
+{% endblock %}

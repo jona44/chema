@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<div class="mt-5 pt-5 w-50">
+       
+ <h1>Create a group</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="hidden" name="cover_image" value="{{ form.instance.cover_image }}">
+        <button type="submit">Create Group</button>
+    </form>
+
+{% endblock %}

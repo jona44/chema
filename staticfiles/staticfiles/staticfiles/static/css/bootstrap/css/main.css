@@ -1,0 +1,255 @@
+/* font-family: 'Bruno Ace', cursive;
+font-family: 'Heebo', sans-serif;
+font-family: 'Oswald', sans-serif;
+font-family: 'Roboto Condensed, sans-serif; */
+  *{
+    margin: 0;
+    box-sizing: border-box;
+  }
+  body{
+  background-color:  rgb(35, 65, 83);
+  font-family:Roboto Condensed,sans-serif;
+  color: #c5ad94;
+  }
+  :root{
+    --bg-color: rgb(35, 65, 83);
+    --bg-color2: (#0A2242);
+    --textcolor: rgb(20, 213, 247);
+    --textcolor1: rgb(101, 171, 184);
+    --border-color: rgb(20, 24, 247);
+    --btncolor:1  rgb(243, 7, 39);
+    --btncolor:2  rgb(15, 243, 7);
+    --btncolor:3 rgb(188, 7, 243);
+    --btncolor:4  rgb(243, 168, 7);
+ }
+ .borderless{
+  background-color: var(--bg-color2);
+ }
+ .borderless-bg{
+  background-color:  rgb(41, 68, 73);
+ }
+ .bordercolor{
+  border: solid 1px var(--textcolor);
+ }
+ .bg-color{
+  background-color: var(--bg-color);
+  
+ }
+ .textcolor1{
+  color: #01133b;
+ }
+ .box{
+  background-color:transparent ;
+ 
+ }
+ .textcolor{
+  color: var(--textcolor);
+ }
+ .rounded1{
+  border-radius: 45%;
+  border-style: outset;
+ }
+ 
+  .bg-green{
+    background: linear-gradient(180deg, rgb(159, 243, 48) 0%, rgba(0, 181, 124, 0.479) 50%,)  ;
+  }
+  .borderless{
+    background-color: #0A2242
+  }
+  .bg-blue{
+    background-color: rgba(33, 37, 255, 0.973);
+  }
+  .bg-dark-blue{
+    background-color: rgba(2, 3, 58, 0.973);
+  }
+  .bg-purple{
+    background-color: rgba(239, 235, 240, 0.747);
+  }
+  .bg-lime{
+    background-color: rgba(187, 255, 0, 0.747);
+    
+  }
+  .bg-light_gray{
+    background-color: rgba(226, 18, 18, 0.897);
+  }
+  .bg-dash{
+    background: linear-gradient(180deg, rgb(48, 214, 243) 0%, rgba(0, 181, 124, 0.555) ) ;
+  }
+  .bg-dash1{
+    background: linear-gradient(180deg, rgba(111, 43, 167, 0.336) 0%, rgba(48, 0, 181, 0.589) ) ;
+  }
+  .bg-dash2{
+    background: linear-gradient(180deg, rgb(159, 243, 48) 0%, rgba(0, 181, 124, 0.479) ) ;
+  }
+  .blue{
+    color:#0539aa
+  }
+  .red{
+    color:rgb(235, 7, 7)
+  }
+  .Lt-blue{
+    color:#0597aa
+  }
+  .grn{
+    color:#05aa1b
+  }
+  .gry{
+    color:#ffffff
+  }
+  .ppl{
+    color:#7806d4dc
+  }
+  .color-wht{
+    color:#f7f7f2
+  }
+  .orange{
+    color:hwb(46 2% 7%)
+  }
+
+
+
+ /* ----------------------------------------side bar---------------------------------------  */
+
+  .base{
+    padding-top: 50px;
+    margin-top: 20px;
+    margin-left: 280px;
+    width:auto;
+    height: 100vh;
+    
+    
+  }
+  .sidenav {
+    position: fixed;
+    width: 280px;
+    height: 100%;
+    font-weight: 400;
+    font-size: large;
+  }
+  .sidenav a {
+    display: flex;
+    background-color: #041b3dcb;
+    color: #0e9bec;
+    border-radius: 5px;
+    text-decoration: none;
+    padding: 10px;
+    margin: 3px;
+  }
+  .sidenav a:hover {
+    border: #0539aa;
+    color: #0c0b0a;
+    background-color: #7e837e;
+   
+  }
+  @media screen and (max-height: 450px) {
+  .sidenav {
+      padding-top: 15px;
+    }
+    
+  .sidenav a {
+      font-size: 18px;
+    }
+  }
+  .header{
+    background-color: #041b3dcb;
+    color: rgb(235, 7, 7);
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding: 20px;
+    border-radius: 5px;
+    font-family:'Bruno Ace', sans-serif;
+  }
+  .links{
+    display: flex;
+    flex-direction: column;
+    padding-top: 5px;
+  }
+  .footer{
+    margin-top: 450px;
+    
+    
+
+  }
+  /*---------------------------------------------------- MAIN------------------------------------------------- */
+  
+  .main {
+    margin-left: 280px;
+    padding: 20px;
+  }
+
+
+  /* ------------------------------------------------client list page------------------------------------------ */
+  .section-table{
+    
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    width: 80%;
+    padding: 100px;
+    
+    margin-left: 150px;
+  }
+  table .table{
+    background-color:aqua;
+  }
+
+  /*----------------------------------------------------create page------------------------------------  */
+
+  .create{
+    padding-top: 100px;
+    padding-left: 400px;
+    padding-right: 400px;
+    
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    text-align: center;
+    padding: 8px;
+   
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+  
+.box{
+  background: transparent;
+}
+.box .card{
+  background-color: #00000010;
+  color: #01133b;
+  border-style: none;
+  padding: 20px;
+}
+/*------------------------------------------------- dashboard---------------------------------------- */
+
+.tables{
+  display:flex;
+ 
+}
+h1{
+  font-family: 'Heebo', sans-serif;
+  font-weight: 700;
+  color: #0539aa;
+}
+.profile{
+ display: flex;
+ float:right;
+ position: relative;
+
+}
+/* -------------------------USERS------------ */
+
+.login,
+.logout
+{
+  background: transparent;
+  width: 500px;;
+}
+.navbar{
+  margin-left: 280px;
+  margin-bottom: 200px;
+}
+

@@ -1,0 +1,38 @@
+<!-- group_detail.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="mt-5 pt-5 w-50">
+        <strong> <h3>Group Name</h3> </strong><p>{{ group.name }}</p>
+        <img src="{{group.cover_image.url}}" width="300" alt="">
+        <div>
+          <strong><h3>Description</h3> </strong>
+            <div class="card p-3 m-2">
+              <p>{{ group.description }}</p>
+            </div>
+        </div>
+        
+        <h5 class="d-grid bg-secondary p-1">
+            Total Members.. {{members_count}}
+        </h5>
+        <ul>
+          {% for member in group.members.all %}
+            <li>{{ member.username }}</li>
+          {% endfor %}
+        </ul>
+        <h5 class="d-grid bg-secondary p-1">
+            Admins.. {{admins_count}}
+        </h5>
+        <ul>
+          {% for admin in group.admins_as_members.all %}
+            <li> {{ admin.username }} </li>
+          {% endfor %}
+        </ul>
+
+          {% if user not in group.members.all %}
+                <a href="{% url 'join_group' group.id %}" class="btn btn-primary">Join Group</a>
+            {% else %}
+                <p>You are already a member of this group.</p>
+            {% endif %}
+    </div>
+{% endblock %}

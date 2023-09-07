@@ -1,0 +1,62 @@
+body{
+    font-family: 'Shanti', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    
+   
+}
+.comment{
+    font-size: small;
+    font-weight: 100;
+}
+.post{
+    font-weight: 700;
+}
+.sidebar-left {
+    
+    position:fixed;
+    top: 0;
+    left: 0;
+    width: 25%;
+    height: 900px;
+    background-color:#bfeeeb;
+    color: rgb(84, 84, 86);
+    padding: 10px;
+    box-sizing: border-box;
+}
+.left-sidebar {
+    height: 100%;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+
+.main-content {
+    width: 50%;
+    margin-right: 25%; /* Sidebar width */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.sidebar-right {
+    position: fixed;
+    margin-left: 10px;
+    top: 0;
+    right: 0;
+    width: 25%;
+    height: 100vh;
+    background-color: #bfeeeb;
+    color: rgb(84, 84, 86);
+    padding: 20px;
+    box-sizing: border-box;
+}
+.cover{
+    height: 250px;
+    
+}
+
+.bg-color{
+    background-color: rgba(29, 24, 24, 0.292);
+    color: aliceblue;
+}

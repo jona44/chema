@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+<title>edit comment</title>
+
+{% block content %}
+
+    <div class="pt-5 mt-5">
+        <div class="d-grid">
+           <button class="btn btn-success">Edit Comment</button>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit"class='btn btn-secondary'>Save Changes</button>
+        </form>
+    </div>  
+   
+{% endblock  %}
