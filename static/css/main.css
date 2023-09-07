@@ -51,12 +51,19 @@ body{
     padding: 20px;
     box-sizing: border-box;
 }
-.cover{
-    height: 250px;
+
+    .cover{
+        background-color: chocolate;
+        background-image: url('C:\Users\tjman\Desktop\projects\chema\static\group_cover_images\cover 10.jpg');
+        background-size: cover;
+        background-position: center;
+        min-height: 300px;
+    }
+   
     
-}
+
 
 .bg-color{
-    background-color: rgba(29, 24, 24, 0.292);
+    background-color: rgba(75, 30, 30, 0.292);
     color: aliceblue;
 }

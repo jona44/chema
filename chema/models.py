@@ -18,6 +18,7 @@ class Group(models.Model):
     name        = models.CharField(max_length=100)
     members     = models.ManyToManyField(User, related_name='group_m')
     admin       = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    is_active   = models.BooleanField(default=True)
     admins_as_members = models.ManyToManyField(User, related_name='admin_groups', blank=True)
     description       = models.TextField(null=True, blank=True)
     date              = models.DateTimeField(auto_now_add=True, null=True, blank=True)

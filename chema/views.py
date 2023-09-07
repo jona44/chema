@@ -17,6 +17,8 @@ def home(request):
     groups = Group.objects.filter(members=user)
     search_form = SearchForm()
     grouped_data = []
+    active_group = Group.objects.filter(is_active=True).first()
+
     for group in groups:
         posts = Post.objects.filter(group=group).order_by('-created_at')
         comments = Comment.objects.filter(post__group=group).order_by('-created_at')
@@ -34,7 +36,7 @@ def home(request):
             comment.replies.set(Reply.objects.filter(comment=comment).order_by('-created_at')[:3])
         grouped_data.append(group_data)
 
-    return render(request, 'chema/home.html', {'grouped_data': grouped_data, 'groups': groups,'search_form': search_form})
+    return render(request, 'chema/home.html', {'group': group,'grouped_data' : grouped_data, 'groups': groups,'search_form': search_form,'active_group':active_group })
 
 
 
@@ -364,3 +366,15 @@ def add_admin(request, group_id):
 
 
 
+def toggle_group(request, group_id):
+    # Get the group being toggled
+    group_to_toggle = get_object_or_404(Group, id=group_id)
+    
+    # Toggle the group by setting it to active
+    group_to_toggle.is_active = True
+    group_to_toggle.save()
+
+    # Deactivate all other groups
+    Group.objects.exclude(id=group_id).update(is_active=False)
+
+    return redirect('home')
