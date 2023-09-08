@@ -18,6 +18,9 @@ def home(request):
     search_form = SearchForm()
     grouped_data = []
     active_group = Group.objects.filter(is_active=True).first()
+    active_group_posts = Post.objects.filter(group=active_group).order_by('-created_at')
+    active_group_comments = Comment.objects.filter(post__in=active_group_posts).order_by('-created_at')
+
 
     for group in groups:
         posts = Post.objects.filter(group=group).order_by('-created_at')
@@ -36,9 +39,13 @@ def home(request):
             comment.replies.set(Reply.objects.filter(comment=comment).order_by('-created_at')[:3])
         grouped_data.append(group_data)
 
-    return render(request, 'chema/home.html', {'group': group,'grouped_data' : grouped_data, 'groups': groups,'search_form': search_form,'active_group':active_group })
-
-
+    return render(request, 'chema/home.html', {'grouped_data' : grouped_data,
+                                               'groups': groups,
+                                               'search_form': search_form,
+                                               'active_group':active_group,
+                                               'active_group_posts': active_group_posts,
+                                               'active_group_comments': active_group_comments  
+                                               })
 
 
 @login_required
@@ -77,16 +84,6 @@ def create_group(request):
         form = GroupForm()
     return render(request, 'chema/create_group.html', {'form': form})
 
-
-
-# def groupDetail(request, group_id):
-#     groups = get_object_or_404(Group, id=group_id)
-#     post = Post.objects.filter(group=groups)
-#     return render(request, 'chema/home.html', {'groups': groups,'post':post})
-
-
-from .models import Post
-from .forms import PostCreationForm
 
 @login_required
 def createPost(request, group_id):
