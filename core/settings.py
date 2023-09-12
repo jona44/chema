@@ -9,7 +9,7 @@ SECRET_KEY = 'django-insecure-l1u#8qmj&mfygs(0exmn%#-=jr8!$5gt5&_7)w@z8wf*ep%!(m
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','chema.com']
 
 
 SITE_ID = 3
@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google', 
+    'allauth.socialaccount.providers.facebook', 
+     
    
     
 ]
@@ -138,9 +140,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATIC_URL = 'static/'
  
-STATICFILES_DIRS = [
-    BASE_DIR, 'static'
-    ]
+STATICFILES_DIRS = [BASE_DIR, 'static']
+    
+    
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Adjust the path as needed
 
 
@@ -149,9 +151,6 @@ LOGOUT_REDIRECT_URL = '/'
 
 # LOGIN_URL = 'account/login'
 # LOGOUT_URL = 'account/logout'
-
-
-
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 TEMPLATE_DIRS = [(BASE_DIR, 'templates')]

@@ -317,10 +317,17 @@ def member_detail(request, pk):
     })
 
 
+from django.db.models import Q
+
 def search_view(request):
     query = request.GET.get('q', '')
-    # Perform your search query here
-    results = list(Group.objects.filter(name__icontains=query).values())
+
+    # Perform a search for both groups and members using Q objects
+    results = (
+        list(Group.objects.filter(Q(name__icontains=query) | Q(members__username__icontains=query)).values()) +
+        list(User.objects.filter(username__icontains=query).values())
+    )
+
     return JsonResponse({'results': results})
 
 

@@ -46,16 +46,6 @@ class Group(models.Model):
     def remove_member(self, user):
         self.members.remove(user)
 
-    def add_admin(self, user):
-        self.admin = user
-
-    def get_total_contributions(self):
-        # Add logic to calculate the total contributions for the group
-        pass
-    def add_admin(group_id):
-       add_admin_url = reverse('add_admin', args=[group_id])
-    
-
 
 class Post(models.Model):
     author     = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -68,8 +58,7 @@ class Post(models.Model):
     def __str__(self):
         return f"{self.author.username}: {self.content}"
 
-    def add_comment(self, author, content):
-        pass
+
     
 
 class Comment(models.Model):

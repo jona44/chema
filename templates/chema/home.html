@@ -210,7 +210,10 @@
             </form>
         </div>
         <div class="card mt-3 p-2 h-25 overflow-auto">
-            <div id="search-results"></div>
+            <div id="search-results">
+               
+
+            </div>
         </div>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -221,7 +224,7 @@
                     var query = $(this).val();  // Get the search query from the input
                     // Make an AJAX request to the search view
                     $.ajax({
-                        url: '/search/',  // Replace with your search view URL
+                        url: '/search/',  
                         data: {
                             'q': query
                         },
@@ -230,13 +233,19 @@
                             resultsContainer.empty();  // Clear previous results
                             // Loop through the results and add them to the container
                             $.each(response.results, function (index, result) {
-                                var link = '<a href="/group_detail_view/' + result.id + '/">' + result.name + '</a>';
-                                resultsContainer.append('<p>' + link + '</p>');
+                                if ('name' in result) {
+                                    // If it's a group result
+                                    var link = '<a href="/group_detail_view/' + result.id + '/">' + result.name + '</a>';
+                                    resultsContainer.append('<p>' + link + '</p>');
+                                } else if ('username' in result) {
+                                    // If it's a member result
+                                    var link = '<a href="/member_detail/' + result.id + '/">' + result.username + '</a>';
+                                    resultsContainer.append('<p>' + link + '</p>');
+                                }
                             });
                         }
                     });
                 });
             });
-        </script>
-        </div>
+        </script>                 
 {% endblock %}

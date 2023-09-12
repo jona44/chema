@@ -30,6 +30,7 @@ urlpatterns = [
     path('edit_reply/<int:reply_id>/', views.edit_reply, name='edit_reply'),
     
     path('member/<int:pk>/', views.member_detail, name='member_detail'),
+
     path('search/', views.search_view, name='search_view'),
     path('group_detail_view/<int:group_id>/', views.group_detail_view, name='group_detail_view'),
     
