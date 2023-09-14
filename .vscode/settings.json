@@ -3,5 +3,7 @@
         "chema"
     ],
     "materialkv.pythonFile": "main.py",
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "appService.defaultWebAppToDeploy": "/subscriptions/d281dccb-ba8f-46ab-83ed-797354c2fa27/resourceGroups/chema_deploy/providers/Microsoft.Web/sites/chemaOnline",
+    "appService.deploySubpath": "."
 }
