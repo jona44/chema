@@ -73,13 +73,13 @@
             <div class="h-50 d-inline-block ">
             </div>
             <span class="align-bottom pt-4 mt-5 ">
-                <a href="{% url 'createPost' group_id=active_group.id %}" class="btn btn-light float-end">
+                <a href="{% url 'createPost' active_group.id %}" class="btn btn-light float-end">
                     Create Post <img src="{% static 'icon_pngs/post_add_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">
                 </a>
-                 <a href="{% url 'add_member' group_id=active_group.id %}" class="btn btn-primary float-end mx-1 ">
+                 <a href="{% url 'add_member' active_group.id %}" class="btn btn-primary float-end mx-1 ">
                      <img src="{% static 'icon_pngs/person_add_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">Add Member
                  </a>
-                 <a href="{% url 'add_admin' group_id=active_group.id %}" class="btn btn-primary float-end">
+                 <a href="{% url 'add_admin' active_group.id %}" class="btn btn-primary float-end">
                     <img src="{% static 'icon_pngs/person_add_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">Add Admin
                  </a>  
             </span>
