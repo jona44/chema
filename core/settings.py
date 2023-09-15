@@ -9,7 +9,7 @@ SECRET_KEY = 'django-insecure-l1u#8qmj&mfygs(0exmn%#-=jr8!$5gt5&_7)w@z8wf*ep%!(m
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','chema.com']
+ALLOWED_HOSTS = ['chemaonline.azurewebsites.net','127.0.0.1','chema.com']
 
 
 SITE_ID = 3
