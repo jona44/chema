@@ -3,8 +3,8 @@
 {% load static %}
 
 {% block sidebar-left %}
-<div class="pt-3 m-3 mb-5 pb-5 left-sidebar">
-    <div class="aside">
+<div class="pt-3 m-3 mb-5 pb-5 left-sidebar ">
+   
         <div class="pt-3 mt-5 bg-light rounded p-2">
             <div class="d-grid">
                 <button class="btn btn-success">
@@ -61,9 +61,9 @@
 <!----------------------- Main Content-------------------- -->
     {% block content %}
  
-<div class="main w-50 ">
+<div class="main mt-5">
     <div class="row"> 
-        <div class="card text-bg-dark cover" style="background-image: url('{{ active_group.cover_image.url}}');
+        <div class="card text-bg-dark  " style="background-image: url('{{ active_group.cover_image.url}}');
                                                     background-size: cover;
                                                     background-position: center center;
                                                     background-repeat: no-repeat;">
@@ -71,8 +71,8 @@
                <h5 class="card-title"> <h1>{{ active_group.name }}</h1></h5>
             </div>
             <div class="h-50 d-inline-block ">
+                helo
             </div>
-            
         </div>
     </div>
     <div class="post border rounded p-3 mt-2">
@@ -153,7 +153,7 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            <ul class="list-unstyled rounded px-5 mx-5">
+                            <ul class="list-unstyled rounded  ">
                                 {% for reply in comment.replies.all %}
                                 <li>
                                     <div
