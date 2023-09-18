@@ -14,15 +14,12 @@ body{
     font-weight: 700;
 }
 .sidebar-left {
-    
     position:fixed;
     top: 0;
     left: 0;
     width: 25%;
     height: 900px;
-    background-color:#bfeeeb;
     color: rgb(84, 84, 86);
-    padding: 10px;
     box-sizing: border-box;
 }
 .left-sidebar {
@@ -32,8 +29,9 @@ body{
 }
 
 
-.main-content {
-    width: 50%;
+.main {
+    width: 100%;
+    margin-left: 25%; /* Sidebar width */
     margin-right: 25%; /* Sidebar width */
     padding: 10px;
     box-sizing: border-box;
@@ -42,28 +40,49 @@ body{
 .sidebar-right {
     position: fixed;
     margin-left: 10px;
-    top: 0;
-    right: 0;
+    top: 0;    right: 0;
     width: 25%;
     height: 100vh;
-    background-color: #bfeeeb;
     color: rgb(84, 84, 86);
-    padding: 20px;
+    padding: 10px;
     box-sizing: border-box;
 }
-
-    .cover{
-        background-color: chocolate;
-        background-image: url('C:\Users\tjman\Desktop\projects\chema\static\group_cover_images\cover 10.jpg');
-        background-size: cover;
-        background-position: center;
-        min-height: 300px;
-    }
-   
-    
-
-
 .bg-color{
     background-color: rgba(75, 30, 30, 0.292);
     color: aliceblue;
+}
+
+@media (max-width: 900px) {
+    .sidebar-right{
+   display:none;
+  }
+
+  .sidebar-left {
+    top: 0;
+    left: 0;
+    width: 35%;
+    height: 900px;
+    color: rgb(84, 84, 86);
+
+}
+.main {
+    width: 100%;
+    margin-left: 35%; /* Sidebar width */
+    margin-right: 1%; /* Sidebar width */
+    padding: 10px;
+    box-sizing: border-box;
+}
+}
+@media (max-width: 576px){
+    .sidebar-left{
+        display:none;
+       }
+    .main {
+        width: 100%;
+        padding: 10px;
+        margin-left: 1%; /* Sidebar width */
+        margin-right: 1%; /* Sidebar width */
+        box-sizing: border-box;
+    }   
+
 }
