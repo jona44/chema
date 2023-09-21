@@ -55,18 +55,27 @@
             {% endfor %}
         </div>
     </div>
-</div>
+
 {% endblock %}
 
 <!----------------------- Main Content-------------------- -->
     {% block content %}
  
-<div class="main mt-5">
-    <div class="row"> 
+<div class="main mt-5"> 
+ <div class="fixed">
+     <div class="canvas mb-2 " >
+      {% include "offcanvas_left.html" %}
+      {% include "offcanvas_right.html" %}
+    </div>
+ </div>
+    
+    
+    <div class="row d-flex"> 
         <div class="card text-bg-dark  " style="background-image: url('{{ active_group.cover_image.url}}');
                                                     background-size: cover;
                                                     background-position: center center;
                                                     background-repeat: no-repeat;">
+                                                 
             <div>
                <h5 class="card-title"> <h1>{{ active_group.name }}</h1></h5>
             </div>
@@ -75,12 +84,12 @@
             </div>
         </div>
     </div>
-    <div class="post border rounded p-3 mt-2">
+    <div class=" row post border rounded  mt-2">
         <h3> <img src="{% static 'icon_pngs/post_add_FILL0_wght300_GRAD0_opsz24.png' %}" alt=""> <h3>Recent Posts</h3>:</h3>
         {% for post in active_group_posts %}
         
-                <div class="list-unstyled group shadow p-3 bg-body-tertiary rounded">
-                    <div class="group bg-success-subtle text-emphasis-success rounded shadow p-3 mb-1 bg-body-tertiary rounded ">
+                <div class="list-unstyled group p-1 ">
+                    <div class="group bg-success-subtle text-emphasis-success rounded  ">
                         <div class="bg-color p-1 rounded">
                             <img class="rounded-circle account-img" width="30"
                                 src="{{ post.author.profile.profile_pic.url }}">
