@@ -1,35 +1,51 @@
-
-<nav class=" navbar navbar-expand-lg fixed-top bg-success mb-5 ">
+{% load static %}
+<nav class="navbar navbar-expand-lg fixed-top bg-success mb-5">
   <div class="container">
-      <a class="navbar-brand text-white" href="{% url 'home'%}"><h3>Chema</h3></a>
-
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div class="w-50 text-center">
-            {% if messages %}
-             {% for message in messages %}
-               <div class="alert alert-{{ message.tags }}">
-                 {{ message }}
-               </div>
-             {% endfor %}
-           {% endif %}
-          </div>
+    <a class="navbar-brand text-white" href="{% url 'home'%}"><h3>Chema</h3></a>
+   
+    
+    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+      <div class="btn-group me-2" role="group" aria-label="First group">
+        <button type="button" class="btn btn"><span class="material-symbols-outlined">
+          join
+          </span></button>
+        <button type="button" class="btn btn"><span class="material-symbols-outlined">
+          group_add
+          </span></button>
+        <button type="button" class="btn btn"><span class="material-symbols-outlined">
+          person_add
+          </span></button>
+        <button type="button" class="btn btn"><span class="material-symbols-outlined">
+          post_add
+          </span></button>
       </div>
-          <div class="d-flex align-items-center">
-                {% if user.is_authenticated %}
-            <a class="nav-link" href="{% url 'account_logout' %}"> logout</a>
-            {% else %}
-            <a class="nav-link" href="{% url 'account_login' %}"> Login </a>
-            {%endif%}
-            <img class="rounded-circle account-img m-3" width="40" src="{{ user.profile.profile_pic.url }}">
-            <a class="nav-item nav-link" href="{% url 'profile' %}">{{user.username}}</a>
-          </div>
-   </div>
-        
-  
-</nav>
+      
+      <div class="btn-group" role="group" aria-label="Third group">
+        <button type="button" class="btn btn-info">8</button>
+      </div>
+    </div>
 
- 
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="w-50 text-center">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Profile links with responsive class -->
+    <div class="profile navbar-nav ">
+      {% if user.is_authenticated %}
+        <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+        <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+      {% else %}
+        <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+        
+      {% endif %}
+    </div>
+  </div>
+</nav>
