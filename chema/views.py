@@ -21,7 +21,6 @@ def home(request):
     active_group_posts = Post.objects.filter(group=active_group).order_by('-created_at')
     active_group_comments = Comment.objects.filter(post__in=active_group_posts).order_by('-created_at')
 
-
     for group in groups:
         posts = Post.objects.filter(group=group).order_by('-created_at')
         comments = Comment.objects.filter(post__group=group).order_by('-created_at')
@@ -30,8 +29,8 @@ def home(request):
         group_data = {
             'group': group,
             'minimized': not (posts.exists() or comments.exists()),
-            'posts': posts[:3],  # Limit the number of posts to display initially
-            'comments': comments[:3],  # Limit the number of comments to display initially
+            'posts': posts[:5],  # Limit the number of posts to display initially
+            'comments': comments[:1],  # Limit the number of comments to display initially
             'admins_as_members': admins_as_members,
         }
 
@@ -87,18 +86,33 @@ def create_group(request):
 
 @login_required
 def createPost(request, group_id):
-    group = get_object_or_404(Group, id=group_id)
+      # Retrieve the active group based on the group_id
+    try:
+        group = Group.objects.get(id=group_id, is_active=True)
+    except Group.DoesNotExist:
+        messages.error(request, "The group does not exist or is not active.")
+        return redirect('your_redirect_url')  # Replace 'your_redirect_url' with the actual URL
+
+    # Check if the user is a member of the group
+    if request.user not in group.members.all():
+        messages.error(request, "You are not a member of this group.")
+        return redirect('your_redirect_url')  # Replace 'your_redirect_url' with the actual URL
 
     if request.method == 'POST':
-        form = PostCreationForm(request.POST, request.FILES)  # Include request.FILES for handling image uploads
+        # Process the form submission
+        form = PostCreationForm(request.POST, request.FILES)
         if form.is_valid():
+            # Create a new post
             post = form.save(commit=False)
             post.author = request.user
             post.group = group
-            post.approved = False  # Set the post as unapproved by default
             post.save()
-            return redirect('home')
+            messages.success(request, "Post created successfully!")
+            return redirect('home') # Replace 'your_redirect_url' with the actual URL
+        else:
+            messages.error(request, "Error creating the post. Please check your input.")
     else:
+        # Display a blank form for creating a post
         form = PostCreationForm()
 
     return render(request, 'chema/createPost.html', {'form': form, 'group': group})
@@ -223,8 +237,10 @@ def approve_post(request, post_id):
 
 
 @login_required
+
+
 def add_dependents(request):
-    DependentFormSet = inlineformset_factory(User, Dependent, form=DependentForm, extra=3)  # Set the number of empty forms
+    DependentFormSet = inlineformset_factory(User, Dependent, form=DependentForm, extra=2,can_delete = False) # Set the number of empty forms
 
     user = request.user
     formset = DependentFormSet(instance=user)
@@ -232,6 +248,8 @@ def add_dependents(request):
     if request.method == 'POST':
         formset = DependentFormSet(request.POST, instance=user)
         if formset.is_valid():
+            # Iterate over the forms and set can_delete to False
+            
             formset.save()
             
              # Getting the names of the added dependents
@@ -243,6 +261,7 @@ def add_dependents(request):
             return redirect('home')  # Redirect to the user's home page
 
     return render(request, 'chema/add_dependents.html', {'formset': formset})
+
 
 
 @login_required

@@ -27,6 +27,10 @@ class Group(models.Model):
     def __str__(self):
         return self.name
     
+    def get_absolute_url(self):
+        # Generate the URL for viewing a group's details
+        return reverse('create_post', args=[str(self.id)])
+    
     
     def save(self, *args, **kwargs):
         if not self.pk:  # Check if this is a new group

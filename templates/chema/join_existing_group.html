@@ -3,7 +3,8 @@
 
 {% block content %}
 
-    <div class=" container mt-5 pt-5">
+<div class="container d-flex justify-content-center mt-5">
+    <div class="card p-3">
         <h1>Join Existing Group</h1>
             <form method="post">
                 {% csrf_token %}
@@ -11,5 +12,7 @@
                 <button type="submit" class="btn btn-secondary">Join Group</button>
             </form>
     </div>
+        
+</div>
   
 {% endblock %}

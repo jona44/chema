@@ -2,8 +2,6 @@
 from django.urls import path
 from . import views
 
-
-
 urlpatterns = [
     path('',views.home, name='home'),
     path('join-existing-group/', views.join_existing_group, name='join_existing_group'),

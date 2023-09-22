@@ -3,14 +3,19 @@
 
  {% block content %}
  
-    <div class=" container mt-5 pt-5">
+ <div class="container d-flex justify-content-center mt-5">
+  
+       <div class="card p-3">
+            <h1>Create Comment for Post</h1>
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-secondary">Add Member</button>
+            </form>
+       </div>
+        
+    </div>
        
-        <h1>Create Comment for Post</h1>
-        <form method="post">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <button type="submit" class="btn btn-secondary">Add Member</button>
-        </form>
    </div>
 
 {% endblock %}
