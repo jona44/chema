@@ -3,7 +3,8 @@
 <title>Create Post</title>
 
 {% block content %}
-    <div class=" container mt-5 pt-5">
+<div class="container d-flex justify-content-center mt-5">
+    <div class="card p-3">
         <div class="d-grid">
             <button class="btn btn-success"> Create Post in : {{ group.name }}</button>
         </div>
@@ -12,5 +13,7 @@
             {{ form|crispy }}
             <button type="submit"class='btn btn-secondary'>Create Post</button>
         </form>
+    </div>
+        
     </div>    
 {% endblock  %}

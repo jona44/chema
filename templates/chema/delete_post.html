@@ -6,8 +6,8 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5 pt-5">
-    
+<div class="container d-flex justify-content-center mt-5">
+    <div class="card p-3">
         <h1>Delete Post</h1>
             <p>Are you sure you want to delete this post?</p>
             <strong>Author:</strong><p> {{ post.author.username }}</p>
@@ -20,8 +20,8 @@
                     </span></button>
                 <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
             </form>
-        </div>
-    </div>
+     </div>
+</div>
  
 {% endblock %}
 

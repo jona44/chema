@@ -4,16 +4,17 @@
 
 {% block content %}
 
-<div class=" container mt-5 pt-5 w-75">
-       
- <div class="d-grid">
-    <h3 class="text-center bg-secondary rounded">Create a group</h3>
- </div>
-    <form method="post">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <input type="hidden" name="cover_image" value="{{ form.instance.cover_image}}">
-        <button type="submit" class="btn btn-secondary">Create Group</button>
-    </form>
-
+<div class="container d-flex justify-content-center mt-5">
+    <div class="card p-3">
+        <div class="d-grid">
+           <h3 class="text-center bg-secondary rounded">Create a group</h3>
+        </div>
+            <form method="post">
+               {% csrf_token %}
+                 {{ form|crispy }}
+                <input type="hidden" name="cover_image" value="{{ form.instance.cover_image}}">
+            <button type="submit" class="btn btn-secondary">Create Group</button>
+        </form>
+    </div>  
+</div>
 {% endblock %}
