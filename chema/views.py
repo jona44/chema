@@ -12,7 +12,7 @@ from .forms import *
 
 
 
-
+@login_required
 def home(request):
     user = request.user
     groups = Group.objects.filter(members=user)
