@@ -11,41 +11,40 @@ import random
 from .forms import *
 
 
-@login_required
+
+
 def home(request):
     user = request.user
     groups = Group.objects.filter(members=user)
     search_form = SearchForm()
     grouped_data = []
     active_group = Group.objects.filter(is_active=True).first()
+    
+    # Fetch only the posts of the active group
     active_group_posts = Post.objects.filter(group=active_group).order_by('-created_at')
+
+    # Fetch comments for the posts in the active group
     active_group_comments = Comment.objects.filter(post__in=active_group_posts).order_by('-created_at')
 
-    for group in groups:
-        posts = Post.objects.filter(group=group).order_by('-created_at')
-        comments = Comment.objects.filter(post__group=group).order_by('-created_at')
-        admins_as_members = group.admins_as_members.all()
+    group_data = {
+        'group': active_group,
+        'minimized': not (active_group_posts.exists() or active_group_comments.exists()),
+        'posts': active_group_posts[:5],  # Limit the number of posts to display initially
+        'comments': active_group_comments,  # Comments for active group's posts
+        'admins_as_members': active_group.admins_as_members.all(),
+    }
 
-        group_data = {
-            'group': group,
-            'minimized': not (posts.exists() or comments.exists()),
-            'posts': posts[:5],  # Limit the number of posts to display initially
-            'comments': comments[:1],  # Limit the number of comments to display initially
-            'admins_as_members': admins_as_members,
-        }
+    for comment in group_data['comments']:
+        comment.replies.set(Reply.objects.filter(comment=comment).order_by('-created_at')[:3])
 
-        for comment in comments:
-            comment.replies.set(Reply.objects.filter(comment=comment).order_by('-created_at')[:3])
-        grouped_data.append(group_data)
-
-    return render(request, 'chema/home.html', {'grouped_data' : grouped_data,
-                                               'groups': groups,
-                                               'search_form': search_form,
-                                               'active_group':active_group,
-                                               'active_group_posts': active_group_posts,
-                                               'active_group_comments': active_group_comments  
-                                               })
-
+    return render(request, 'chema/home.html', {
+        'grouped_data': [group_data],  # Only the active group data
+        'groups': groups,
+        'search_form': search_form,
+        'active_group': active_group,
+        'active_group_posts': active_group_posts,
+        'active_group_comments': active_group_comments
+    })
 
 @login_required
 def choice(request):
@@ -96,7 +95,7 @@ def createPost(request, group_id):
     # Check if the user is a member of the group
     if request.user not in group.members.all():
         messages.error(request, "You are not a member of this group.")
-        return redirect('your_redirect_url')  # Replace 'your_redirect_url' with the actual URL
+        return redirect('home')  # Replace 'your_redirect_url' with the actual URL
 
     if request.method == 'POST':
         # Process the form submission

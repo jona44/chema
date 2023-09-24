@@ -63,29 +63,27 @@
  
    
 <div class="main mt-5"> 
- <div class="fixed">
-     <div class="canvas mb-2 " >
-      {% include "offcanvas_left.html" %}
-      {% include "offcanvas_right.html" %}
+    <div class="fixed">
+        <div class="canvas mb-2 " >
+            {% include "offcanvas_left.html" %}
+            {% include "offcanvas_right.html" %}
+        </div>
     </div>
- </div>
-    
     
     <div class="row d-flex"> 
-        
         <div class="card text-bg-dark  " style="background-image: url('{{ active_group.cover_image.url}}');
                                                     background-size: cover;
                                                     background-position: center center;
                                                     background-repeat: no-repeat;">
-                                                 
             <div>
-                
                 <div class="card-title"> <h1>{{ active_group.name }}</h1></div>
-                <a href="{% url 'createPost' active_group.id %}"class="badge rounded-pill text-bg-danger ">Create Post</a>
-                <a href="{% url 'add_member' active_group.id %}"  class="badge rounded-pill text-bg-info ">Add Member</a>
-                <a href="{% url 'add_admin' active_group.id %}"  class="badge rounded-pill text-bg-info ">Add Admin</a>
-               
+                {% if active_group.id %}
+                <a href="{% url 'createPost'  group_id=active_group.id %}" class="badge rounded-pill text-bg-danger ">Create Post</a>
+                <a href="{% url 'add_member'  group_id=active_group.id %}"class="badge rounded-pill text-bg-info ">Add Member</a>
+                <a href="{% url 'add_admin'  group_id=active_group.id %}"class="badge rounded-pill text-bg-info ">Add Admin</a>
+                {% endif %}
             </div>
+
             <div class="h-50 d-inline-block ">
                 helo
             </div>
@@ -96,10 +94,10 @@
     <div class=" row post border rounded  mt-2">
         <h3> <img src="{% static 'icon_pngs/post_add_FILL0_wght300_GRAD0_opsz24.png' %}" alt=""> <h3>Recent Posts</h3>:</h3>
         {% for post in active_group_posts %}
-        
+
         <div class="list-unstyled group p-1 ">
-            <div class="group bg-success-subtle text-emphasis-success rounded  ">
-                <div class="bg-color p-1 rounded">
+            <div class="group bg-success-subtle text-emphasis-success rounded p-1">
+                <div class="bg-color p-1 rounded m-2">
                     <img class="rounded-circle account-img" width="30"
                     src="{{ post.author.profile.profile_pic.url }}">
                     <strong>{{ post.author.username }} </strong>
@@ -108,13 +106,13 @@
                 <figure class="figure m-1 rounded">
                     {% if post.image %}
                     <img src="{{ post.image.url }}" width="400"
-                    class="figure-img img-fluid rounded float-end" alt="...">
+                    class="figure-img img-fluid rounded float-end m-3" alt="...">
                     {% endif %}
-                    <figcaption class="figure-caption"></figcaption>
+                    
                 </figure>
-                
-                <p class="post">{{ post.content }}</p>
-                        <div class="d-flex bg-light rounded pt-1">
+             
+                <p class="post m-3">{{ post.content }}</p>
+                    <div class="d-flex bg-light rounded pt-1 m-3">
                             <a href="{% url 'create_comment' post.id %}" class="p-1">
                                 <div class="btn btn-sm ">Condolences&nbsp;
                                     <span class="badge text-bg-dark">{{ post.comment_set.count }}</span>
@@ -128,22 +126,23 @@
                                 </div>
                             </a>&nbsp;
                             <a href="{% url 'edit_post' post.id %}">
-                                
                                 <div class="btn btn-sm text-success">
-                                    <img src="{% static 'icon_pngs/edit_note_FILL0_wght300_GRAD0_opsz24.png' %}"
+                                 <img src="{% static 'icon_pngs/edit_note_FILL0_wght300_GRAD0_opsz24.png' %}"
                                     alt="">&nbsp;edit
                                 </div>
+                                {% endif %}
                             </a>
-                            {% endif %}
-                            
-                        </div>
                     </div>
-                    <ul class="list-unstyled border rounded p-3 mb-3 ml-4">
-                        {% for comment in active_group_comments %}
-                       
-                        <li>
-                            <div
-                                class="bg-info-subtle text-emphasis-info p-1 mb-1 shadow p-3 mb-1 bg-body-tertiary rounded">
+                                <button class="toggle-button bg-color rounded m-3 ">View Condolence Mgs<span class="material-symbols-outlined">
+                                    keyboard_arrow_down
+                                    </span></button>
+                            
+                                <div class="hidden-content">
+                                     <ul class="list-unstyled border rounded p-3 mb-3 ml-4">
+                                    {% for comment in active_group_comments %}
+                                    {% if comment.post == post %}
+                               <li>
+                             <div class="bg-info-subtle text-emphasis-info p-1 mb-1 shadow p-3 mb-1 bg-body-tertiary rounded">
                                 <img class="rounded-circle account-img" width="30"
                                     src="{{ comment.author.profile.profile_pic.url }}">
                                 <strong>{{ comment.author.username }}</strong>
@@ -151,9 +150,8 @@
                                 <div><small class="comment">{{ comment.content }}</small></div>
                                 <div class="d-flex bg-light rounded pt-1">
                                     <a href="{% url 'add_reply' comment_id=comment.id %}">
-                                        <div class="btn btn-sm "><img
-                                                src="{% static 'icon_pngs/reply_FILL0_wght300_GRAD0_opsz24.png' %}"
-                                                alt="">&nbsp;reply</div>
+                                        <div class="btn btn-sm "><img src="{% static 'icon_pngs/reply_FILL0_wght300_GRAD0_opsz24.png' %}"
+                                            alt="">&nbsp;reply</div>
                                         <h6><span class="badge text-bg-dark"></span></h6>
                                     </a>&nbsp;
                                     {% if user == comment.author %}
@@ -168,42 +166,68 @@
                                                 alt="">&nbsp;delete
                                             </div>
                                         </a>
-                                        
-                                       
-
-                                    </div>
+                                    {%endif%}    
                                 </div>
-                            <ul class="list-unstyled rounded  ">
+                              </div>
+                             
+                              <ul class="list-unstyled rounded  ">
                                 {% for reply in comment.replies.all %}
                                 <li>
-                                    <div
-                                        class="bg-warning-subtle text-emphasis-warning p-3 shadow p-3 mb-2 bg-body-tertiary rounded">
-                                        <img class="rounded-circle account-img" width="30"
-                                        src="{{ reply.author.profile.profile_pic.url }}">
-                                        <strong>{{ reply.author.username }}</strong>
-                                        <small class="text-muted">{{ reply.created_at }}:</small>
-                                        <div class="text-small">
-                                            <small class="comment">{{ reply.content }}</small>
+                                    <div class="bg-warning-subtle text-emphasis-warning p-3 ml-5 rounded d-flex">
+                                        <div class="px-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" width="35">
+                                                <path d="m560-120-57-57 144-143H200v-480h80v400h367L503-544l56-57 241 241-240 240Z"/>
+                                            </svg>
                                         </div>
+                                        <div>
+                                            <img class="rounded-circle account-img" width="30"
+                                            src="{{ reply.author.profile.profile_pic.url }}">
+                                            <strong>{{ reply.author.username }}</strong>
+                                            <small class="text-muted">{{ reply.created_at }}:</small>
+                                            <div class="text-small">
+                                                <small class="comment">{{ reply.content }}</small>
+                                        </div> 
+                                        </div>
+                                        
                                     </div>
                                 </li>
                                 {% endfor %}
                             </ul>
+
                         </li>
                         {% endif %}
                         {% endfor %}
-                    </ul>
-                </div>
-        
-       
-      
+                     </ul>
+                    </div>
+                 </div>
+               </div>
+                        
+              
         {% endfor %}
-    </div>
-  
 </div>
   
 </div>
+  
+</div>
+                           </div>
+                      
 
+                           <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                var toggleButtons = document.querySelectorAll(".toggle-button");
+                        
+                                toggleButtons.forEach(function (button) {
+                                    button.addEventListener("click", function () {
+                                        var content = this.nextElementSibling; // Get the next sibling
+                                        if (content.style.display === "none" || content.style.display === "") {
+                                            content.style.display = "block"; // Show the content
+                                        } else {
+                                            content.style.display = "none"; // Hide the content
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
    
 
   {% endblock%}
@@ -222,7 +246,7 @@
         </div>
         <div class="card mt-3 p-2 h-25 overflow-auto">
             <div id="search-results">
-               
+        
 
             </div>
         </div>
