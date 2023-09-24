@@ -20,6 +20,10 @@ def home(request):
     grouped_data = []
     active_group = Group.objects.filter(is_active=True).first()
     
+    if active_group is None:
+    # Handle the case where there are no active groups
+        return render(request, 'no_active_groups.html')
+    
     # Fetch only the posts of the active group
     active_group_posts = Post.objects.filter(group=active_group).order_by('-created_at')
 
@@ -234,10 +238,7 @@ def approve_post(request, post_id):
     return redirect('home')
 
 
-
 @login_required
-
-
 def add_dependents(request):
     DependentFormSet = inlineformset_factory(User, Dependent, form=DependentForm, extra=2,can_delete = False) # Set the number of empty forms
 
