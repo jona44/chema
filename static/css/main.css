@@ -102,6 +102,8 @@ body{
 .canvas{
     display: flex;
     justify-content: space-between;
+   
+    
 }
 
 @media (max-width: 660.98px) {
