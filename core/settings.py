@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'chema',
     'user',
+    'condolence',
     'crispy_forms',
     "crispy_bootstrap5",
     'allauth',
@@ -34,7 +35,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google', 
     'allauth.socialaccount.providers.facebook', 
      
-   
     
 ]
 

@@ -14,15 +14,15 @@ from .forms import *
 
 @login_required
 def home(request):
-    user = request.user
-    groups = Group.objects.filter(members=user)
+    profile = Profile.objects.get(user=request.user)  # Retrieve the profile associated with the user
+    groups = Group.objects.filter(members=profile)
     search_form = SearchForm()
     grouped_data = []
     active_group = Group.objects.filter(is_active=True).first()
     
     if active_group is None:
-    # Handle the case where there are no active groups
-        return render(request, 'no_active_groups.html')
+        # Handle the case where there are no active groups
+        return render(request, 'chema/choice.html')
     
     # Fetch only the posts of the active group
     active_group_posts = Post.objects.filter(group=active_group).order_by('-created_at')
@@ -34,9 +34,13 @@ def home(request):
         'group': active_group,
         'minimized': not (active_group_posts.exists() or active_group_comments.exists()),
         'posts': active_group_posts[:5],  # Limit the number of posts to display initially
-        'comments': active_group_comments,  # Comments for active group's posts
-        'admins_as_members': active_group.admins_as_members.all(),
+        'comments': active_group_comments,  # Comments for the active group's posts
     }
+
+    if active_group.admins_as_members.exists():
+        group_data['admins_as_members'] = active_group.admins_as_members.all()
+    else:
+        group_data['admins_as_members'] = []
 
     for comment in group_data['comments']:
         comment.replies.set(Reply.objects.filter(comment=comment).order_by('-created_at')[:3])
@@ -50,6 +54,7 @@ def home(request):
         'active_group_comments': active_group_comments
     })
 
+
 @login_required
 def choice(request):
     pass
@@ -58,32 +63,38 @@ def choice(request):
 
 @login_required
 def join_existing_group(request):
+    profile = request.user.profile
     if request.method == 'POST':
         form = GroupJoinForm(request.POST)
         if form.is_valid():
             group_id = form.cleaned_data['group'].id
             group = get_object_or_404(Group, id=group_id)
-            group.members.add(request.user)
-            return redirect('home')
+            group.members.add(request.user.profile)
+            return redirect('group_detail_view', group_id=group.id)
     else:
         form = GroupJoinForm()
 
     return render(request, 'chema/join_existing_group.html', {'form': form})
 
+@login_required
 
 @login_required
 def create_group(request):
     if request.method == 'POST':
-        form = GroupForm(request.POST, request.FILES)
+        form = CreateGroupForm(request.POST)
         if form.is_valid():
             group = form.save(commit=False)
-            group.admin = request.user  # Set the admin of the group to the current user
+            group.admin = Admin.objects.create(profile=request.user.profile)
             group.save()
-            group.members.add(request.user)  # Add the current user as a member
-            group.admins_as_members.add(request.user)  # Add the current user as an admin (if needed)
-            return redirect('home')
+            group.admins_as_members.add(request.user.profile)
+            return redirect('group_detail_view', group_id=group.id)
     else:
-        form = GroupForm()
+        form = CreateGroupForm()
+
+    context = {
+        'form': form,
+    }
+
     return render(request, 'chema/create_group.html', {'form': form})
 
 
@@ -94,12 +105,12 @@ def createPost(request, group_id):
         group = Group.objects.get(id=group_id, is_active=True)
     except Group.DoesNotExist:
         messages.error(request, "The group does not exist or is not active.")
-        return redirect('your_redirect_url')  # Replace 'your_redirect_url' with the actual URL
-
+        return redirect('your_redirect_url') 
+    
     # Check if the user is a member of the group
     if request.user not in group.members.all():
         messages.error(request, "You are not a member of this group.")
-        return redirect('home')  # Replace 'your_redirect_url' with the actual URL
+        return redirect('home') 
 
     if request.method == 'POST':
         # Process the form submission
@@ -111,7 +122,7 @@ def createPost(request, group_id):
             post.group = group
             post.save()
             messages.success(request, "Post created successfully!")
-            return redirect('home') # Replace 'your_redirect_url' with the actual URL
+            return redirect('home') 
         else:
             messages.error(request, "Error creating the post. Please check your input.")
     else:
@@ -206,19 +217,18 @@ def delete_comment(request, comment_id):
     return render(request, 'chema/delete_comment.html', {'comment': comment})
 
 
-
 @login_required
 def add_member(request, group_id):
     group = get_object_or_404(Group, id=group_id)
-    user = request.user  # Get the logged-in user
+    # Get the logged-in user
 
     if request.method == 'POST':
         form = AddMemberForm(request.POST)
         if form.is_valid():
-            new_member = form.cleaned_data['new_member']
+            member_profile = form.cleaned_data['member']
             # Check if the new_member is the logged-in user and not already a member
-            if new_member not in group.members.all():
-                group.members.add(new_member)
+            if member_profile not in group.members.all():
+                group.members.add(member_profile)
                 return redirect('home')
     else:
         form = AddMemberForm()
@@ -266,8 +276,8 @@ def add_dependents(request):
 
 @login_required
 def user_groups(request):
-    user = request.user
-    groups = Group.objects.filter(members=user)
+    profile = Profile.objects.get(user=request.user)
+    groups = Group.objects.filter(members=profile)
     return render(request, 'chema/user_groups.html', {'groups': groups})
 
 
@@ -355,7 +365,7 @@ def join_group(request, group_id):
     group = get_object_or_404(Group, id=group_id)
     # Add the current user to the group's members
     if request.user not in group.members.all():
-        group.members.add(request.user)
+        group.members.add(request.user.profile)
     # Redirect to the group's detail page or any other appropriate page
     return redirect('group_detail_view', group_id)
 

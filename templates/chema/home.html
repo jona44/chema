@@ -45,9 +45,9 @@
                         {{ group.description }}
                     </div>
                     <h3>Members</h3>
-                    {% for member in group.members.all %}
+                    {% for member in group.members.profile.all %}
                     <a href="{% url 'member_detail' pk=member.id %}">
-                        <img src="{{ member.profile.profile_pic.url }}" width="30" class="rounded-circle">{{ member.username }}
+                        <img src="{{ member.profile.profile_pic.url }}" width="30" class="rounded-circle">{{ member }}
                     </a>
                     {% endfor %}
                 </li>
@@ -81,6 +81,7 @@
                 <a href="{% url 'createPost'  group_id=active_group.id %}" class="badge rounded-pill text-bg-danger ">Create Post</a>
                 <a href="{% url 'add_member'  group_id=active_group.id %}"class="badge rounded-pill text-bg-info ">Add Member</a>
                 <a href="{% url 'add_admin'  group_id=active_group.id %}"class="badge rounded-pill text-bg-info ">Add Admin</a>
+              
                 {% endif %}
             </div>
 
@@ -186,7 +187,7 @@
                                             <small class="text-muted">{{ reply.created_at }}:</small>
                                             <div class="text-small">
                                                 <small class="comment">{{ reply.content }}</small>
-                                        </div> 
+                                            </div> 
                                         </div>
                                         
                                     </div>
