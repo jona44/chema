@@ -22,7 +22,7 @@ def home(request):
     
     if active_group is None:
     # Handle the case where there are no active groups
-        return render(request, 'chema/home.html')
+        return render(request, 'chema/create_group.html')
     
     # Fetch only the posts of the active group
     active_group_posts = Post.objects.filter(group=active_group).order_by('-created_at')
