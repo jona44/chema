@@ -23,7 +23,7 @@ def home(request):
     if active_group is None:
     # Handle the case where there are no active groups
 <<<<<<< Updated upstream
-        return render(request, 'chema/home.html')
+        return render(request, 'chema/create_group.html')
 =======
         return render(request, 'chema/create_group.html')
 >>>>>>> Stashed changes
