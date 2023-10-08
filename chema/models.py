@@ -4,25 +4,29 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
+from user.models import Profile
+# from condolence.models import Deceased
 
 class Admin(models.Model):
-    admin       = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
-    date        = models.DateTimeField(auto_now_add=True,null=True,blank=True)
-    
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
+    date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
     def __str__(self):
-        return self.admin
+        # You can return a specific attribute of the associated Profile, like the username
+        return self.profile.user.username
         
 
 
 class Group(models.Model):
     name        = models.CharField(max_length=100)
-    members     = models.ManyToManyField(User, related_name='group_m')
-    admin       = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    members     = models.ManyToManyField(Profile, related_name='group_m')
+    admin       = models.ForeignKey(Admin, on_delete=models.CASCADE, null=True, blank=True)
     is_active   = models.BooleanField(default=True)
-    admins_as_members = models.ManyToManyField(User, related_name='admin_groups', blank=True)
+    admins_as_members = models.ManyToManyField(Profile, related_name='admin_groups', blank=True)
     description       = models.TextField(null=True, blank=True)
     date              = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     cover_image       = models.ImageField(upload_to='group_cover_images', null=True, blank=True)
+
 
     def __str__(self):
         return self.name
@@ -52,7 +56,7 @@ class Group(models.Model):
 
 
 class Post(models.Model):
-    author     = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    author     = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
     group      = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
     content    = models.TextField(null=True, blank=True)
     image      = models.ImageField(upload_to='post_images/', null=True, blank=True)  # Add an ImageField for images
@@ -67,7 +71,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post       = models.ForeignKey(Post, on_delete=models.CASCADE)
-    author     = models.ForeignKey(User, on_delete=models.CASCADE)
+    author     = models.ForeignKey(Profile, on_delete=models.CASCADE)
     content    = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -75,7 +79,7 @@ class Comment(models.Model):
         return f"{self.author.username}: {self.content}"
 
 class Reply(models.Model):
-    author     = models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
+    author     = models.ForeignKey(Profile, on_delete=models.CASCADE,null=True,blank=True)
     comment    = models.ForeignKey(Comment, on_delete=models.CASCADE,related_name='replies',null=True,blank=True)
     content    = models.TextField(null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
@@ -87,11 +91,11 @@ class Reply(models.Model):
         verbose_name_plural = "Replies"
 
 class Dependent(models.Model):
-    guardian      = models.ForeignKey(User, on_delete=models.CASCADE,null=True,blank=True)
+    guardian      = models.ForeignKey(Profile, on_delete=models.CASCADE,null=True,blank=True)
     name          = models.CharField(max_length=100)
     date_of_birth = models.DateField()
     relationship  = models.CharField(max_length=100 ,null=True,blank=True)
-    date        = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    date          = models.DateTimeField(auto_now_add=True,null=True,blank=True)
 
 
     def __str__(self):

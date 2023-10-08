@@ -116,3 +116,6 @@ body{
    .hidden-content {
     display: none;
 }
+.members{
+    height: 100px;
+}

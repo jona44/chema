@@ -2,7 +2,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="mt-5 pt-5 container">
+    <div class="mt-5 pt-5 container ">
         <strong> <h3>Group Name</h3> </strong><p>{{ group.name }}</p>
         <img src="{{group.cover_image.url}}" width="300" alt="">
         <div>
@@ -17,7 +17,7 @@
         </h5>
         <ul>
           {% for member in group.members.all %}
-            <li>{{ member.username }}</li>
+            <li>{{ member }}</li>
           {% endfor %}
         </ul>
         <h5 class="d-grid bg-secondary p-1">
@@ -25,7 +25,7 @@
         </h5>
         <ul>
           {% for admin in group.admins_as_members.all %}
-            <li> {{ admin.username }} </li>
+            <li> {{ admin}} </li>
           {% endfor %}
         </ul>
 

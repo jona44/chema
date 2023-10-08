@@ -24,6 +24,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('', include('chema.urls')),
     path('', include('user.urls')),
+    path('', include('condolence.urls')),
 ]
 
 if settings.DEBUG:

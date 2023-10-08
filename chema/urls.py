@@ -34,6 +34,8 @@ urlpatterns = [
     
     path('add_admin/<int:group_id>/', views.add_admin, name='add_admin'),
     path('toggle_group/<int:group_id>/', views.toggle_group, name='toggle_group'),
+    
+   
  
 ]
 

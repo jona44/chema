@@ -43,3 +43,15 @@ class ProfileUpdateForm(forms.ModelForm):
             }),
         }
         
+
+
+class DeceasedProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['deceased']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Customize the deceased field widget (e.g., change its label)
+        self.fields['deceased'].label = "Is Deceased"
+        self.fields['deceased'].help_text = "Check this box if the member is deceased."

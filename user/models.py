@@ -6,15 +6,17 @@ from io import BytesIO
 
 # Create your models here.
 class Profile(models.Model):
+    
     user        = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(default='default.jpg', upload_to='profile_pics')
     bio         = models.TextField()
+    deceased    = models.BooleanField(default=False)
     phone       = models.CharField(max_length=10,null=True,blank=True)
     address     = models.TextField(null=True,blank=True)
      
     
     def __str__(self):
-        return f'{self.user.username} Profile'
+        return f'{self.user.username}' 
 
     def resize_profile_photo(self):
         if not self.profile_pic:

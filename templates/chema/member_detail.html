@@ -4,10 +4,16 @@
 <div class=" container  mt-5 pt-5  mb-5">
   
       <h1>Member Profile</h1>
-    <img src="{{member.profile.profile_pic.url }}" alt="{{ member.username }}'s profile picture">
+    <img src="{{member.profile.profile_pic.url }}" alt="{{ member}}'s profile picture">
     <p>Name: {{ member.username }}</p>
     <p>Email: {{ member.email }}</p>
-    <p class="bg-secondary">Profile:</p>
+   
+    {% if profile.user_is_group_admin %}
+      <a href="{% url 'update_deceased_status' profile.id %}">Update Deceased Status</a>
+    {% endif %}
+
+
+    <p class="bg-secondary mt-1">Profile:</p>
     <ul>
       <li><strong>Bio:</strong> 
         <figure class="figure bg-body-tertiary">{{ profile.bio }}</figure> 
@@ -17,7 +23,10 @@
     </ul>
     <p class="bg-secondary">Groups:</p>
     {% for group in groups %}
-    <div class="bg-secondary-subtle text  rounded m-3 p-2" style="background-image: url('group_cover_images/cover_1.jpg')">
+    <div class="bg-secondary-subtle text  rounded m-3 p-2" style="background-image: url('{{ group.cover_image.url}}');
+                                                                                            background-size: cover;
+                                                                                            background-position: center center;
+                                                                                            background-repeat: no-repeat;">
       
          <strong>Name:</strong><p>{{ group.name }}</p>
          <strong>Admin:</strong><p>{{ group.admin }}</p>
