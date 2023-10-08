@@ -16,7 +16,7 @@ class Profile(models.Model):
      
     
     def __str__(self):
-        return f'{self.user.username} Profile'
+        return f'{self.user.username}' 
 
     def resize_profile_photo(self):
         if not self.profile_pic:

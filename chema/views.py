@@ -22,7 +22,7 @@ def home(request):
     
     if active_group is None:
     # Handle the case where there are no active groups
-        return render(request, 'no_active_groups.html')
+        return render(request, 'chema/home.html')
     
     # Fetch only the posts of the active group
     active_group_posts = Post.objects.filter(group=active_group).order_by('-created_at')
@@ -108,7 +108,7 @@ def createPost(request, group_id):
         return redirect('your_redirect_url') 
     
     # Check if the user is a member of the group
-    if request.user not in group.members.all():
+    if request.user.profile not in group.members.all():
         messages.error(request, "You are not a member of this group.")
         return redirect('home') 
 
@@ -118,7 +118,7 @@ def createPost(request, group_id):
         if form.is_valid():
             # Create a new post
             post = form.save(commit=False)
-            post.author = request.user
+            post.author = request.user.profile
             post.group = group
             post.save()
             messages.success(request, "Post created successfully!")
@@ -153,7 +153,7 @@ def edit_post(request, post_id):
 def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
-    if post.author != request.user:
+    if post.author != request.user.profile:
         # If the current user is not the author of the post, they are not allowed to delete it
         return redirect('home')
 
@@ -172,7 +172,7 @@ def create_comment(request, post_id):
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
-            comment.author = request.user
+            comment.author = request.user.profile
             comment.post = post
             comment.save()
             return redirect('home')
@@ -186,7 +186,7 @@ def create_comment(request, post_id):
 def edit_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
 
-    if comment.author != request.user:
+    if comment.author != request.user.profile:
         # If the current user is not the author of the comment, they are not allowed to edit it
         return redirect('home')
 
@@ -206,7 +206,7 @@ def edit_comment(request, comment_id):
 def delete_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
 
-    if comment.author != request.user:
+    if comment.author != request.user.profile:
         # If the current user is not the author of the comment, they are not allowed to delete it
         return redirect('post_detail', post_id=comment.post.id)
 
@@ -250,9 +250,9 @@ def approve_post(request, post_id):
 
 @login_required
 def add_dependents(request):
-    DependentFormSet = inlineformset_factory(User, Dependent, form=DependentForm, extra=2,can_delete = False) # Set the number of empty forms
+    DependentFormSet = inlineformset_factory(Profile, Dependent, form=DependentForm, extra=2,can_delete = False) # Set the number of empty forms
 
-    user = request.user
+    user = request.user.profile
     formset = DependentFormSet(instance=user)
 
     if request.method == 'POST':
@@ -289,7 +289,7 @@ def add_reply(request, comment_id):
         form = ReplyForm(request.POST)
         if form.is_valid():
             new_reply = form.save(commit=False)
-            new_reply.author = request.user
+            new_reply.author = request.user.profile
             new_reply.comment = comment
             new_reply.save()
             return redirect('home')
@@ -303,7 +303,7 @@ def add_reply(request, comment_id):
 def remove_reply(request, reply_id):
     reply = get_object_or_404(Reply, id=reply_id)
     comment = reply.comment
-    if request.user == reply.author:
+    if request.user.profile == reply.author:
         reply.delete()
     return redirect('groupDetail', group_id=comment.post.group.id)
 
@@ -326,23 +326,24 @@ def edit_reply(request, reply_id):
 
 @login_required
 def member_detail(request, pk):
-    # Get the member object or raise a 404 error
-    member = get_object_or_404(User, pk=pk)
-    # Get the member's profile
-    profile = Profile.objects.get(user=member)
-    # Get the groups that the member belongs to
-    groups = Group.objects.filter(members=member)
-    # Get the dependents of the member
-    dependents = Dependent.objects.filter(guardian=member)
-    # Get the profile image of the member
+    # Get the user object or raise a 404 error
+    user = get_object_or_404(User, pk=pk)
+    
+    # Get the user's profile
+    profile = Profile.objects.get(user=user)
+    
+    # Get the groups that the user belongs to
+    groups = Group.objects.filter(members=profile)
+    
+    # Get the dependents of the user
+    dependents = Dependent.objects.filter(guardian=profile)
     
     # Render the template with the context data
     return render(request, 'chema/member_detail.html', {
-        'member': member,
+        'member': user,
         'profile': profile,
         'groups': groups,
         'dependents': dependents,
-        
     })
 
 
@@ -350,13 +351,11 @@ from django.db.models import Q
 
 def search_view(request):
     query = request.GET.get('q', '')
-
     # Perform a search for both groups and members using Q objects
     results = (
-        list(Group.objects.filter(Q(name__icontains=query) | Q(members__username__icontains=query)).values()) +
-        list(User.objects.filter(username__icontains=query).values())
+        list(Group.objects.filter(Q(name__icontains=query) | Q(members__user__username__icontains=query)).values()) +
+        list(Profile.objects.filter(user__username__icontains=query).values())
     )
-
     return JsonResponse({'results': results})
 
 
@@ -386,7 +385,7 @@ def add_admin(request, group_id):
         form = AddAdminForm(request.POST, group_id=group.id)
         if form.is_valid():
             user = form.cleaned_data['member']
-            if request.user in group.admins_as_members.all() and user in group.members.all():
+            if request.user.profile in group.admins_as_members.all() and user in group.members.all():
                 group.admins_as_members.add(user)
                 return redirect('group_detail_view', group_id=group.id)
             else:
