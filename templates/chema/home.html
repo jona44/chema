@@ -3,70 +3,13 @@
 {% load static %}
 
 {% block sidebar-left %}
-<div class="pt-3 m-3 mb-5 pb-5 left-sidebar ">
-   
-        <div class="pt-3 mt-5 bg-light rounded p-2">
-            <div class="d-grid">
-                <button class="btn btn-success">
-                    <img src="{% static 'icon_pngs/groups_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">
-                    My groups
-                </button>
-            </div>
-            <p class="bg-secondary mt-3">Group Names</p>
-            <ul class="list-unstyled">
-                {% for group in groups %}
-                <li>
-                    <a href="{% url 'toggle_group' group.id %}">
-                        <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;{{ group.name }}</a>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="pt-3 mt-5 bg-light rounded p-2 ">
-            <div class="d-grid">
-                <button class="btn btn-primary" id="toggle-group-detail">
-                    <img src="{% static 'icon_pngs/groups_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">Group Detail
-                </button>
-            </div>
-            {% for group in groups %}
-            <ul class="list-unstyled">
-                <li>
-                    <p class="bg-secondary mt-3"><strong>Group Name :&nbsp;</strong></p>
-                    <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;&nbsp;
-                    {{ group.name }}
 
-                    <p class="bg-secondary mt-3"><strong>Group Admin :&nbsp;</strong></p>
-                    {% for admin in group.admins_as_members.all %}
-                    <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;&nbsp;
-                    {{ admin }}
-                    {% endfor %}
-                    <p class="bg-secondary"><strong><img src="{% static 'icon_pngs/description_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">Description:</strong></p>
-                    <div class="card p-2">
-                        {{ group.description }}
-                    </div>
-                    <div class=" members overflow-auto">
-                     <h3>Members</h3>
-                    {% for member in group.members.all %}
-                    <ul class="list-unstyled">
-                    <a href="{% url 'member_detail' pk=member.id %}">
-                        <li><img src="{{ member.profile_pic.url }}" width="30" class="rounded-circle">
-                            {{member}}</li>
-                        </ul>
-                    </a>
-                    {% endfor %}   
-                    </div>
-                    
-                </li>
-            </ul>
-            {% endfor %}
-        </div>
-    </div>
+{% include 'chema/left_side.html'  %} # with groups=user_groups.groups
 
 {% endblock %}
 
 <!----------------------- Main Content-------------------- -->
     {% block content %}
- 
    
 <div class="main mt-5"> 
     <div class="fixed">
@@ -77,6 +20,7 @@
     </div>
     
     <div class="row d-flex"> 
+      {{profile}}
         <div class="card text-bg-dark  " style="background-image: url('{{ active_group.cover_image.url}}');
                                                     background-size: cover;
                                                     background-position: center center;
@@ -87,70 +31,94 @@
                 <a href="{% url 'createPost'  group_id=active_group.id %}" class="badge rounded-pill text-bg-danger ">Create Post</a>
                 <a href="{% url 'add_member'  group_id=active_group.id %}"class="badge rounded-pill text-bg-info ">Add Member</a>
                 <a href="{% url 'add_admin'  group_id=active_group.id %}"class="badge rounded-pill text-bg-info ">Add Admin</a>
-              
                 {% endif %}
             </div>
 
-            <div class="h-50 d-inline-block ">
-                helo
+            <div class="h-25 d-inline-block ">
+              {{profile}}
             </div>
-            <div>
+            <div class="row-3">
+              <h2>Your Groups</h2>
+<ul>
+    name {% for group in groups %}
+       <span class="tag"><h3>{{ group.name}}</h3></span>name
+       <span class="tag"><strong>{{ group.description}}</strong></span>
+     {% endfor %}
+  
+</ul>name
+
+
+
+  <h1>All Groups</h1>
+  <ul>
+   
+      <li>
+        {%for group in groups %}
+              {%endfor%}
+              {{profile}}
+      </li>
+   
+      
+    
+  </ul>
+
+
+
             </div>
         </div>
     </div>
     <div class=" row post border rounded  mt-2">
-        <h3> <img src="{% static 'icon_pngs/post_add_FILL0_wght300_GRAD0_opsz24.png' %}" alt=""> <h3>Recent Posts</h3>:</h3>
-        {% for post in active_group_posts %}
-
-        <div class="list-unstyled group p-1 ">
+      <h3>
+        <img src="{% static 'icon_pngs/post_add_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">
+        <h3>Recent Posts</h3>:
+    </h3>
+   {% for post in active_group_posts %}
+        <div class="list-unstyled group p-1"> 
             <div class="group bg-success-subtle text-emphasis-success rounded p-1">
                 <div class="bg-color p-1 rounded m-2">
-                    <img class="rounded-circle account-img" width="30"
-                    src="{{ post.author.profile_pic.url }}">
-                    <strong>{{ post.author }} </strong>
+                    <img class="rounded-circle account-img" width="30" src="{{ post.author.profile_pic.url }}">
+                    <strong>{{ post.author.user }}</strong>
                     <small class="text-muted">{{ post.created_at }}</small>
                 </div>
                 <figure class="figure m-3 rounded">
                     {% if post.image %}
-                    <img src="{{ post.image.url }}" width="400"
-                    class="figure-img img-fluid rounded float-end " alt="...">
+                        <img src="{{ post.image.url }}" width="400" class="figure-img img-fluid rounded float-end" alt="...">
                     {% endif %}
-                    
                 </figure>
-             
                 <p class="post m-3">{{ post.content }}</p>
-                    <div class="d-flex bg-light rounded pt-1 m-3">
-                            <a href="{% url 'create_comment' post.id %}" class="p-1">
-                              <div class="btn btn-sm ">Condolences&nbsp;
-                                <span class="badge text-bg-dark">{{ post.comment_set.count }}</span>
-                              </div>
-                            </a>&nbsp;
-                            {% if user == post.author %}
-                            <a href="{% url 'delete_post' post.id %}">
-                                <div class="btn btn-sm text-danger">
-                                    <img src="{% static 'icon_pngs/delete_FILL0_wght300_GRAD0_opsz24.png' %}"
-                                        alt="">&nbsp;delete
-                                </div>
-                            </a>&nbsp;
-                            <a href="{% url 'edit_post' post.id %}">
-                                <div class="btn btn-sm text-success">
-                                 <img src="{% static 'icon_pngs/edit_note_FILL0_wght300_GRAD0_opsz24.png' %}"
-                                    alt="">&nbsp;edit
-                                </div>
-                                {% endif %}
-                            </a>
-                    </div>
-                                <button class="toggle-button bg-color rounded m-3 ">View Condolence Mgs<span class="material-symbols-outlined">
-                                    keyboard_arrow_down
-                                    </span></button>
-                            
-                                <div class="hidden-content">
-                                     <ul class="list-unstyled border rounded p-3 mb-3 ml-4">
-                                    {% for comment in active_group_comments %}
-                                    {% if comment.post == post %}
-                               <li>
+    
+                    <div class="d-flex bg-secondary rounded py-1 ">
+                      <a href="{% url 'create_comment' post.id %}"class="btn btn-sm ">Condolences&nbsp;</a>
+                      &nbsp;
+                        {% if request.user == post.author.user %}
+                      <a href="{% url 'delete_post' post.id %}">
+                        <div class="btn btn-sm text-danger">
+                          <img src="{% static 'icon_pngs/delete_FILL0_wght300_GRAD0_opsz24.png' %}"alt="">&nbsp;delete
+                        </div>
+                      </a>
+                      &nbsp;  
+                      <a href="{% url 'edit_post' post.id %}">
+                        <div class="btn btn-sm text-success">
+                          <img src="{% static 'icon_pngs/edit_note_FILL0_wght300_GRAD0_opsz24.png' %}"alt="">&nbsp;edit
+                        </div>
+                      </a>        
+                        {% endif %}
+                         
+                  </div>
+                </div> 
+               
+               
+                     <button class="toggle-button btn btn-primary  p-1 ">More Condolence Mgs
+                        <span class="badge text-bg-dark">{{ post.comment_set.count }}</span>
+                     </button>
+                       
+                  <div class="hidden-content">  
+               
+                    <ul class="list-unstyled border rounded p-3 mb-3 ml-4">
+                       {% for comment in active_group_comments %}
+                             {% if comment.post == post %}
                              <div class="bg-info-subtle text-emphasis-info p-1 mb-1 shadow p-3 mb-1 bg-body-tertiary rounded">
-                                <img class="rounded-circle account-img" width="30"
+                              <img class="rounded-circle account-img" width="30"
                                     src="{{ comment.author.profile_pic.url }}">
                                 <strong>{{ comment.author}}</strong>
                                    <small class="text-muted">{{ comment.created_at }}:</small>
@@ -177,10 +145,9 @@
                                                 alt="">&nbsp;delete
                                             </div>
                                         </a>
-                                    {%endif%}    
+                                    {%endif%}   
                                 </div>
                               </div>
-                             
                               <ul class="list-unstyled rounded  ">
                                    {% for reply in comment.replies.all %}
                                 <li>
@@ -199,42 +166,44 @@
                                           <small class="comment">{{ reply.content }}</small>
                                         </div> 
                                       </div>
-                                        
                                     </div>
                                 </li>
                                 {% endfor %}
                             </ul>
-
                         </li>
-                        {% endif %}
-                        {% endfor %}
+                          {% endif %}
+                         {% endfor %}
                      </ul>
-                    </div>
-                 </div>
-               </div>
-        {% endfor %}
+                    </div> {%endfor%} 
+                  </div>
+
+        </div>
+        </div>
+        
      </div>
    </div>
  </div>
 </div>
                       
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-   document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", function () {
       var toggleButtons = document.querySelectorAll(".toggle-button");
-                        
-        toggleButtons.forEach(function (button) {
-           button.addEventListener("click", function () {
-            var content = this.nextElementSibling; // Get the next sibling
-            if (content.style.display === "none" || content.style.display === "") {
-                content.style.display = "block"; // Show the content
-            } else {
-            content.style.display = "none"; // Hide the content
-            }
-         })
+
+      toggleButtons.forEach(function (button) {
+          button.addEventListener("click", function () {
+              var content = this.nextElementSibling; // Get the next sibling
+              if (content.style.display === "none" || content.style.display === "") {
+                  content.style.display = "block"; // Show the content
+              } else {
+                  content.style.display = "none"; // Hide the content
+              }
+          });
       });
   });
-</script>                                            
+</script>
+                 
    
 
   {% endblock%}
@@ -243,49 +212,9 @@
 <!-- ---------------------------------Right Sidebar------------------------------------- -->
 
 {% block sidebar-right %}
-
-<div class="w-100 mt-5 pt-5">
-   <form id="search-form">
-    {% csrf_token %}
-     <input type="text" id="search-input" maxlength="100" placeholder="Search..."
-     class="textinput textInput form-control" required="" id="id_name">
-   </form>
+<div class="mt-5 pt-5">
+  {% include "right_side.html" %}
 </div>
-        <div class=" mt-3 p-2 h-25 overflow-auto">
-            <div id="search-results">
-            </div>
-        </div>
-
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                // Attach an event listener to the search input field
-                $('#search-input').on('input', function () {
-                    var query = $(this).val();  // Get the search query from the input
-                    // Make an AJAX request to the search view
-                    $.ajax({
-                        url: '/search/',  
-                        data: {
-                            'q': query
-                        },
-                        success: function (response) {
-                            var resultsContainer = $('#search-results');
-                            resultsContainer.empty();  // Clear previous results
-                            // Loop through the results and add them to the container
-                            $.each(response.results, function (index, result) {
-                                if ('name' in result) {
-                                    // If it's a group result
-                                    var link = '<a href="/group_detail_view/' + result.id + '/">' + result.name + '</a>';
-                                    resultsContainer.append('<p>' + link + '</p>');
-                                } else if ('username' in result) {
-                                    // If it's a member result
-                                    var link = '<a href="/member_detail/' + result.id + '/">' + result.username + '</a>';
-                                    resultsContainer.append('<p>' + link + '</p>');
-                                }
-                            });
-                        }
-                    });
-                });
-            });
-        </script>                 
+  
+               
 {% endblock %}

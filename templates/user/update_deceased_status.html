@@ -4,14 +4,14 @@
 <div class="container d-flex mt-5 justify-content-center">
       
   <div>
-    <h2>Update Deceased Status for {{ profile.user.username }}</h2>
+    <h3>Update Deceased Status for <strong class="text-success">{{ profile.user.username }}</strong></h3>
         <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-primary">Update</button>
         </form>
   
-  <a href="{% url 'member_detail' pk=profile.user.id %}">Back to Member Detail</a>
+  <a href="{% url 'member_detail' profile_id=profile.user.id %}">Back to Member Detail</a>
 
   </div>
  

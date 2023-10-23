@@ -4,56 +4,12 @@
 
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
       <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasRightLabel">Offcanvas right</h5>
+        <h5 class="offcanvas-title" id="offcanvasRightLabel">Search Groups & Members..</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body">
-        <div class="w-100 mt-5 pt-5">
-          <form id="search-form">
-              {% csrf_token %}
-              <input type="text" id="search-input" maxlength="100" placeholder="Search..."
-                  class="textinput textInput form-control" required="" id="id_name">
-          </form>
-      </div>
-      <div class="card mt-3 p-2 h-25 overflow-auto">
-          <div id="search-results">
-             
 
-          </div>
-      </div>
-
-      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-      <script>
-          $(document).ready(function () {
-              // Attach an event listener to the search input field
-              $('#search-input').on('input', function () {
-                  var query = $(this).val();  // Get the search query from the input
-                  // Make an AJAX request to the search view
-                  $.ajax({
-                      url: '/search/',  
-                      data: {
-                          'q': query
-                      },
-                      success: function (response) {
-                          var resultsContainer = $('#search-results');
-                          resultsContainer.empty();  // Clear previous results
-                          // Loop through the results and add them to the container
-                          $.each(response.results, function (index, result) {
-                              if ('name' in result) {
-                                  // If it's a group result
-                                  var link = '<a href="/group_detail_view/' + result.id + '/">' + result.name + '</a>';
-                                  resultsContainer.append('<p>' + link + '</p>');
-                              } else if ('username' in result) {
-                                  // If it's a member result
-                                  var link = '<a href="/member_detail/' + result.id + '/">' + result.username + '</a>';
-                                  resultsContainer.append('<p>' + link + '</p>');
-                              }
-                          });
-                      }
-                  });
-              });
-          });
-      </script>                 
+       {% include 'right_side.html'%}     
 
       </div>
     </div>

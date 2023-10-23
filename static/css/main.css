@@ -6,6 +6,12 @@ body{
     
    
 }
+.section{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+   
+}
 .comment{
     font-size: small;
     font-weight: 100;
@@ -72,7 +78,15 @@ body{
     padding: 10px;
     box-sizing: border-box;
 }
+.section{
+   
+    
+    width: 100%;
+   
 }
+}
+
+
 @media (max-width: 576px){
     .sidebar-left{
         display:none;
@@ -118,4 +132,8 @@ body{
 }
 .members{
     height: 100px;
+}
+
+.box{
+    height: 20%;
 }

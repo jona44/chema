@@ -7,9 +7,12 @@
     
       <div class="btn">
         
-        <a href="{% url 'create_group'%}"  class="badge rounded-pill text-bg-primary ">Create Group</a>
-        <a href="{% url 'join_existing_group'%}"  class="badge rounded-pill text-bg-secondary ">Join Group</a>
+        <a href="{% url 'create_group'%}"  class="badge rounded-pill text-bg-warning ">Create Group</a>
+        {% if not is_member %}
+        <a href="{% url 'join_active_group' %}"  class="badge rounded-pill text-bg-primary ">Join Group</a>
         
+        <!-- Show content for non-members -->
+       {% endif %}
       </div>
       
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">

@@ -15,10 +15,11 @@ class GroupJoinForm(forms.Form):
     group = forms.ModelChoiceField(queryset=Group.objects.all(),label='Select Group', empty_label='Select a Member')
     
 
-class CreateGroupForm(forms.ModelForm):
+class GroupCreationForm(forms.ModelForm):
     class Meta:
         model = Group
-        fields = ['name', 'description', 'cover_image'] 
+        fields = ['name', 'description', 'cover_image', 'is_active']
+        # You can customize widgets or add any additional fields as needed
        
         widgets={
             'description': forms.Textarea(attrs={
@@ -29,7 +30,8 @@ class CreateGroupForm(forms.ModelForm):
         }
         
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(GroupCreationForm, self).__init__(*args, **kwargs)
+        # You can customize form fields or add validation as needed.
     
     
 class PostCreationForm(forms.ModelForm):

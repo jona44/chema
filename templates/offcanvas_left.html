@@ -8,58 +8,8 @@
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-          <div class="pt-3 m-3 mb-5 pb-5 left-sidebar ">
-   
-            <div class="pt-3 mt-5 bg-light rounded p-2">
-                <div class="d-grid">
-                    <button class="btn btn-success">
-                        <img src="{% static 'icon_pngs/groups_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">
-                        My groups
-                    </button>
-                </div>
-                <p class="bg-secondary mt-3">Group Names</p>
-                <ul class="list-unstyled">
-                    {% for group in groups %}
-                    <li>
-                        <a href="{% url 'toggle_group' group.id %}">
-                            <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;{{ group.name }}</a>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="pt-3 mt-5 bg-light rounded p-2 ">
-                <div class="d-grid">
-                    <button class="btn btn-primary" id="toggle-group-detail">
-                        <img src="{% static 'icon_pngs/groups_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">Group Detail
-                    </button>
-                </div>
-                {% for group in groups %}
-                <ul class="list-unstyled">
-                    <li>
-                        <p class="bg-secondary mt-3"><strong>Group Name :&nbsp;</strong></p>
-                        <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;&nbsp;
-                        {{ group.name }}
-    
-                        <p class="bg-secondary mt-3"><strong>Group Admin :&nbsp;</strong></p>
-                        {% for admin in group.admins_as_members.all %}
-                        <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;&nbsp;
-                        {{ admin.username }}
-                        {% endfor %}
-                        <p class="bg-secondary"><strong><img src="{% static 'icon_pngs/description_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">Description:</strong></p>
-                        <div class="card p-2">
-                            {{ group.description }}
-                        </div>
-                        <h3>Members</h3>
-                        {% for member in group.members.all %}
-                        <a href="{% url 'member_detail' pk=member.id %}">
-                            <img src="{{ member.profile.profile_pic.url }}" width="30" class="rounded-circle">{{ member.username }}
-                        </a>
-                        {% endfor %}
-                    </li>
-                </ul>
-                {% endfor %}
-            </div>
-        </div>
+            
+          {% include 'chema/left_side.html' with groups=user_groups.groups %}
     
         </div>
     </div>

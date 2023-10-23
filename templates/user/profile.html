@@ -6,7 +6,11 @@
       <div class=" d-flex justify-content-center  ">
         <img class="rounded-circle account-img" width="100" src="{{ user.profile.profile_pic.url }}">
         <div class="media-body">
+         
           <h2 class="account-heading">{{ user.username }}</h2>
+          {% if request.user.profile.is_admin %}
+          <p>(admin)</p>
+          {% endif %}
           <p class="textcolor">{{ user.email }}</p>
         </div>
       </div>

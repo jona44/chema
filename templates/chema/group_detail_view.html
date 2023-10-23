@@ -13,24 +13,26 @@
         </div>
         
         <h5 class="d-grid bg-secondary p-1">
-            Total Members.. {{members_count}}
+            Total Members.. {{count_members}}
         </h5>
-        <ul>
-          {% for member in group.members.all %}
-            <li>{{ member }}</li>
-          {% endfor %}
+        <ul class="  h-25 overflow-auto">
+          {% for member in members %}
+         <span class="bg-light">	&#128509;{{ member.user.username }}&nbsp; </span>
+        {% endfor %}
         </ul>
         <h5 class="d-grid bg-secondary p-1">
-            Admins.. {{admins_count}}
+            Admins.. {{count_admins}}
         </h5>
-        <ul>
-          {% for admin in group.admins_as_members.all %}
-            <li> {{ admin}} </li>
-          {% endfor %}
-        </ul>
+        <div>
+          {% for admin in group_admins %}
+          &#128509;{{ admin }}
+           {% endfor %}
+        </div>
+        
+          
 
-          {% if user not in group.members.all %}
-                <a href="{% url 'join_group' group.id %}" class="btn btn-primary">Join Group</a>
+          {% if profile not in group.members.all %}
+                <a href="{% url 'join_active_group'  %}" class="btn btn-primary">Join Group</a>
             {% else %}
                 <p>You are already a member of this group.</p>
             {% endif %}
