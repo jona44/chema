@@ -1,5 +1,4 @@
 from django.contrib import admin
-from . models import Contribution,Deceased
+from . models import Contribution
 
-admin.site.register(Deceased)
 admin.site.register(Contribution)

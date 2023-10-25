@@ -2,9 +2,9 @@
 {% load static %}
 
 
-<div class="pt-3 m-3 mb-5 pb-5 left-sidebar ">
+<div class="m-3 mb-5 pb-5 left-sidebar ">
    
-  <div class="pt-3 mt-5 bg-light rounded p-2">
+  <div class="pt-3  bg-light rounded p-2">
       <div class="d-grid">
           <button class="btn btn-success">
               <img src="{% static 'icon_pngs/groups_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">
@@ -35,7 +35,7 @@
               {{ group.name }}
 
               <p class="bg-secondary mt-3"><strong>Group Admin :&nbsp;</strong></p>
-              {% for admin in group.admins_as_members.all %}
+              {% for admin in group.admins %}
               <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;&nbsp;
               {{ admin }}
               {% endfor %}
@@ -49,7 +49,7 @@
               <ul class="list-unstyled">
               <a href="{% url 'member_detail' member_id=member.id group_id=group.id %}">
                   <li><img src="{{ member.profile_pic.url }}" width="30" class="rounded-circle">
-                      {{member}}</li>
+                      {{member}}{% if member.deceased %}<span class="text-danger">(Deceased)</span>{%endif%}{% if admin %}<span class="text-success">(Admin)</span>{%endif%} </li>
                   </ul>
               </a>
               {% endfor %}   

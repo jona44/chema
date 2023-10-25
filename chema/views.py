@@ -5,9 +5,9 @@ from .models import *
 from django.urls import reverse 
 from django.forms import inlineformset_factory
 from django.contrib import messages
-import os
+
 from user.models import Profile
-import random
+
 from .forms import *
 from django.core.exceptions import PermissionDenied
 
@@ -265,7 +265,6 @@ def delete_comment(request, comment_id):
 
 
 @login_required
-
 def add_member(request, group_id):
     # Get the group
     group = get_object_or_404(Group, id=group_id)
@@ -465,12 +464,7 @@ def member_detail(request, group_id, member_id):
     }
 
     # Check if the current user is a group admin for the specific group
-    try:
-        group_membership = GroupMembership.objects.get(group=group, member=request.user.profile)
-        if not group_membership.is_admin:
-            raise Http404("You are not a group admin.")
-    except GroupMembership.DoesNotExist:
-        raise Http404("You are not a group member.")
+    
 
     if request.method == 'POST' and 'mark_member_as_deceased' in request.POST:
         # Handle marking the member as deceased here
@@ -519,8 +513,6 @@ def add_admin(request, group_id):
     return render(request, 'chema/add_admin.html', {'form': form})
 
 
-
-
 def toggle_group(request, group_id):
     # Get the group being toggled
     group_to_toggle = get_object_or_404(Group, id=group_id)
@@ -535,20 +527,6 @@ def toggle_group(request, group_id):
     return redirect('home')
 
 
-
-# def mark_member_as_deceased(request, group_id, member_id):
-#     group = get_object_or_404(Group, id=group_id, is_active=True)
-#     member = get_object_or_404(Profile, id=member_id, groups=group)
-#     admin = group.get_admins()
-
-#     if request.user not in admin:
-#         raise PermissionDenied("You are not authorized to perform this action.")
-
-#     if request.method == 'POST':
-#         member.deceased = True
-#         member.save()
-#         messages.success(request, f'{member} has been marked as deceased.')
-#         return redirect('member_detail', group_id=group_id, member_id=member_id)
 
 
 

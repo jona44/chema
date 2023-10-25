@@ -4,7 +4,7 @@
 
 {% block sidebar-left %}
 
-{% include 'chema/left_side.html'  %} # with groups=user_groups.groups
+{% include 'chema/left_side.html' %}  with groups=user_groups.groups
 
 {% endblock %}
 
@@ -31,6 +31,7 @@
                 <a href="{% url 'createPost'  group_id=active_group.id %}" class="badge rounded-pill text-bg-danger ">Create Post</a>
                 <a href="{% url 'add_member'  group_id=active_group.id %}"class="badge rounded-pill text-bg-info ">Add Member</a>
                 <a href="{% url 'add_admin'  group_id=active_group.id %}"class="badge rounded-pill text-bg-info ">Add Admin</a>
+                <a href="{% url 'create_contribution' %}">Create Contribution</a>
                 {% endif %}
             </div>
 
@@ -39,28 +40,7 @@
             </div>
             <div class="row-3">
               <h2>Your Groups</h2>
-<ul>
-    name {% for group in groups %}
-       <span class="tag"><h3>{{ group.name}}</h3></span>name
-       <span class="tag"><strong>{{ group.description}}</strong></span>
-     {% endfor %}
-  
-</ul>name
 
-
-
-  <h1>All Groups</h1>
-  <ul>
-   
-      <li>
-        {%for group in groups %}
-              {%endfor%}
-              {{profile}}
-      </li>
-   
-      
-    
-  </ul>
 
 
 
