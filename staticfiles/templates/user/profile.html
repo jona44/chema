@@ -2,11 +2,15 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <div class="container d-flex justify-content-center">
-  <div class="w-50 ">
-      <div class=" d-flex justify-content-center mt-5 pt-5">
+  <div class="card p-3 mt-5">
+      <div class=" d-flex justify-content-center  ">
         <img class="rounded-circle account-img" width="100" src="{{ user.profile.profile_pic.url }}">
         <div class="media-body">
+         
           <h2 class="account-heading">{{ user.username }}</h2>
+          {% if request.user.profile.is_admin %}
+          <p>(admin)</p>
+          {% endif %}
           <p class="textcolor">{{ user.email }}</p>
         </div>
       </div>

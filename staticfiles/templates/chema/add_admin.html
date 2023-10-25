@@ -2,13 +2,19 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="mt-5 pt-5 w-50 mb-5">
-    <h1>Add Admin</h1>
-    <form method="post">
+<div class="container mt-5">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Add New Admin</h2>
+      </div>
+      <div class="card-body">
+        <form method="post">
         {% csrf_token %}
         {{ form|crispy }}
-        <input type="submit"class="button rounded" value="Add Admin">
-    </form>
+        <button type="submit">Add Admin</button>
+       </form>
+      </div>
+    </div>
 </div>
 
 {% endblock %}

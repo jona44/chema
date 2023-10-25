@@ -9,7 +9,7 @@
 {% block content %}
 <div class="d-flex">
 
- <div class="container "> 
+  <div class="container mt-5 pt-5"> 
 
 <h1>{% trans "Sign In" %}</h1>
 
@@ -19,7 +19,7 @@
 <p>{% blocktrans with site.name as site_name %}Please sign in with one
 of your existing third party accounts.</p>
 
-<p>Or, <a href="{{ signup_url }}">sign up</a>
+<p>Or, <a href="{{ signup_url }">sign up</a>
 for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
 
 <div class="socialaccount_ballot">

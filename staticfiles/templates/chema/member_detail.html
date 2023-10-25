@@ -1,50 +1,64 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<div class="mt-5 pt-5 w-50 mb-5">
-      <h1>Member Profile</h1>
-    <img src="{{member.profile.profile_pic.url }}" alt="{{ member.username }}'s profile picture">
-    <p>Name: {{ member.username }}</p>
-    <p>Email: {{ member.email }}</p>
-    <p class="bg-secondary">Profile:</p>
-    <ul>
-      <li><strong>Bio:</strong> 
-        <figure class="figure bg-body-tertiary">{{ profile.bio }}</figure> 
-      </li>
-      <li> <strong>Address:</strong> <p>{{ profile.address }}</p></li>
-      <li><strong>Phone: </strong> {{ profile.phone }}</li>
-    </ul>
-    <p class="bg-secondary">Groups:</p>
-    {% for group in groups %}
-    <div class="bg-secondary-subtle text  rounded m-3 p-2" style="background-image: url('group_cover_images/cover_1.jpg')">
-      
-         <strong>Name:</strong><p>{{ group.name }}</p>
-         <strong>Admin:</strong><p>{{ group.admin }}</p>
+  <div class="container mt-3">
+    <h1>Member Detail: {{ object }}</h1>
+    <h1>Group: {{ group.name }}</h1>
+    <p>Member: {{ member.name }}</p>
 
-         <strong>Description:</strong><p class="bg-light-subtle text-success  rounded m-3 p-2"> {{ group.description }}</p>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">Profile Info</div>
+          <div class="card-body">
+            <img src="{{ member.profile_pic.url }}" alt="{{ member.user.username }}" class="img-fluid">
+            <p><strong>Username:</strong> {{ object }}</p>
+            <p><strong>Bio:</strong> {{ bio }}</p>
+            <p><strong>Phone:</strong> {{ phone }}</p>
+            <p><strong>Address:</strong> {{ address }}</p>
+            <p><strong>Deceased:</strong> {% if member.deceased %}
+              <span class="text-danger">Yes</span>
+            {% else %}
+              No
+            {% endif %}</p>
+            
+            {% if user.profile == group.admin %}
+              <form method="post">
+                {% csrf_token %}
+                {% if not member.deceased %}
+                  <input type="submit" name="mark_member_as_deceased" value="Mark as Deceased">
+                {% else %}
+                  <p>This member is marked as deceased.</p>
+                {% endif %}
+              </form>
+            {% else %}
+              <p>Only group admin can mark this member as deceased.</p>
+            {% endif %}
+          </div>
         </div>
-      {% endfor %}
-     
-    </ul>
-    <p class="bg-secondary">Dependents:</p>
-    <table class="table w-100">
-      <tr>
-        <th >Name</th>
-        <th >Date of Birth</th>
-        <th >Country</th>
-      </tr>
-      {% for dependent in dependents %}
-      <tr>
-        <td>{{ dependent.name }}</td>
-        <td>{{ dependent.date_of_birth }}</td>
-        <td>{{ dependent.relationship }}</td>
-      </tr>
-      {% endfor %}
-    </table>
-    <div class="d-grid ">
-      <a href="{% url 'add_dependents'%} " class="btn btn-success">add Spouse or Child </a>
+      </div>
+      <div class="col-md-8">       
+        <div class="card">
+          <div class="card-header">Groups</div>
+          <div class="card-body">
+            <ul>
+              {% for group in groups %}
+                <li>{{ group.name }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        <div class="card mt-3">
+          <div class="card-header">Dependents</div>
+          <div class="card-body">
+            <ul>
+              {% for dependent in dependents %}
+                <li>{{ dependent.name }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
-       
-
-</div>
+  </div>
 {% endblock %}

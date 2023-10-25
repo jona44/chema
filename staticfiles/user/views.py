@@ -1,9 +1,11 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django .contrib.auth.models import User
 from .forms import UserUpdateForm, ProfileUpdateForm,UserRegisterForm
 from django.contrib import messages
 from .forms import UserUpdateForm, ProfileUpdateForm,UserRegisterForm
 from django.contrib.auth.decorators import login_required
+from .models import Profile
+from chema.models import Group
 
 
 # Create your views here.
@@ -44,3 +46,8 @@ def user_register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'user/user-register.html', {'form': form})
+
+
+
+
+

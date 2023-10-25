@@ -2,10 +2,9 @@
 {% load crispy_forms_tags %}
 
  {% block content %}
-
-    <title>Reply Comment</title>
-
-    <div class="mt-5 pt-5">
+ <div class="container d-flex justify-content-center mt-5">
+    <div class="card p-3">
+     
         <h1> Reply To Comment</h1>
         <form method="post">
             {% csrf_token %}
@@ -13,5 +12,7 @@
             <button type="submit" class="btn btn-secondary">Reply</button>
         </form>
     </div>
+    
+</div>
 
 {% endblock %}

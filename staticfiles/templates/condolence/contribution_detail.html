@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <h1>Contribution Detail</h1>
+    <p>Contributing Member: {{ contribution.contributing_member }}</p>
+    <p>Amount: {{ contribution.amount }}</p>
+    <p>Contribution Date: {{ contribution.contribution_date }}</p>
+    <h2>Deceased Members:</h2>
+    <ul>
+        {% for member in deceased_members %}
+            <li>{{ member }}</li>
+        {% endfor %}
+    </ul>
+        </div>
+        <div class="card-footer">
+            <a href="{#}" class="btn btn-primary">Back to Contributions</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
