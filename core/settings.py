@@ -1,5 +1,3 @@
-
-
 from pathlib import Path,os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,7 +11,6 @@ ALLOWED_HOSTS = ['chemaonline.azurewebsites.net','127.0.0.1','chema.com']
 CSRF_TRUSTED_ORIGINS = ['https://chemaonline.azurewebsites.net','https://127.0.0.1','https://chema.com']
 
 SITE_ID = 3
-
 
 
 INSTALLED_APPS = [
@@ -141,7 +138,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = 'static/'
  
 STATICFILES_DIRS = [BASE_DIR, 'static']
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 STATIC_ROOT = BASE_DIR / 'staticfiles'
     
     
