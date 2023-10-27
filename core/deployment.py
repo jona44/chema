@@ -50,6 +50,7 @@ DATABASES = {
         'NAME':'chemaonline-database ',
         'HOST':'chemaonline-server.postgres.database.azure.com',
         'USER':'labcfxiqdd',
+        'PORT': 5432,
         'PASSWORD':'Y1FZAVFH4X38SN7J$'
     }    
 }
