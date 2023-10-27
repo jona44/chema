@@ -60,4 +60,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER ='manyadzatocky@gmail.com'
 EMAIL_HOST_PASSWORD  = os.environ['EMAIL_PASSWORD']
+
+WEBSITES_PORT = 8000
  
