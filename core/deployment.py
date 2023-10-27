@@ -6,7 +6,7 @@ SECRET_KEY = os.environ['SECRET']
 ALLOWED_HOST = ['WEBSITE_HOSTNAME']
 CSRF_TRUSTED_ORIGINS = ['https://'+ os.environ['WEBSITE_HOSTNAME']]
 
-DEBUG = True
+DEBUG = False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -19,15 +19,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-# STATIC_ROOT =os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATIC_ROOT =os.path.join(BASE_DIR, 'staticfiles')
 
-STORAGES = {
-    # ...
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+# STORAGES = {
+#     # ...
+#     "staticfiles": {
+#         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+#     },
+# }
 
 # #connection_string = os.environ('AZURE_POSTGRESQL_CONNECTIONSTRING')
 # connection_string = os.environ.get['AZURE_POSTGRESQL_CONNECTIONSTRING']
