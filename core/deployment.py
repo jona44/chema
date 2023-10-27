@@ -29,31 +29,34 @@ STORAGES = {
     },
 }
 
-connection_string = os.environ['AZURE_POSTGRESQL_CONNECTIONSTRING']
-# connection_string = os.environ.get['AZURE_POSTGRESQL_CONNECTIONSTRING']
-parameters = {pair.split('='):pair.split('=')(1) for pair in connection_string.split(' ')}
-# # parameters = {pair.split('=')[0]: pair.split('=')[1] for pair in connection_string.split(';')}
+# connection_string = os.environ['AZURE_POSTGRESQL_CONNECTIONSTRING']
+connection_string = os.environ.get['AZURE_POSTGRESQL_CONNECTIONSTRING']
+# parameters = {pair.split('='):pair.split('=')(1) for pair in connection_string.split(' ')}
+parameters = {pair.split('=')[0]: pair.split('=')[1] for pair in connection_string.split(';')}
 
 
-DATABASES = {
-    'default':{
-        'ENGINE':'django.db.backends.postgresql',
-        'NAME':parameters["dbname"],
-        'HOST':parameters['host'],
-        'USER':parameters['user'],
-        'PASSWORD':parameters['password'],
-    }    
-}
 # DATABASES = {
 #     'default':{
 #         'ENGINE':'django.db.backends.postgresql',
-#         'NAME':'chemaonline-database ',
-#         'HOST':'chemaonline-server.postgres.database.azure.com',
-#         'USER':'labcfxiqdd',
-#         'PORT': 5432,
-#         'PASSWORD':'Y1FZAVFH4X38SN7J$'
+#         'NAME':parameters["dbname"],
+#         'HOST':parameters['host'],
+#         'USER':parameters['user'],
+#         'PORT':parameters[5432] ,
+#         'SSLMODE':parameters['require'],
+#         'PASSWORD':parameters['password'],
 #     }    
 # }
+DATABASES = {
+    'default':{
+        'ENGINE':'django.db.backends.postgresql',
+        'NAME':'chemaonline-database ',
+        'HOST':'chemaonline-server.postgres.database.azure.com',
+        'USER':'labcfxiqdd',
+        'PORT': 5432,
+        'SSLMODE':'require',
+        'PASSWORD':'Y1FZAVFH4X38SN7J$'
+    }    
+}
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
