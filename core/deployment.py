@@ -29,12 +29,56 @@ STORAGES = {
     },
 }
 
+
+from azure.identity import DefaultAzureCredential
+import psycopg2
+
+# Uncomment the following lines according to the authentication type.
+# For system-assigned identity.
+credential = DefaultAzureCredential()
+
+# For user-assigned identity.
+# managed_identity_client_id = os.getenv('AZURE_POSTGRESQL_CLIENTID')
+# cred = ManagedIdentityCredential(client_id=managed_identity_client_id)    
+
+# For service principal.
+# tenant_id = os.getenv('AZURE_POSTGRESQL_TENANTID')
+# client_id = os.getenv('AZURE_POSTGRESQL_CLIENTID')
+# client_secret = os.getenv('AZURE_POSTGRESQL_CLIENTSECRET')
+# cred = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
+
+# Acquire the access token.
+accessToken = credential.get_token('https://ossrdbms-aad.database.windows.net/.default')
+
+
+# In your setting file, eg. settings.py
+host = os.getenv('AZURE_POSTGRESQL_HOST')
+user = os.getenv('AZURE_POSTGRESQL_USER')
+password = accessToken.token # this is accessToken acquired from above step.
+database = os.getenv('AZURE_POSTGRESQL_NAME')
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': database,
+        'USER': user,
+        'PASSWORD': password,
+        'HOST': host,
+        'PORT': '5432',  # Port is 5432 by default 
+        'OPTIONS': {'sslmode': 'require'},
+    }
+}
+
+
+
 # connection_string = os.environ['AZURE_POSTGRESQL_CONNECTIONSTRING']
 # connection_string = os.environ.get['AZURE_POSTGRESQL_CONNECTIONSTRING']
 connection_string = os.environ['AZURE_POSTGRESQL_CONNECTIONSTRING']
 # parameters = {pair.split('='):pair.split('=')(1) for pair in connection_string.split(' ')}
 parameters = {pair.split('=')[0]: pair.split('=')[1] for pair in connection_string.split(';')}
 
+
+#learn.microsoft.com/en-us/azure/service-connector/how-to-integrate-postgres
 
 DATABASES = {
     'default':{
