@@ -2,6 +2,10 @@ import os
 from .settings import *
 from .settings import BASE_DIR
 
+from azure.identity import DefaultAzureCredential
+import psycopg2
+
+
 SECRET_KEY = os.environ['SECRET']
 ALLOWED_HOST = ['WEBSITE_HOSTNAME']
 CSRF_TRUSTED_ORIGINS = ['https://'+ os.environ['WEBSITE_HOSTNAME']]
@@ -29,9 +33,6 @@ STORAGES = {
     },
 }
 
-
-from azure.identity import DefaultAzureCredential
-import psycopg2
 
 # Uncomment the following lines according to the authentication type.
 # For system-assigned identity.
