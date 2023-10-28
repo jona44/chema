@@ -48,7 +48,7 @@ credential = DefaultAzureCredential()
 # cred = ClientSecretCredential(tenant_id=tenant_id, client_id=client_id, client_secret=client_secret)
 
 # Acquire the access token.
-accessToken = credential.get_token('https://ossrdbms-aad.database.windows.net/.default')
+accessToken =credential.get_token('https://ossrdbms-aad.database.windows.net/.default')
 
 
 # In your setting file, eg. settings.py
