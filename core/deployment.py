@@ -60,10 +60,10 @@ database = os.getenv('AZURE_POSTGRESQL_NAME')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': database,
-        'USER': user,
-        'PASSWORD': password,
-        'HOST': host,
+        'NAME': 'AZURE_POSTGRESQL_NAME',
+        'USER': 'AZURE_POSTGRESQL_USER',
+        'PASSWORD': 'accessToken',
+        'HOST': 'AZURE_POSTGRESQL_HOST',
         'PORT': '5432',  # Port is 5432 by default 
         'OPTIONS': {'sslmode': 'require'},
     }
