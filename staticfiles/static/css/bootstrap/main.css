@@ -1,0 +1,246 @@
+/* font-family: 'Bruno Ace', cursive;
+font-family: 'Heebo', sans-serif;
+font-family: 'Oswald', sans-serif;
+font-family: 'Roboto Condensed, sans-serif; */
+  *{
+    margin: 0;
+    box-sizing: border-box;
+  }
+  /* body{
+  background-color:  rgb(35, 65, 83);
+  font-family:Roboto Condensed,sans-serif;
+  color: #c5ad94;
+  } */
+  :root{
+    --bg-color: rgb(35, 65, 83);
+    --textcolor: rgb(20, 213, 247);
+    --textcolor1: rgb(101, 171, 184);
+    --border-color: rgb(20, 24, 247);
+    --btncolor1:  rgb(243, 7, 39);
+    --btncolor2:  rgb(15, 243, 7);
+    --btncolor3: rgb(188, 7, 243);
+    --btncolor4:  rgb(243, 168, 7);
+ }
+ .bordercolor{
+  border: 1px solid var(--textcolor);
+ }
+ .bgColor{
+  background-color: var(--bg-color);
+ }
+.transparent{
+  background-color: transparent;
+}
+ .card{
+  background-color:transparent ;
+ 
+ }
+ .textcolor{
+  color: var(--textcolor);
+ }
+ 
+  .bg-green{
+    background: linear-gradient(180deg, rgb(159, 243, 48) 0%, rgba(0, 181, 124, 0.479) 50%,)  ;
+  }
+  .bg-orange{
+    background-color: rgba(255, 153, 0, 0.61);
+  }
+  .bg-blue{
+    background-color: rgba(33, 37, 255, 0.973);
+  }
+  .bg-dark-blue{
+    background-color: rgba(2, 3, 58, 0.973);
+  }
+  .bg-purple{
+    background-color: rgba(225, 0, 255, 0.747);
+  }
+  .bg-lime{
+    background-color: rgba(187, 255, 0, 0.747);
+    
+  }
+  .bg-light_gray{
+    background-color: rgba(83, 80, 80, 0.199);
+  }
+  .bg-dash{
+    background: linear-gradient(180deg, rgb(48, 214, 243) 0%, rgba(0, 181, 124, 0.555) ) ;
+  }
+  .bg-dash1{
+    background: linear-gradient(180deg, rgba(111, 43, 167, 0.336) 0%, rgba(48, 0, 181, 0.589) ) ;
+  }
+  .bg-dash2{
+    background: linear-gradient(180deg, rgb(159, 243, 48) 0%, rgba(0, 181, 124, 0.479) ) ;
+  }
+  .blue{
+    color:#0539aa
+  }
+  .red{
+    color:#e9082d
+  }
+  .Lt-blue{
+    color:#0597aa
+  }
+  .grn{
+    color:#05aa1b
+  }
+  .gry{
+    color:#ffffff
+  }
+  .ppl{
+    color:#7806d4dc
+  }
+  .color-wht{
+    color:#f7f7f2
+  }
+  .orange{
+    color:hwb(46 2% 7%)
+  }
+
+
+
+ /* ----------------------------------------side bar---------------------------------------  */
+
+  .base{
+    padding-top: 50px;
+    margin-top: 20px;
+    margin-left: 280px;
+    width:auto;
+    height: 100vh;
+    
+    
+  }
+  .sidenav {
+    position: fixed;
+    width: 280px;
+    height: 100%;
+    font-weight: 800;
+    font-size: x-large;
+  }
+  .sidenav a {
+    display: flex;
+    justify-content: center;
+    align-self: center;
+    color: #0799ee;
+    border-radius: 5px;
+    border-color: #070be9;
+    text-decoration: none;
+    padding: 15px;
+  }
+  .sidenav a:hover {
+    border: #0539aa;
+    color: #d8c40c;
+  }
+  @media screen and (max-height: 450px) {
+  .sidenav {
+      padding-top: 15px;
+    }
+    
+  .sidenav a {
+      font-size: 18px;
+    }
+  }
+  .header{
+    color: rgb(235, 7, 7);
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding: 20px;
+    font-family:'Bruno Ace', sans-serif;
+  }
+  .links{
+    display: flex;
+    flex-direction: column;
+    padding-top: 5px;
+  }
+  .footer{
+    margin-top: 450px;
+  }
+  /*---------------------------------------------------- MAIN------------------------------------------------- */
+  
+  .main {
+    margin-left: 280px;
+    padding: 20px;
+  }
+
+
+  /* ------------------------------------------------client list page------------------------------------------ */
+  .section-table{
+    
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    width: 80%;
+    padding: 100px;
+    margin-left: 150px;
+  }
+  table .table{
+    background-color:aqua;
+  }
+
+  /*----------------------------------------------------create page------------------------------------  */
+
+  .create{
+    padding-top: 100px;
+    padding-left: 400px;
+    padding-right: 400px;
+    
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    text-align: center;
+    padding: 8px;
+   
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+  
+.box{
+  background: transparent;
+}
+.box .card{
+  background-color: #00000010;
+  color: #01133b;
+  border-style: none;
+  padding: 20px;
+}
+/*------------------------------------------------- dashboard---------------------------------------- */
+.dashboard{
+  column-gap: 10;
+  display: flex;
+  flex-direction: row;
+
+  
+  
+ 
+  border-radius: 10px;
+}
+.tables{
+  display:flex;
+ 
+}
+h1{
+  font-family: 'Heebo', sans-serif;
+  font-weight: 700;
+  color: #0539aa;
+}
+.profile{
+ display: flex;
+ float:right;
+ position: relative;
+
+}
+/* -------------------------USERS------------ */
+.login{
+  padding-top: 200px;
+  width: auto;
+  height: 900px;
+   
+}
+.navbar{
+  margin-left: 280px;
+  margin-bottom: 200px;
+}
+.responsive{
+  width: 100%;
+}
