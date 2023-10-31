@@ -9,10 +9,28 @@
  
       <div class="box  p-2 border mt-2 rounded overflow-auto">
         <div class="search-results">
-            
         </div>
       </div>
- 
+      <div class="container mt-5">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Contributions List</h2>
+          </div>
+          <div class="card-body">
+            <h1>Contributions List</h1>
+        <ul>
+            {% for contribution in contributions %}
+                <li><a href="{% url 'contribution_detail' contribution.id %}">          {{ contribution.contributing_member }} contributed {{ contribution.amount }} on {{ contribution.contribution_date }} in {{ contribution.group.name }} for {{ contribution.deceased_member.all|join:", " }}
+                </a></li>
+            {% endfor %}
+        </ul>
+
+       
+        <!-- Add a button or link to create a new contribution if needed -->
+        <a href="{% url 'create_contribution' %}" class="btn btn-primary">Create New Contribution</a>
+          </div>
+        </div>
+      </div>
  
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
