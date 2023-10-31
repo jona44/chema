@@ -2,8 +2,12 @@ import os
 from .settings import *
 from .settings import BASE_DIR
 
+<<<<<<< HEAD
 # from azure.identity import DefaultAzureCredential
 # import psycopg2
+=======
+
+>>>>>>> e0af8f32c711a61879504b7d6d0bf952457570c9
 
 
 SECRET_KEY = os.environ['SECRET']
@@ -26,6 +30,7 @@ MIDDLEWARE = [
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STATIC_ROOT =os.path.join(BASE_DIR, 'staticfiles')
 
+<<<<<<< HEAD
 # STORAGES = {
 #     # ...
 #     "staticfiles": {
@@ -76,6 +81,19 @@ STATIC_ROOT =os.path.join(BASE_DIR, 'staticfiles')
 connection_string = os.environ.get('AZURE_POSTGRESQL_CONNECTIONSTRING')
 
 #connection_string = os.environ['AZURE_POSTGRESQL_CONNECTIONSTRING']
+=======
+STORAGES =  {
+    # ...
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+
+connection_string = os.environ.get('AZURE_POSTGRESQL_CONNECTIONSTRING')
+
+#connection_string = os.environ['AZURE_POSTGRESQL_CONNECTIONSTRING']
+>>>>>>> e0af8f32c711a61879504b7d6d0bf952457570c9
 #parameters = {pair.split('='):pair.split('=')(1) for pair in connection_string.split(' ')}
 parameters = {pair.split('=')[0]: pair.split('=')[1] for pair in connection_string.split(' ')}
 
@@ -91,6 +109,7 @@ DATABASES = {
         'PASSWORD':parameters['password'],
     }    
 }
+<<<<<<< HEAD
 # DATABASES = {
 #     'default':{
 #         'ENGINE':'django.db.backends.postgresql',
@@ -102,6 +121,9 @@ DATABASES = {
 #         'PASSWORD':'Y1FZAVFH4X38SN7J$'
 #     }    
 # }
+=======
+
+>>>>>>> e0af8f32c711a61879504b7d6d0bf952457570c9
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

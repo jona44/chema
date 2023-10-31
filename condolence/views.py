@@ -60,7 +60,7 @@ def contributions_list(request):
         'contributions': contributions,
     }
 
-    return render(request, 'condolence/contributions_list.html', context)
+    return render(request, 'chema/home.html', context)
 
 
 

@@ -5,7 +5,7 @@ from .models import *
 from django.urls import reverse 
 from django.forms import inlineformset_factory
 from django.contrib import messages
-
+from condolence.models import Contribution
 from user.models import Profile
 
 from .forms import *
@@ -18,7 +18,7 @@ def home(request):
     user = request.user.profile
     groups = Group.objects.filter(members=request.user.profile)
     search_form = SearchForm()
-   
+    contributions = Contribution.objects.filter(group__is_active=True)
 
     grouped_data = []
 
@@ -54,6 +54,7 @@ def home(request):
         'active_group': active_group,
         'active_group_posts': active_group_posts,
         'active_group_comments': active_group_comments,
+        'contributions':contributions
         
     })
 
