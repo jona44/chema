@@ -25,15 +25,12 @@ MIDDLEWARE = [
 # STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # STATIC_ROOT =os.path.join(BASE_DIR, 'staticfiles')
 
-STORAGES = {
+STORAGES =  {
     # ...
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
-
-
-
 
 
 connection_string = os.environ.get('AZURE_POSTGRESQL_CONNECTIONSTRING')
