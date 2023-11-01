@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 
 from condolence.forms import ContributionForm
@@ -10,12 +10,22 @@ from chema.models import *
 
 
 
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect
+from .forms import ContributionForm
+from .models import Group, Contribution
+
 def create_contribution(request):
     if request.method == 'POST':
         form = ContributionForm(request.POST)
         if form.is_valid():
             current_group = Group.objects.get(is_active=True)
             group_admin = current_group.admin  # Assuming 'admin' is the ForeignKey to Profile
+            
+            # Check if user is part of AdminGroup
+            if not request.user.groups.filter(name="Admin").exists():
+                # Redirect the user to somewhere else - add your URL here
+               messages.error(request, "You are not an admin of this group.")
             
             amount = form.cleaned_data['amount']
             deceased_members = form.cleaned_data['deceased_member']
@@ -37,6 +47,7 @@ def create_contribution(request):
         form = ContributionForm()
     
     return render(request, 'condolence/create_contribution.html', {'form': form})
+
 
 
 def contribution_detail(request, contribution_id):

@@ -30,9 +30,17 @@
                 {% if active_group.id %}
                 <a href="{% url 'createPost'  group_id=active_group.id %}" class="badge rounded-pill text-bg-danger ">Create Post</a>
                 <a href="{% url 'add_member'  group_id=active_group.id %}"class="badge rounded-pill text-bg-info ">Add Member</a>
-                <a href="{% url 'add_admin'  group_id=active_group.id %}"class="badge rounded-pill text-bg-info ">Add Admin</a>
-                <a href="{% url 'create_contribution' %}">Create Contribution</a>
-                {% endif %}
+                {% if active_group.admin == request.user.profile %}
+                  <a href="{% url 'add_admin'  group_id=active_group.id %}"class="badge rounded-pill text-bg-info ">Add Admin</a>
+                  <a href="{% url 'create_contribution' %}"class="badge rounded-pill text-bg-primary ">Create Contribution</a>
+                   
+                  {% endif %}
+                  {% endif %}
+                 
+                   
+                   
+
+               
             </div>
 
             <div class="h-25 d-inline-block ">
@@ -40,9 +48,6 @@
             </div>
             <div class="row-3">
               <h2>Your Groups</h2>
-
-
-
 
             </div>
         </div>
@@ -186,19 +191,12 @@
                  
    
 
-  {% endblock%}
+  {% endblock %}
 
 
 <!-- ---------------------------------Right Sidebar------------------------------------- -->
 
 {% block sidebar-right %}
-
-  
     {% include "right_side.html" %}
-  
-  
-
-
-               
 {% endblock %}
 

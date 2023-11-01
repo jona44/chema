@@ -53,6 +53,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'chema.context_processors.active_groups',
                 'chema.context_processors.user_groups',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',

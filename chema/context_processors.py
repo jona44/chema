@@ -11,3 +11,7 @@ def user_groups(request):
         groups = Group.objects.none()
 
     return {'groups': groups}
+
+def active_groups(request):
+    active_groups = Group.objects.filter(is_active=True)
+    return {'active_groups': active_groups}

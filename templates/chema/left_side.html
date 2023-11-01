@@ -35,10 +35,10 @@
               {{ group.name }}
 
               <p class="bg-secondary mt-3"><strong>Group Admin :&nbsp;</strong></p>
-              {% for admin in group.admins %}
+              
               <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;&nbsp;
-              {{ admin }}
-              {% endfor %}
+              {{ active_group.admin }}
+              
               <p class="bg-secondary"><strong><img src="{% static 'icon_pngs/description_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">Description:</strong></p>
               <div class="card p-2">
                   {{ group.description }}
@@ -47,11 +47,17 @@
                <h3>Members</h3>
               {% for member in group.members.all %}
               <ul class="list-unstyled">
-              <a href="{% url 'member_detail' member_id=member.id group_id=group.id %}">
-                  <li><img src="{{ member.profile_pic.url }}" width="30" class="rounded-circle">
-                      {{member}}{% if member.deceased %}<span class="text-danger">(Deceased)</span>{%endif%}{% if admin %}<span class="text-success">(Admin)</span>{%endif%} </li>
-                  </ul>
-              </a>
+                <a href="{% url 'member_detail' member_id=member.id group_id=group.id %}">
+                    <li><img src="{{ member.profile_pic.url }}" width="30" class="rounded-circle">
+                        {{member}}
+                        {% if member.deceased %}
+                            <span class="text-danger">(Deceased)</span>
+                        {% endif %}
+                       
+                    </li>
+                </a>
+                
+                
               {% endfor %}   
               </div>
               

@@ -38,3 +38,7 @@ class Profile(models.Model):
 
         # Update the ImageField with the resized image
         self.profile_pic.save(self.profile_pic.name, File(buffer), save=False)
+        
+    def is_admin_of_group(self, group):
+        return self.groupmembership_set.filter(group=group, is_admin=True).exists()
+    
