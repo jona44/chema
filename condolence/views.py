@@ -65,10 +65,12 @@ def contribution_detail(request, contribution_id):
 
 
 def contributions_list(request):
-    contributions = Contribution.objects.all()  # You can filter or order the contributions as needed
-
+    contributions = Contribution.objects.all()
+    list_count = Contribution.objects.all().count()# You can filter or order the contributions as needed
+    print(list_count)
     context = {
         'contributions': contributions,
+        'list_count': list_count
     }
 
     return render(request, 'chema/home.html', context)

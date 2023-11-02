@@ -11,15 +11,16 @@
         <div class="search-results">
         </div>
       </div>
-       <h2 class="title">Contributions List</h2>
+       <h2 class="title">Contributions List <span class="badge text-bg-primary">n{{list_count}}</span></h2>
       <div class="container  h-75 overflow-auto">
         <div class="card ">
          <ul class="list-group">
             {% for contribution in contributions %}
                 <li class="list-group-item">
                     <a href="{% url 'contribution_detail' contribution.id %}">
-                       {{ contribution.contributing_member }} contributed {{ contribution.amount }} on {{ contribution.contribution_date }} in {{ contribution.group.name }} for {{ contribution.deceased_member.all|join:", " }}
-                    </a>
+                       {{ contribution.contributing_member }}</a>
+                        contributed  on {{ contribution.contribution_date }} {{list_count}}for <p class="text-danger">{{ contribution.deceased_member.all|join:", " }}</p>
+                    
                 </li>
             {% endfor %}
           </ul>    
