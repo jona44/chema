@@ -10,7 +10,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['chemaonline.azurewebsites.net','127.0.0.1','chema.com']
 CSRF_TRUSTED_ORIGINS = ['https://chemaonline.azurewebsites.net','https://127.0.0.1','https://chema.com']
 
-SITE_ID =10
+SITE_ID =  10
+
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -25,12 +27,11 @@ INSTALLED_APPS = [
     'condolence',
     'crispy_forms',
     "crispy_bootstrap5",
-    # 'allauth',
-    # 'allauth.account',
-    # 'allauth.socialaccount',
-    # 'allauth.socialaccount.providers.google', 
-    # 'allauth.socialaccount.providers.facebook', 
-     
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google', 
+    'allauth.socialaccount.providers.facebook', 
     
 ]
 
@@ -60,28 +61,32 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
-        # ...
+     
     },
            
 ]
 
-# Allauth Settings
-# AUTHENTICATION_CLASSES = (
-#     # ...
-#     'allauth.account.auth_backends.AuthenticationBackend',
-#     # ...
-# )
 
+AUTHENTICATION_CLASSES = (
+    # ...
+    'allauth.account.auth_backends.AuthenticationBackend',
+    # ...
+)
 
+AUTHENTICATION_CLASS = (
+    # ...
+    'allauth.account.auth_backends.AuthenticationBackend',
+    # ...
+)
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
-# AUTHENTICATION_BACKENDS = (
-#     'django.contrib.auth.backends.ModelBackend',
-#     'allauth.account.auth_backends.AuthenticationBackend',
-#     # ...
-# )
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+    
+)
 
 DATABASES ={
     'default': {
@@ -115,6 +120,16 @@ USE_I18N = True
 
 USE_TZ = True
 
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            "profile",
+            "email"
+        ],
+            "AUTH_PARAMS":{"access_type":"online"}
+    }
+}
+
 # SOCIALACCOUNT_PROVIDERS ={
 #        "google": {
 #         # For each OAuth based provider, either add a ``SocialApp``
@@ -146,11 +161,12 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR, 'static']
     
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'logout/'
 
-# LOGIN_URL = 'login'
-# LOGOUT_URL = 'logout'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+# LOGIN_URL = 'account/login'
+# LOGOUT_URL = 'account/logout'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 TEMPLATE_DIRS = [(BASE_DIR, 'templates')]

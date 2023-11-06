@@ -1,0 +1,154 @@
+body{
+    font-family: 'Shanti', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    
+   
+}
+.section{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+   
+}
+.comment{
+    font-size: small;
+    font-weight: 100;
+}
+.post{
+    font-weight: 700;
+}
+.sidebar-left {
+    position:fixed;
+    top: 0;
+    left: 0;
+    width: 25%;
+    height: 900px;
+    color: rgb(84, 84, 86);
+    box-sizing: border-box;
+}
+.left-sidebar {
+    height: 100%;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+
+.main {
+    width: 100%;
+    margin-left: 25%; /* Sidebar width */
+    margin-right: 25%; /* Sidebar width */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.sidebar-right {
+    position: fixed;
+    margin-left: 10px;
+    top: 0;    right: 0;
+    width: 25%;
+    height: 100vh;
+    color: rgb(84, 84, 86);
+    padding: 10px;
+    box-sizing: border-box;
+}
+.bg-color{
+    background-color: rgba(75, 30, 30, 0.292);
+    color: aliceblue;
+}
+
+@media (max-width: 900px) {
+    .sidebar-right{
+   display:none;
+  }
+
+  .sidebar-left {
+    top: 0;
+    left: 0;
+    width: 35%;
+    height: 900px;
+    color: rgb(84, 84, 86);
+
+}
+.main {
+    width: 100%;
+    margin-left: 35%; /* Sidebar width */
+    margin-right: 1%; /* Sidebar width */
+    padding: 10px;
+    box-sizing: border-box;
+}
+.section{
+   
+    
+    width: 100%;
+   
+}
+}
+
+
+@media (max-width: 576px){
+    .sidebar-left{
+        display:none;
+    }
+      
+    .main {
+        width: 100%;
+        padding: 10px;
+        margin-left: 1%; /* Sidebar width */
+        margin-right: 1%; /* Sidebar width */
+        box-sizing: border-box;
+    }   
+    
+}
+@media (min-width: 576px){
+     .offcanvas-left{
+        display:none; 
+    }
+    
+}
+@media (min-width: 900px){
+     .offcanvas-right{
+        display:none; 
+    }
+   
+}
+.canvas{
+    display: flex;
+    justify-content: space-between;
+   
+    
+}
+
+@media (max-width: 660.98px) {
+  .profile{
+    display: none !important;
+  }
+}
+
+   /* Initially hide the content */
+   .hidden-content {
+    display: none;
+}
+.members{
+    height: 100px;
+}
+
+.box{
+    height: 20%;
+}
+
+
+
+.bt-outline-orange{
+    border-color: #e54e1e;
+    color :#e54e1e;
+    background-color: #ecc4b7;
+    font-weight: 700;
+}
+.bt-outline-blue{
+    border-color:#1e2758;
+    color :#1e2758;
+    background-color: rgba(135, 121, 236, 0.845);
+    font-weight: 700;
+}
