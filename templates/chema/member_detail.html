@@ -2,14 +2,14 @@
 
 {% block content %}
   <div class="container mt-3">
-    <h1>Member Detail: {{ object }}</h1>
-    <h1>Group: {{ group.name }}</h1>
-    <p>Member: {{ member.name }}</p>
+    <h1 class="text-blue"> Username: <span class="text-light-blue">{{ object }}</span></h1>
+    <h1 class=" text-blue">Group: <span class="text-light-blue">{{ group.name }}</span></h1>
+   
 
     <div class="row">
       <div class="col-md-4">
         <div class="card">
-          <div class="card-header">Profile Info</div>
+          <div class="card-header "><span class="text-orange">Profile Info</span></div>
           <div class="card-body">
             <img src="{{ member.profile_pic.url }}" alt="{{ member.user.username }}" class="img-fluid">
             <p><strong>Username:</strong> {{ object }}</p>
@@ -39,7 +39,7 @@
       </div>
       <div class="col-md-8">       
         <div class="card">
-          <div class="card-header">Groups</div>
+          <div class="card-header"><span class="text-orange">Groups</span></div>
           <div class="card-body">
             <ul>
               {% for group in groups %}
@@ -49,7 +49,7 @@
           </div>
         </div>
         <div class="card mt-3">
-          <div class="card-header">Dependents</div>
+          <div class="card-header"><span class="text-orange">Dependents</span></div>
           <div class="card-body">
             <ul>
               {% for dependent in dependents %}
