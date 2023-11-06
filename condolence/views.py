@@ -17,6 +17,11 @@ def create_contribution(request):
             current_group = Group.objects.get(is_active=True)
             group_admin = current_group.admin  # Assuming 'admin' is the ForeignKey to Profile
             
+            # Check if user is part of AdminGroup
+            if not request.user.groups.filter(name="Admin").exists():
+                # Redirect the user to somewhere else - add your URL here
+               messages.error(request, "You are not an admin of this group.")
+            
             amount = form.cleaned_data['amount']
             deceased_members = form.cleaned_data['deceased_member']
             contributing_member = form.cleaned_data['contributing_member']
@@ -54,10 +59,12 @@ def contribution_detail(request, contribution_id):
 
 
 def contributions_list(request):
-    contributions = Contribution.objects.all()  # You can filter or order the contributions as needed
-
+    contributions = Contribution.objects.all()
+    list_count = Contribution.objects.all().count()# You can filter or order the contributions as needed
+    print(list_count)
     context = {
         'contributions': contributions,
+        'list_count': list_count
     }
 
     return render(request, 'chema/home.html', context)

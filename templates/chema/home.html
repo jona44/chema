@@ -25,24 +25,25 @@
                                                     background-size: cover;
                                                     background-position: center center;
                                                     background-repeat: no-repeat;">
-            <div>
-                <div class="card-title"> <h1>{{ active_group.name }}</h1></div>
-                {% if active_group.id %}
-                <a href="{% url 'createPost'  group_id=active_group.id %}" class="badge rounded-pill text-bg-danger ">Create Post</a>
-                <a href="{% url 'add_member'  group_id=active_group.id %}"class="badge rounded-pill text-bg-info ">Add Member</a>
-                <a href="{% url 'add_admin'  group_id=active_group.id %}"class="badge rounded-pill text-bg-info ">Add Admin</a>
-                <a href="{% url 'create_contribution' %}">Create Contribution</a>
-                {% endif %}
-            </div>
+                                                    <div>
+                                                      <div class="card-title"> <h1>{{ active_group.name }}</h1></div>
+                                                      {% if active_group.id %}
+                                                      <a href="{% url 'createPost'  group_id=active_group.id %}" class="badge  bt-outline-orange ">Create Post</a>
+                                                      <a href="{% url 'add_member'  group_id=active_group.id %}"class="badge  text-bg-info ">Add Member</a>
+                                                      {% if active_group.admin == request.user.profile %}
+                                                        <a href="{% url 'add_admin'  group_id=active_group.id %}"class="badge  text-bg-info ">Add Admin</a>
+                                                        <a href="{% url 'create_contribution' %}"class="badge text-bg-primary ">Create Contribution</a>
+                                                         
+                                                        {% endif %}
+                                                        {% endif %}
+                                                     
+                                                  </div>
 
             <div class="h-25 d-inline-block ">
               {{profile}}
             </div>
             <div class="row-3">
               <h2>Your Groups</h2>
-
-
-
 
             </div>
         </div>
@@ -192,13 +193,6 @@
 <!-- ---------------------------------Right Sidebar------------------------------------- -->
 
 {% block sidebar-right %}
-
-  
     {% include "right_side.html" %}
-  
-  
-
-
-               
 {% endblock %}
 

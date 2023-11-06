@@ -137,3 +137,18 @@ body{
 .box{
     height: 20%;
 }
+
+
+
+.bt-outline-orange{
+    border-color: #e54e1e;
+    color :#e54e1e;
+    background-color: #eb4e1a;
+    font-weight: 700;
+}
+.bt-outline-blue{
+    border-color:#1e2758;
+    color :#1e2758;
+    background-color: rgba(135, 121, 236, 0.845);
+    font-weight: 700;
+}
