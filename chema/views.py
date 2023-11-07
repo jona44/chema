@@ -399,41 +399,6 @@ def search_view(request):
     return JsonResponse({'results': results})
 
 
-# def member_detail(request, group_id, member_id):  
-#     group = get_object_or_404(Group, id=group_id)
-#     member = get_object_or_404(Profile, id=member_id)
-#     groups = member.groups.all()
-#     bio = member.bio
-#     phone = member.phone
-#     dependents = member.dependent_set.all()
-
-#     # Fetch the group details for each group the member belongs to
-#     group_details = []
-#     for group in groups:
-#         group_details.append({
-#             'name': group.name,
-#             # 'dependent': profile.dependent,
-#             # 'deceased': group.deceased,
-#             'is_active': group.is_active,
-#             'description': group.description,
-#             'date': group.date,
-#         })
-
-#     context = {
-#         'object': member,
-#         'groups': groups,
-#         'bio': bio,
-#         'phone': phone,
-#         'dependents': dependents,
-#         'group': group,
-#         'member': member,
-#     }
-
-#     return render(request, 'chema/member_detail.html', context)
-
-
-
-
 def member_detail(request, group_id, member_id):
     group = get_object_or_404(Group, id=group_id)
     member = get_object_or_404(Profile, id=member_id)
@@ -476,9 +441,6 @@ def member_detail(request, group_id, member_id):
         return HttpResponse(request, 'chema/member_detail.html')
 
     return render(request, 'chema/member_detail.html', context)
-
-
-
 
 
 @login_required

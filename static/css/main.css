@@ -153,14 +153,12 @@ body{
     display: none;
 }
 .members{
-    height: 100px;
+    height: 300px;
 }
 
 .box{
     height: 20%;
 }
-
-
 
 .bt-outline-orange{
     border-color: #e54e1e;

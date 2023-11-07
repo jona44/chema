@@ -7,8 +7,8 @@
   <div class="pt-3  bg-light rounded p-1">
       <div class="d-grid">
           <div class=" bg-c text-white p-2">
-              <img src="{% static 'icon_pngs/groups_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">
-              My groups
+            <img src="{% static 'icon_pngs/groups_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">
+             My groups
           </div>
       </div>
       <p class="bg-secondary text-white mt-1 px-2">Group Names</p>
@@ -27,36 +27,41 @@
               <img src="{% static 'icon_pngs/groups_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">Group Detail
           </div>
       </div>
-      {% for group in groups %}
+      
       <ul class="list-unstyled">
+        
           <li>
               <p class="bg-secondary text-white mt-1 px-2"><strong>Group Name :&nbsp;</strong></p>
               <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;&nbsp;
-              {{ group.name }}
+              {{ active_group.name }}
 
               <p class="bg-secondary text-white mt-3 px-2 "><strong>Group Admin :&nbsp;</strong></p>
-              {% for admin in group.admins %}
+              {% for admin in active_group.all %}
               <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;&nbsp;
-              {{ admin }}
+              {{ admin.name}}
               {% endfor %}
               <p class="bg-secondary text-white"><strong><img src="{% static 'icon_pngs/description_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">Description:</strong></p>
               <div class="card p-2">
-                  {{ group.description }}
+                  {{ active_group.description }}
               </div>
+              <h3 class="text-orange">Members</h3>
               <div class=" members overflow-auto">
-               <h3 class="text-orange">Members</h3>
-              {% for member in group.members.all %}
+                {% for member in active_group.members.all %}
+                
               <ul class="list-unstyled">
-              <a href="{% url 'member_detail' member_id=member.id group_id=group.id %}">
+                <a href="{% url 'member_detail' group_id=active_group.id member_id=member.id  %}">
                   <li><img src="{{ member.profile_pic.url }}" width="30" class="rounded-circle">
                       {{member}}{% if member.deceased %}<span class="text-danger">(Deceased)</span>{%endif%}{% if admin %}<span class="text-success">(Admin)</span>{%endif%} </li>
                   </ul>
-              </a>
-              {% endfor %}   
+               </a>
+              
+              {% endfor %}  
+              
               </div>
               
           </li>
       </ul>
-      {% endfor %}
+     
+      
   </div>
 </div>
