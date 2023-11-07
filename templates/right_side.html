@@ -18,9 +18,9 @@
             {% for contribution in contributions %}
                 <li class="list-group-item">
                     <a href="{% url 'contribution_detail' contribution.id %}">
-                       {{ contribution.contributing_member }}</a>
-                        contributed  on {{ contribution.contribution_date }} {{list_count}}for <p class="text-danger">{{ contribution.deceased_member.all|join:", " }}</p>
-                    
+                     <strong>{{ contribution.contributing_member }}</strong>  </a>
+                        contributed  on {{ contribution.contribution_date }} {{list_count}}for deceased_member
+                        <span class="text-danger">&nbsp;<strong>: {{ contribution.deceased_member.all|join:", " }}</strong></span>
                 </li>
             {% endfor %}
           </ul>    

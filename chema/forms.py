@@ -54,7 +54,7 @@ class EditPostForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(attrs={
                 'class': 'form-control',
-                'rows': 5,
+                'rows': 4,
             }),
         }
 
@@ -66,7 +66,7 @@ class CommentForm(forms.ModelForm):
         widgets={
             'content': forms.Textarea(attrs={
                 'class': 'form-control form-control-md',
-                'style': 'width:500px;height:90px;',
+                'rows': 4,
             }),
         } 
 
@@ -77,7 +77,7 @@ class CommentEditForm(forms.ModelForm):
         widgets={
             'content': forms.Textarea(attrs={
                 'class': 'form-control form-control-md',
-                'style': 'width:500px;height:90px;',
+                'rows': 4,
             }),
         } 
         
@@ -103,7 +103,7 @@ class ReplyForm(forms.ModelForm):
         widgets={
             'content': forms.Textarea(attrs={
                 'class': 'form-control form-control-md',
-                'style': 'width:500px;height:90px;',
+               'rows': 4,
             }),
         }
         
