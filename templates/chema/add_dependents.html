@@ -5,7 +5,8 @@
    <div class=" container  mt-5 pt-5">
       <div class="card">
          <div class="card-header">
-          <h2 class="card-title">Add Dependents</h2>
+          
+          <h1 class="card-title text-orange "><h1 class="text-blue">Add  Dependents <span class="text-light-blue">{{ group.name }}</span></h2>
          </div>
          <div class="card-body">
             <form method="post">
@@ -16,7 +17,8 @@
                      {{form|crispy}}
                   </div>
                   {% endfor %}
-                  <button type="submit" class="btn  bg-success-subtle ">Save</button>
+                 
+                  <button type="submit" class=" bt-outline-orange">Save</button>
             </form>
         </div>
       </div>

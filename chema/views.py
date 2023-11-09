@@ -89,7 +89,7 @@ def join_existing_group(request):
 
     return render(request, 'chema/join_existing_group.html', {'form': form})
 
-
+@login_required
 def join_active_group(request):
     # Assuming there is only one active group, retrieve it
     active_group = Group.objects.filter(is_active=True).first()
@@ -311,9 +311,7 @@ def add_dependents(request):
         formset = DependentFormSet(request.POST, instance=user)
         if formset.is_valid():
             # Iterate over the forms and set can_delete to False
-            
             formset.save()
-            
              # Getting the names of the added dependents
             added_dependents_names = ', '.join([form.cleaned_data.get('name') for form in formset.forms if form.cleaned_data.get('name')])
 

@@ -82,11 +82,11 @@ class Reply(models.Model):
         
 class Dependent(models.Model):
     guardian = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100,null=True, blank=True)
     date_of_birth = models.DateField()
     relationship = models.CharField(max_length=100, null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='dependents')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='dependents',null=True, blank=True)
 
     def __str__(self):
         return self.name        

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-5">
+   <div class="card">
+    <div class="card-header">
+      <h1 class="card-title  "><h1 class="text-blue">Contribution Detail</h1></h1>
+    </div>
+    <div class="card-body">
+        
+        <p>Contributing Member: {{ contribution.contributing_member }}</p>
+        <p>Amount: {{ contribution.amount }}</p>
+        <p>Contribution Date: {{ contribution.contribution_date }}</p>
+        <h2 class="text-blue">Deceased Members:</h2>
+        <ul>
+            {% for member in deceased_members %}
+                <li>{{ member }}</li>
+            {% endfor %}
+        </ul> 
+        <div class="card-footer">
+            <a href="{% url 'create_contribution' %}"> <button class="bt-outline-orange">Back to Contributions</button></a>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+{% endblock %}
