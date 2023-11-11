@@ -15,7 +15,7 @@ class Profile(models.Model):
     address     = models.TextField(null=True,blank=True)
     first_name  = models.CharField(max_length=20)
     surname     = models.CharField(max_length=20)
-    deceased    = models.BooleanField(default=False)
+   
  
     
     def __str__(self):
