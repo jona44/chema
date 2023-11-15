@@ -1,10 +1,71 @@
 {% extends 'partials/base.html' %}
- b{% block content %}
+
+{% block content %}
+ {% if deceased %}
+ <div class="container mt-3">
+  <h1 class="text-blue"> Username: <span class="text-danger">{{ object }}</span></h1>
+  <h1 class=" text-blue">Group: <span class="text-danger">{{ group.name }}</span></h1>
+ 
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header "><span class="text-orange"><h4>Profile Info:</h4></span></div>
+        <div class="card-body">
+          <img src="{{ member.profile_pic.url }}" alt="{{ member.user.username }}" class="img-fluid">
+          <p><strong>Username:</strong> <span class="text-danger">{{ object }}</span></p>
+          <p><strong>Bio:</strong> <span class="text-danger">{{ bio }}</span></p>
+          <p><strong>Phone:</strong> <span class="text-danger">{{ phone }}</span></p>
+          <p><strong>Address:</strong> <span class="text-danger">{{ address }}</span></p>
+
+          <p><strong class="text-danger">Deceased:</strong>
+           
+          
+        </div>
+      </div>
+    </div>
+    <div class="col-md-8">       
+      <div class="card">
+        <div class="card-header"><span class="text-orange"><h4>Groups:</h4></span></div>
+        <div class="card-body">
+          <ul>
+            {% for group in groups %}
+              <li class="text-danger">{{ group.name }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <div class="card mt-3">
+        <div class="card-header"><span class="text-orange"><h4>Dependents:</h4></span></div>
+        <div class="card-body">
+          <ul>
+            {% for dependent in dependents %}
+              <li>{{ dependent.name }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <div class="card mt-3">
+        <div class="card-header "><span class="text-orange"><h4>Condolence Contributions History:</h4></span></div>
+        <div class="card-body">
+          <ul>
+            {% for dependent in dependents %}
+              <li>{{ dependent.name }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+    {%else%}
+   
+   
   <div class="container mt-3">
     <h1 class="text-blue"> Username: <span class="text-light-blue">{{ object }}</span></h1>
     <h1 class=" text-blue">Group: <span class="text-light-blue">{{ group.name }}</span></h1>
    
-
     <div class="row">
       <div class="col-md-4">
         <div class="card">
@@ -15,25 +76,7 @@
             <p><strong>Bio:</strong> {{ bio }}</p>
             <p><strong>Phone:</strong> {{ phone }}</p>
             <p><strong>Address:</strong> {{ address }}</p>
-
-            <p><strong>Deceased:</strong> {% if deceased %}
-              <span class="text-danger">Yes</span>
-            {% else %}
-              No
-            {% endif %}</p>
             
-            {% if user.profile == group.admin %}
-              <form method="post">
-                {% csrf_token %}
-                {% if not member.deceased %}
-                  <input type="submit" name="mark_member_as_deceased" value="Mark as Deceased">
-                {% else %}
-                  <p>This member is marked as deceased.</p>
-                {% endif %}
-              </form>
-            {% else %}
-              <p>Only group admin can mark this member as deceased.</p>
-            {% endif %}
           </div>
         </div>
       </div>
@@ -71,4 +114,5 @@
       </div>
     </div>
   </div>
+  {%endif%}
 {% endblock %}

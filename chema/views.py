@@ -399,27 +399,14 @@ def search_view(request):
 
 
 def member_detail(request, group_id, member_id ):
-    
+    deceased = Deceased.objects.filter(deceased_id=member_id,group_id=group_id)
     group = get_object_or_404(Group, id=group_id)
     member = get_object_or_404(Profile, id=member_id)
-   
-    
     groups = member.groups.all()
     bio = member.bio
     phone = member.phone
     dependents = member.dependent_set.all()
-    deceased = get_object_or_404(Deceased, deceased=member_id)
-
-    # Fetch the group details for each group the member belongs to
-    group_details = []
-    for group in groups:
-        group_details.append({
-            'name': group.name,
-            'is_active': group.is_active,
-            'description': group.description,
-            'date': group.date,
-        })
-
+      
     context = {
         'object': member,
         # 'groups': groups,
@@ -428,21 +415,18 @@ def member_detail(request, group_id, member_id ):
         'dependents': dependents,
         'group': group,
         'member': member,
-        'deceased':deceased,
+        'deceased':deceased,   
          
-    }
-
-    # Check if the current user is a group admin for the specific group
-    
-
-    if request.method == 'POST' and 'mark_member_as_deceased' in request.POST:
-        # Handle marking the member as deceased here
-        member.deceased = True  # Assuming you have a 'deceased' field in your Profile model
-        member.save()
-
-        # You can add a success message or redirect as needed
-        return HttpResponse(request, 'chema/member_detail.html')
-
+       }
+    # Fetch the group details for each group the member belongs to
+    group_details = []
+    for group in groups:
+        group_details.append({
+                'name': group.name,
+                'is_active': group.is_active,
+                'description': group.description,
+                'date': group.date,
+            })
     return render(request, 'chema/member_detail.html', context)
 
 
