@@ -5,7 +5,7 @@ from .models import *
 from django.urls import reverse 
 from django.forms import inlineformset_factory
 from django.contrib import messages
-from condolence.models import Contribution
+from condolence.models import Contribution,Deceased
 from user.models import Profile
 
 from .forms import *
@@ -368,7 +368,7 @@ def edit_reply(request, reply_id):
 
 def group_detail_view(request, group_id):
     group = get_object_or_404(Group, pk=group_id)
-
+    deceased = Deceased.objects.filter(group__is_active=True)
     # Use the reverse relationship to get the admin members
     group_admins = group.members.filter(groupmembership__is_admin=True)
 
@@ -378,6 +378,7 @@ def group_detail_view(request, group_id):
         'members': group.members.all(),  # All members of the group
         'count_members': group.members.count(),
         'count_admins': group_admins.count(),
+        'deceased':deceased,
     }
 
     return render(request, 'chema/group_detail_view.html', context)
@@ -397,14 +398,17 @@ def search_view(request):
     return JsonResponse({'results': results})
 
 
-def member_detail(request, group_id, member_id):
+def member_detail(request, group_id, member_id ):
+    
     group = get_object_or_404(Group, id=group_id)
     member = get_object_or_404(Profile, id=member_id)
+   
+    
     groups = member.groups.all()
     bio = member.bio
     phone = member.phone
     dependents = member.dependent_set.all()
-   
+    deceased = get_object_or_404(Deceased, deceased=member_id)
 
     # Fetch the group details for each group the member belongs to
     group_details = []
@@ -418,12 +422,13 @@ def member_detail(request, group_id, member_id):
 
     context = {
         'object': member,
-        'groups': groups,
+        # 'groups': groups,
         'bio': bio,
         'phone': phone,
         'dependents': dependents,
         'group': group,
         'member': member,
+        'deceased':deceased,
          
     }
 

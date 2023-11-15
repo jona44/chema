@@ -1,5 +1,5 @@
 {% extends 'partials/base.html' %}
-{% block content %}
+ b{% block content %}
   <div class="container mt-3">
     <h1 class="text-blue"> Username: <span class="text-light-blue">{{ object }}</span></h1>
     <h1 class=" text-blue">Group: <span class="text-light-blue">{{ group.name }}</span></h1>
@@ -15,7 +15,8 @@
             <p><strong>Bio:</strong> {{ bio }}</p>
             <p><strong>Phone:</strong> {{ phone }}</p>
             <p><strong>Address:</strong> {{ address }}</p>
-            <p><strong>Deceased:</strong> {% if member.deceased %}
+
+            <p><strong>Deceased:</strong> {% if deceased %}
               <span class="text-danger">Yes</span>
             {% else %}
               No

@@ -1,8 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-
-from condolence.forms import ContributionForm
-from .models import Contribution
+from condolence.forms import *
+from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from chema.models import *
@@ -69,6 +68,19 @@ def contributions_list(request):
 
     return render(request, 'chema/home.html', context)
 
-
-
+def deceased(request):
+    active_group = Group.objects.filter(is_active=True).first()
+    group_admin = Profile.objects.filter(groupmembership__is_admin=True, groups=active_group)
     
+    if request.method == 'POST':
+        form = DeceasedForm(request.POST)
+        if form.is_valid():
+            deceased=form.save(commit=False) 
+            deceased.group= active_group
+            deceased.group_admin= request.user.profile
+            deceased.save()
+            messages.success(request, "Group member has been marked as Deceased!")
+            return redirect('group_detail_view', active_group.id)
+    else:
+        form = DeceasedForm()
+    return render(request, 'condolence/deceased.html', {'form':form,'active_group':active_group} )    
