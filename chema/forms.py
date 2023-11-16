@@ -134,12 +134,13 @@ class SearchForm(forms.Form):
 
 
 class AddAdminForm(forms.Form):
-    member = forms.ModelChoiceField(queryset=None)
+    member = forms.ModelChoiceField(queryset=Profile.objects.filter(groups__is_active=True), label='Select New Member')
 
-    def __init__(self, *args, **kwargs):
-        group_id = kwargs.pop('group_id')
-        super().__init__(*args, **kwargs)
-        group = Group.objects.get(id=group_id)
-        self.fields['member'].queryset = group.members.all()
+
+    # def __init__(self, *args, **kwargs):
+    #     group_id = kwargs.pop('group_id')
+    #     super().__init__(*args, **kwargs)
+    #     group = Group.objects.get(id=group_id)
+    #     self.fields['member'].queryset = group.members.all()
 
  

@@ -106,7 +106,7 @@
           <div class="card-body">
             <ul>
               {% for contribution in contribution %}
-                <li>{{ contribution.deceased_member }}-date-{{contribution.contribution_date}}</li>
+                <li>{{ contribution.deceased_member }}-date-{{contribution.contribution_date}}--Admin--{{contribution.group_admin}}</li>
               {% endfor %}
             </ul>
           </div>

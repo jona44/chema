@@ -434,8 +434,6 @@ def member_detail(request, group_id, member_id ):
 @login_required
 def add_admin(request, group_id):
     group = get_object_or_404(Group, id=group_id)
-    
-    
     # Check if the user is an admin of the group
     if not group.admin == request.user.profile:
         return render(request, 'error.html')  # Handle the case where the user is not an admin
@@ -459,7 +457,7 @@ def add_admin(request, group_id):
                 # Handle the case where the selected user is not a member of the group
                 pass
     else:
-        form = AddAdminForm(group_id=group_id)
+        form = AddAdminForm()
 
     return render(request, 'chema/add_admin.html', {'form': form})
 
