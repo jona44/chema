@@ -33,6 +33,7 @@
                 {% if active_group.admin == request.user.profile %}
                 <a href="{% url 'add_admin'  group_id=active_group.id %}"class="badge   bt-outline-orange ">Add Admin</a>
                 <a href="{% url 'create_contribution' %}"class="badge  bt-outline-orange ">Create Contribution</a>
+                <a href="{% url 'deceased' %}"class="badge  bt-outline-orange ">Deceased</a>
                  
                 {% endif %}
                 {% endif %}                                       

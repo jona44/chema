@@ -459,7 +459,7 @@ def add_admin(request, group_id):
     else:
         form = AddAdminForm()
 
-    return render(request, 'chema/add_admin.html', {'form': form})
+    return render(request, 'chema/add_admin.html', {'form': form, 'group':group})
 
 
 def toggle_group(request, group_id):
