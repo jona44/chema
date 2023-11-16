@@ -402,6 +402,7 @@ def member_detail(request, group_id, member_id ):
     deceased = Deceased.objects.filter(deceased_id=member_id,group_id=group_id)
     group = get_object_or_404(Group, id=group_id)
     member = get_object_or_404(Profile, id=member_id)
+    contribution = Contribution.objects.filter(contributing_member=member_id,group__is_active=True)
     groups = member.groups.all()
     bio = member.bio
     phone = member.phone
@@ -416,7 +417,7 @@ def member_detail(request, group_id, member_id ):
         'group': group,
         'member': member,
         'deceased':deceased,   
-         
+         'contribution':contribution,
        }
     # Fetch the group details for each group the member belongs to
     group_details = []

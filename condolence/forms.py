@@ -12,7 +12,7 @@ class ContributionForm(forms.ModelForm):
         super(ContributionForm, self).__init__(*args, **kwargs)
         # Filter the choices for deceased members to only include those marked as deceased
         self.fields['contributing_member'].queryset = Profile.objects.filter(groups__is_active=True )
-        self.fields['deceased_member'].queryset = Profile.objects.filter(deceased=True)
+        self.fields['deceased_member'].queryset = Deceased.objects.filter(group__is_active=True)
 
 
 class DeceasedForm(forms.ModelForm):

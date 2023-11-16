@@ -12,12 +12,12 @@
         <div class="card-header "><span class="text-orange"><h4>Profile Info:</h4></span></div>
         <div class="card-body">
           <img src="{{ member.profile_pic.url }}" alt="{{ member.user.username }}" class="img-fluid">
-          <p><strong>Username:</strong> <span class="text-danger">{{ object }}</span></p>
-          <p><strong>Bio:</strong> <span class="text-danger">{{ bio }}</span></p>
-          <p><strong>Phone:</strong> <span class="text-danger">{{ phone }}</span></p>
-          <p><strong>Address:</strong> <span class="text-danger">{{ address }}</span></p>
+          <p class="text-danger"><strong>Username:</strong> <span >{{ object }}</span></p>
+          <p class="text-danger"><strong>Bio:</strong> <span >{{ bio }}</span></p>
+          <p class="text-danger"><strong>Phone:</strong> <span >{{ phone }}</span></p>
+          <p class="text-danger"><strong>Address:</strong> <span >{{ address }}</span></p>
 
-          <p><strong class="text-danger">Deceased:</strong>
+          <p class="text-danger"><strong >Deceased:</strong>
            
           
         </div>
@@ -48,8 +48,8 @@
         <div class="card-header "><span class="text-orange"><h4>Condolence Contributions History:</h4></span></div>
         <div class="card-body">
           <ul>
-            {% for dependent in dependents %}
-              <li>{{ dependent.name }}</li>
+            {% for contribution in contribution %}
+              <li>{{ contribution.deceased_member }}-date-{{contribution.contribution_date}}</li>
             {% endfor %}
           </ul>
         </div>
@@ -105,8 +105,8 @@
           <div class="card-header "><span class="text-orange"><h4>Condolence Contributions History:</h4></span></div>
           <div class="card-body">
             <ul>
-              {% for dependent in dependents %}
-                <li>{{ dependent.name }}</li>
+              {% for contribution in contribution %}
+                <li>{{ contribution.deceased_member }}-date-{{contribution.contribution_date}}</li>
               {% endfor %}
             </ul>
           </div>

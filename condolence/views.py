@@ -22,20 +22,19 @@ def create_contribution(request):
                messages.error(request, "You are not an admin of this group.")
             
             amount = form.cleaned_data['amount']
-            deceased_members = form.cleaned_data['deceased_member']
+            deceased_member = form.cleaned_data['deceased_member']
             contributing_member = form.cleaned_data['contributing_member']
             
             contribution = Contribution(
                 group=current_group,
                 amount=amount,
                 contributing_member=contributing_member,
-                group_admin=group_admin
+                group_admin=group_admin,
+                deceased_member=deceased_member
             )
             contribution.save()
 
             # Use the add method to set deceased members
-            contribution.deceased_member.add(*deceased_members)
-            
             return redirect('contribution_detail', contribution.id)
     else:
         form = ContributionForm()
@@ -47,11 +46,11 @@ def contribution_detail(request, contribution_id):
     contribution = get_object_or_404(Contribution, id=contribution_id)
 
     # Get the deceased members related to this contribution
-    deceased_members = contribution.deceased_member.all()
+   
 
     context = {
         'contribution': contribution,
-        'deceased_members': deceased_members,
+       
     }
 
     return render(request, 'condolence/contribution_detail.html', context)
@@ -83,4 +82,5 @@ def deceased(request):
             return redirect('group_detail_view', active_group.id)
     else:
         form = DeceasedForm()
-    return render(request, 'condolence/deceased.html', {'form':form,'active_group':active_group} )    
+    return render(request, 'condolence/deceased.html', {'form':form,'active_group':active_group} )
+

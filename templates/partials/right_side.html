@@ -20,7 +20,7 @@
                     <a href="{% url 'contribution_detail' contribution.id %}">
                      <strong>{{ contribution.contributing_member }}</strong>  </a>
                         contributed  on {{ contribution.contribution_date }} {{list_count}}for deceased_member
-                        <span class="text-danger">&nbsp;<strong>: {{ contribution.deceased_member.all|join:", " }}</strong></span>
+                        <span class="text-danger">&nbsp;<strong>: {{ contribution.deceased_member|join:", " }}</strong></span>
                 </li>
             {% endfor %}
           </ul>    
