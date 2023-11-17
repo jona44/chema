@@ -1,4 +1,5 @@
 from .models import *
+from django.shortcuts import  get_object_or_404
 
 def user_groups(request):
     # Ensure the user is authenticated
@@ -11,3 +12,9 @@ def user_groups(request):
         groups = Group.objects.none()
 
     return {'groups': groups}
+
+# def group_admins(request, group_id ):
+#     group = get_object_or_404(Group,group_id=group_id)
+#     group_admin = group.members.filter(groupmembership__is_admin=True)
+    
+#     return {'group_admin':group_admin}

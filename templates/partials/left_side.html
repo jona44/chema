@@ -36,7 +36,7 @@
               {{ active_group.name }}
 
               <p class="bg-secondary text-white mt-3 px-2 "><strong>Group Admin :&nbsp;</strong></p>
-              {% for admin in active_group.admin.all %}
+              {% for admin in admins_as_members %}
              
               <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;&nbsp;
               {{ admin }}
@@ -57,15 +57,9 @@
                       {{member}}{% if member.deceased %}<span class="text-danger">(Deceased)</span>{%endif%}{% if admin %}<span class="text-success">(Admin)</span>{%endif%} </li>
                   </ul>
                </a>
-              
               {% endfor %}  
-               
-              
               </div>
-              
           </li>
       </ul>
-     
-      
   </div>
 </div>

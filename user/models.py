@@ -12,7 +12,7 @@ class Profile(models.Model):
     profile_pic = models.ImageField(default='default.jpg', upload_to='profile_pics')
     bio         = models.TextField()
     phone       = models.CharField(max_length=10,null=True,blank=True)
-    address     = models.TextField(null=True,blank=True)
+    address     = models.TextField()
     first_name  = models.CharField(max_length=20)
     surname     = models.CharField(max_length=20)
    

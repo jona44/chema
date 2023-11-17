@@ -9,15 +9,12 @@
     </div>
     <div class="card-body">
         
-        <p>Contributing Member: {{ contribution.contributing_member }}</p>
-        <p>Amount: {{ contribution.amount }}</p>
-        <p>Contribution Date: {{ contribution.contribution_date }}</p>
-        <p>Deceased Member: {{ contribution.deceased_member }}</p>
-        <h2 class="text-blue">Deceased Members:</h2>
-        <ul>
-            {% for member in deceased_members %}
-              <li>{{ member }}</li>
-            {% endfor %}
+        <p><strong class="text-blue">Contributing Member: &nbsp;&nbsp;</strong> {{ contribution.contributing_member }}</p>
+        <p><strong class="text-blue">Amount:</strong> &nbsp;{{ contribution.amount }}</p>
+        <p><strong class="text-blue">Contribution Date:</strong> &nbsp;{{ contribution.contribution_date }}</p>
+        <p><strong class="text-blue">Deceased Member:</strong>&nbsp; {{ contribution.deceased_member }}</p>
+        <p><strong class="text-blue">Group Admin:</strong> &nbsp;{{ contribution.group_admin }}</p>
+        
         </ul> 
         <div class="card-footer">
             <a href="{% url 'create_contribution' %}"> <button class="bt-outline-orange">Back to Contributions</button></a>

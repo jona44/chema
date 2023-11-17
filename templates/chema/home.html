@@ -30,14 +30,22 @@
                 {% if active_group.id %}
                 <a href="{% url 'createPost'  group_id=active_group.id %}" class="badge  bt-outline-orange ">Create Post</a>
                 <a href="{% url 'add_member'  group_id=active_group.id %}"class="badge   bt-outline-orange">Add Member</a>
-                {% if active_group.admin == request.user.profile %}
+               {% for admin in admins_as_members %}
+              
+                 {% if request.user.profile == admin%}
+                  
                 <a href="{% url 'add_admin'  group_id=active_group.id %}"class="badge   bt-outline-orange ">Add Admin</a>
                 <a href="{% url 'create_contribution' %}"class="badge  bt-outline-orange ">Create Contribution</a>
                 <a href="{% url 'deceased' %}"class="badge  bt-outline-orange ">Deceased</a>
                  
+
                 {% endif %}
-                {% endif %}                                       
-                                                     
+                {%endfor%}
+                {% endif %}
+           
+             
+                                                  
+                                           
              </div>
 
             <div class="h-25 d-inline-block ">

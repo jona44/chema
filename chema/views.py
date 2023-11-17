@@ -16,9 +16,10 @@ from django.core.exceptions import PermissionDenied
 @login_required
 def home(request):
     user = request.user.profile
-    groups = Group.objects.filter(members=request.user.profile)
+    # groups = Group.objects.filter(members=request.user.profile)
     search_form = SearchForm()
     contributions = Contribution.objects.filter(group__is_active=True)
+   
 
     grouped_data = []
 
@@ -34,7 +35,7 @@ def home(request):
 
     # Fetch comments for the posts in the active group
     active_group_comments = Comment.objects.filter(post__in=active_group_posts).order_by('-created_at')
-
+    
     group_data = {
         
         'group': active_group,
@@ -48,14 +49,15 @@ def home(request):
         comment.replies.set(Reply.objects.filter(comment=comment).order_by('-created_at')[:3])
 
     return render(request, 'chema/home.html', {
+
         'grouped_data': [group_data],  # Only the active group data
-        'groups': groups,
+        # 'groups': groups,
         'search_form': search_form,
         'active_group': active_group,
         'active_group_posts': active_group_posts,
         'active_group_comments': active_group_comments,
-        'contributions':contributions
-        
+        'contributions':contributions,
+        'admins_as_members': active_group.get_admins()
     })
 
 
@@ -406,6 +408,7 @@ def member_detail(request, group_id, member_id ):
     groups = member.groups.all()
     bio = member.bio
     phone = member.phone
+    address = member.address
     dependents = member.dependent_set.all()
       
     context = {
@@ -413,6 +416,7 @@ def member_detail(request, group_id, member_id ):
         # 'groups': groups,
         'bio': bio,
         'phone': phone,
+        'address':address,
         'dependents': dependents,
         'group': group,
         'member': member,
@@ -451,7 +455,7 @@ def add_admin(request, group_id):
                     group_membership = group.groupmembership_set.get(member=user)
                     group_membership.is_admin = True
                     group_membership.save()
-                
+                  
                 return redirect('group_detail_view', group_id=group.id)
             else:
                 # Handle the case where the selected user is not a member of the group

@@ -29,7 +29,7 @@ def create_contribution(request):
                 group=current_group,
                 amount=amount,
                 contributing_member=contributing_member,
-                group_admin=group_admin,
+                group_admin=request.user.profile,
                 deceased_member=deceased_member
             )
             contribution.save()
