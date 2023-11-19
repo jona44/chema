@@ -60,22 +60,22 @@
     <div class=" row post border rounded  mt-2">
       <h3>
         <img src="{% static 'icon_pngs/post_add_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">
-        <h3>Recent Posts</h3>:
+        <h3>Recent Posts</h3>
     </h3>
    {% for post in active_group_posts %}
         <div class="list-unstyled group p-1"> 
             <div class="group bg-success-subtle text-emphasis-success rounded p-1">
-                <div class="bg-color p-1 rounded m-2">
+                <div class=" p-1 rounded m-2">
                     <img class="rounded-circle account-img" width="30" src="{{ post.author.profile_pic.url }}">
                     <strong>{{ post.author.user }}</strong>
                     <small class="text-muted">{{ post.created_at }}</small>
                 </div>
-                <figure class="figure m-3 rounded">
+                
                     {% if post.image %}
                         <img src="{{ post.image.url }}" width="400" class="figure-img img-fluid rounded float-end" alt="...">
                     {% endif %}
-                </figure>
-                <p class="post m-3">{{ post.content }}</p>
+                
+                <p class="post">{{ post.content }}</p>
     
                     <div class="d-flex bg-secondary rounded py-1 ">
                       <a href="{% url 'create_comment' post.id %}"class="btn btn-sm ">Condolences&nbsp;</a>

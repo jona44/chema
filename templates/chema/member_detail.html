@@ -84,31 +84,31 @@
         <div class="card">
           <div class="card-header"><span class="text-orange"><h4>Groups:</h4></span></div>
           <div class="card-body">
-            <ul>
+            <ol>
               {% for group in groups %}
                 <li>{{ group.name }}</li>
               {% endfor %}
-            </ul>
+            </ol>
           </div>
         </div>
         <div class="card mt-3">
           <div class="card-header"><span class="text-orange"><h4>Dependents:</h4></span></div>
           <div class="card-body">
-            <ul>
+            <ol>
               {% for dependent in dependents %}
                 <li>{{ dependent.name }}</li>
               {% endfor %}
-            </ul>
+            </ol>
           </div>
         </div>
         <div class="card mt-3">
           <div class="card-header "><span class="text-orange"><h4>Condolence Contributions History:</h4></span></div>
           <div class="card-body">
-            <ul>
+            <ol>
               {% for contribution in contribution %}
                 <li>{{ contribution.deceased_member }}-date-{{contribution.contribution_date}}--Admin--{{contribution.group_admin}}</li>
               {% endfor %}
-            </ul>
+            </ol>
           </div>
         </div>
       </div>
