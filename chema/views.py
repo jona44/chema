@@ -7,10 +7,8 @@ from django.forms import inlineformset_factory
 from django.contrib import messages
 from condolence.models import Contribution,Deceased
 from user.models import Profile
-
 from .forms import *
 from django.core.exceptions import PermissionDenied
-
 
 
 @login_required
@@ -18,8 +16,9 @@ def home(request):
     user = request.user.profile
     # groups = Group.objects.filter(members=request.user.profile)
     search_form = SearchForm()
-    contributions = Contribution.objects.filter(group__is_active=True)
-   
+    
+    deceased      = Deceased.objects.filter(group__is_active=True)
+    contributions = Contribution.objects.filter(deceased_member_id__contributions_open=True, group__is_active=True)
 
     grouped_data = []
 
@@ -51,13 +50,15 @@ def home(request):
     return render(request, 'chema/home.html', {
 
         'grouped_data': [group_data],  # Only the active group data
-        # 'groups': groups,
+        # 'groups': groups,f
         'search_form': search_form,
         'active_group': active_group,
         'active_group_posts': active_group_posts,
         'active_group_comments': active_group_comments,
         'contributions':contributions,
-        'admins_as_members': active_group.get_admins()
+        'admins_as_members': active_group.get_admins(),
+        'deceased':deceased,
+        
     })
 
 

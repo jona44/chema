@@ -22,6 +22,7 @@ class Deceased(models.Model):
     group     = models.ForeignKey(Group, on_delete=models.CASCADE)
     date      = models.DateField(auto_now_add=True)
     group_admin = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name='admin')
+    contributions_open = models.BooleanField(default=True)
 
     def __str__ (self):
        return f"{self.deceased}"

@@ -14,22 +14,21 @@
       <p class="bg-secondary text-white mt-1 px-2">Group Names</p>
       <ul class="list-unstyled">
           {% for group in groups %}
-          <li>
-              <a href="{% url 'toggle_group' group.id %}">
-                  <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;{{ group.name }}</a>
-          </li>
+        <li>
+         <a href="{% url 'toggle_group' group.id %}">
+          <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;{{ group.name }}</a>
+        </li>
           {% endfor %}
       </ul>
   </div>
   <div class="pt-3 mt-5 bg-light rounded p-2 ">
       <div class="d-grid">
-          <div class="bg-c text-white p-2 px-2" id="toggle-group-detail">
+          <div class="bg-c text-white p-2 px-2" >
               <img src="{% static 'icon_pngs/groups_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">Group Detail
           </div>
       </div>
       
       <ul class="list-unstyled">
-        
           <li>
               <p class="bg-secondary text-white mt-1 px-2"><strong>Group Name :&nbsp;</strong></p>
               <img src="{% static 'icon_pngs/group_FILL0_wght400_GRAD0_opsz24.png' %}" alt="">&nbsp;&nbsp;
@@ -54,7 +53,7 @@
               <ul class="list-unstyled">
                 <a href="{% url 'member_detail' group_id=active_group.id member_id=member.id %}">
                   <li><img src="{{ member.profile_pic.url }}" width="30" class="rounded-circle">
-                      {{member}}{% if member.deceased %}<span class="text-danger">(Deceased)</span>{%endif%}{% if admin %}<span class="text-success">(Admin)</span>{%endif%} </li>
+                      {{member}}
                   </ul>
                </a>
               {% endfor %}  

@@ -7,26 +7,35 @@
     </form>
  </div>
  
-      <div class="box  p-2 border mt-2 rounded overflow-auto">
-        <div class="search-results">
-        </div>
+    <div class="box  p-2 border mt-2 rounded overflow-auto">
+      <div class="search-results">
       </div>
-      <h2 class="title text-orange">Contributions List <span class="badge text-bg-primary">n{{Contributions.count}}</span></h2>
-      <div class="container  h-75 overflow-auto">
-        <div class="card ">
-         <ol class="list-group">
-            {% for contribution in contributions %}
-                <li class="list-group-item">
+    </div>
+    
+    <div class="card m-1 p-1">
+        <h2 class="title text-orange">Contributions List </h2>
+       <p >{%for deceased in deceased %}
+          <a href="{% url 'toggle_deceased' deceased.id %}"><span class="badge bg-c">{{deceased}}</span> </a>
+         {%endfor%}
+       </p>
+    </div>
+    <div class="card m-1 p-1 ">
+       <span class="badge bg-c"><h6>contributions ...{{contributions.count}}</h6></span> </a>
+    </div>
+    <div class="h-50 overflow-auto">
+      <ol class="list-group ">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+        {% for contribution in contributions %}
+           <li class="list-group-item">
                     <a href="{% url 'contribution_detail' contribution.id %}">
                      <strong>{{ contribution.contributing_member }}</strong>  </a>
                         contributed  on {{ contribution.contribution_date }} {{list_count}}for deceased_member
                         <span class="text-danger">&nbsp;<strong>: {{ contribution.deceased_member }} </strong> </span> admin
-                <strong>{{contribution.group_admin}}</strong></li>
-            {% endfor %}
-          </ol>    
-        </div>
-        
+                    <strong>{{contribution.group_admin}}</strong>
+           </li>
+        {% endfor %}
+      </ol>    
     </div>
+    
  
 <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>

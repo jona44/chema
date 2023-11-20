@@ -33,7 +33,6 @@ def create_contribution(request):
                 deceased_member=deceased_member
             )
             contribution.save()
-
             # Use the add method to set deceased members
             return redirect('contribution_detail', contribution.id)
     else:
@@ -44,27 +43,14 @@ def create_contribution(request):
 
 def contribution_detail(request, contribution_id):
     contribution = get_object_or_404(Contribution, id=contribution_id)
-
     # Get the deceased members related to this contribution
-   
-
     context = {
         'contribution': contribution,
-       
-    }
-
+        }
     return render(request, 'condolence/contribution_detail.html', context)
 
 
-def contributions_list(request):
-    contributions = Contribution.objects.dates()
-  
-    context = {
-        'contributions': contributions,
-        
-    }
 
-    return render(request, 'chema/home.html', context)
 
 def deceased(request):
     active_group = Group.objects.filter(is_active=True).first()
@@ -83,3 +69,16 @@ def deceased(request):
         form = DeceasedForm()
     return render(request, 'condolence/deceased.html', {'form':form,'active_group':active_group} )
 
+
+def toggle_deceased(request, deceased_id):
+    # Get the deceased being toggled
+    deceased_to_toggle = get_object_or_404(Deceased, id=deceased_id)
+    
+    # Toggle the deceased by setting it to True
+    deceased_to_toggle.contributions_open = True
+    deceased_to_toggle.save()
+
+    # Deactivate all other deceased
+    Deceased.objects.exclude(id=deceased_id).update(contributions_open=False)
+
+    return redirect('home')
