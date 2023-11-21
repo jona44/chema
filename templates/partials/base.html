@@ -27,13 +27,7 @@
      
      
   <div class="container-fluid  d-flex justify-content-center mt-5 p-2">
-     {% if messages %}
-       {% for message in messages %}
-         <div class="alert alert-{{ message.tags }}">
-           {{ message }}
-         </div>
-       {% endfor %}
-     {% endif %} 
+ 
     {% block content %}
   
     {% endblock  %}
