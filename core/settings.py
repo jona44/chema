@@ -54,7 +54,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'chema.context_processors.user_groups',
-                # 'chema.context_processors.group_admins',
+              
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
