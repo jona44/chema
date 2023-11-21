@@ -10,23 +10,10 @@
         <a href="{% url 'create_group'%}"  class="badge rounded-pill bt-outline-orange ">Create Group</a>
         {% if not is_member %}
         <a href="{% url 'join_active_group' %}"  class="badge rounded-pill bt-outline-orange ">Join Group</a>
-        
         <!-- Show content for non-members -->
        {% endif %}
       </div>
-      
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="w-50 text-center">
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
-        </div>
-      </div>
-      
+     
       <!-- Profile links with responsive class -->
       <img class="rounded-circle article-img" src="{{ user.profile.profile_pic.url }}" width="40">
       <div class="profile navbar-nav ">
@@ -39,8 +26,13 @@
         {% endif %}
       </div>
     </div>
+ 
+
 </nav>. 
 
+
+  
+   
 
  
    

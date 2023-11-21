@@ -275,7 +275,7 @@ def add_member(request, group_id):
 
     # Check if the current user is a member of the group
     if request.user.profile not in group.members.all():
-        raise Http404("You are not a member of this group.")
+         return render(request, 'partials/error1.html ') 
 
     if request.method == 'POST':
         form = AddMemberForm(request.POST)
@@ -441,7 +441,7 @@ def add_admin(request, group_id):
     group = get_object_or_404(Group, id=group_id)
     # Check if the user is an admin of the group
     if not group.admin == request.user.profile:
-        return render(request, 'error.html')  # Handle the case where the user is not an admin
+        return render(request, 'partials/error.html ')  # Handle the case where the user is not an admin
 
     if request.method == 'POST':
         form = AddAdminForm(request.POST)
