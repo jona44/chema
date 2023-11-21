@@ -10,7 +10,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['chemaonline.azurewebsites.net','127.0.0.1','chema.com']
 CSRF_TRUSTED_ORIGINS = ['https://chemaonline.azurewebsites.net','https://127.0.0.1','https://chema.com']
 
-SITE_ID = 10
+SITE_ID = 11
 
 
 INSTALLED_APPS = [
