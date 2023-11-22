@@ -66,4 +66,4 @@ jobs:
         with:
           app-name: 'chemaonline'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_78A692C800B642F4A43628E3B997CF20 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_347B5BD6D16B40C885545A28F07D9A12 }}
