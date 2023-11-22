@@ -10,10 +10,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['chemaonline.azurewebsites.net','127.0.0.1','chema.com']
 CSRF_TRUSTED_ORIGINS = ['https://chemaonline.azurewebsites.net','https://127.0.0.1','https://chema.com']
 
-SITE_ID =10
-
-
-
+SITE_ID = 10
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -31,8 +28,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google', 
-    'allauth.socialaccount.providers.facebook', 
+    # 'allauth.socialaccount.providers.google', 
+    # 'allauth.socialaccount.providers.facebook', 
      
     
 ]
@@ -126,15 +123,15 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            "profile",
-            "email"
-        ],
-            "AUTH_PARAMS":{"access_type":"online"}
-    }
-}
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'SCOPE': [
+#             "profile",
+#             "email"
+#         ],
+#             "AUTH_PARAMS":{"access_type":"online"}
+#     }
+# }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
