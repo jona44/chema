@@ -10,7 +10,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['chemaonline.azurewebsites.net','127.0.0.1','chema.com']
 CSRF_TRUSTED_ORIGINS = ['https://chemaonline.azurewebsites.net','https://127.0.0.1','https://chema.com']
 
-SITE_ID = 10
+
 
 
 INSTALLED_APPS = [
@@ -20,17 +20,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
+    
     'chema',
     'user',
     'condolence',
     'crispy_forms',
     "crispy_bootstrap5",
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google', 
-    'allauth.socialaccount.providers.facebook', 
+       
      
     
 ]
@@ -66,18 +62,7 @@ TEMPLATES = [
            
 ]
 
-# Allauth Settings
-AUTHENTICATION_CLASSES = (
-    # ...
-    'allauth.account.auth_backends.AuthenticationBackend',
-    # ...
-)
 
-AUTHENTICATION_CLASS = (
-    # ...
-    'allauth.account.auth_backends.AuthenticationBackend',
-    # ...
-)
 
 
 WSGI_APPLICATION = 'core.wsgi.application'
@@ -85,7 +70,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    
     # ...
 )
 
@@ -124,15 +109,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# SOCIALACCOUNT_PROVIDERS = {
-#     'google': {
-#         'SCOPE': [
-#             "profile",
-#             "email"
-#         ],
-#             "AUTH_PARAMS":{"access_type":"online"}
-#     }
-# }
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -147,8 +124,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# LOGIN_URL = 'account/login'
-# LOGOUT_URL = 'account/logout'
+LOGIN_URL = '/login'
+LOGOUT_URL = '/logout'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 TEMPLATE_DIRS = [(BASE_DIR, 'templates')]
