@@ -6,6 +6,7 @@ __pycache__/
 local_settings.py
 db.sqlite3
 media
+profile_pics
 db.sqlite3-journal
 
 ### Linux ###
