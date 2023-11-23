@@ -37,7 +37,7 @@ class GroupCreationForm(forms.ModelForm):
 class PostCreationForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['content','image']
+        fields = ['content']
         widgets={
             'content': forms.Textarea(attrs={
                 'class': 'form-control',

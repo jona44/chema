@@ -51,7 +51,7 @@ class GroupMembership(models.Model):
 class Post(models.Model):
     author = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
-    content = models.TextField(null=True, blank=True)
+    content = models.TextField()
     image = models.ImageField(upload_to='post_images/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(default=True, null=True, blank=True)
