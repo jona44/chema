@@ -17,21 +17,14 @@
   <body>
     
        {% include "partials/nav2.html"  %}
-    
-       
-     <div class="sidebar-left  mt-5">
+     <div class="sidebar-left  mt-5 pt-5">
       {% block sidebar-left %}
         <!-- Left sidebar content -->
       {% endblock %} 
      </div>
-     
-     
-  <div class="container-fluid  d-flex justify-content-center mt-5 p-2">
- 
     {% block content %}
   
     {% endblock  %}
-  </div>
 
   <div class="sidebar-right mt-5 pt-5 ">
     {% block sidebar-right %}

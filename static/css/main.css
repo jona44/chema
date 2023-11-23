@@ -61,8 +61,8 @@ body{
     width: 100%;
     margin-left: 25%; /* Sidebar width */
     margin-right: 25%; /* Sidebar width */
-    padding: 10px;
-    box-sizing: border-box;
+   
+    
 }
 
 .sidebar-right {
@@ -115,10 +115,10 @@ body{
     }
       
     .main {
-        width: 100%;
+        width: 100%; 
         padding: 10px;
         margin-left: 1%; /* Sidebar width */
-        margin-right: 1%; /* Sidebar width */
+        margin-right: 10%; /* Sidebar width */
         box-sizing: border-box;
     }   
     
