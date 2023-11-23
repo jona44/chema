@@ -143,4 +143,6 @@ class AddAdminForm(forms.Form):
     #     group = Group.objects.get(id=group_id)
     #     self.fields['member'].queryset = group.members.all()
 
- 
+class UploadFileForm(forms.Form):
+    file = forms.FileField()       
+        

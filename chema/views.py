@@ -480,6 +480,36 @@ def toggle_group(request, group_id):
 
     return redirect('home')
 
+import csv
+
+def upload_csv(request):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            csv_file = request.FILES['file']
+            file_data = csv_file.read().decode("utf-8")
+            lines = file_data.split("\n")
+
+            for line in lines: 
+                fields = line.split(',')
+                if len(fields) > 1:
+                    username = fields[0]
+                    email = fields[1]
+                    password1 = fields[2]
+                    password2 = fields[3]
+
+                    if password1 == password2:
+                        User.objects.create_user(username=username, email=email, password=password1)
+                    else:
+                        return HttpResponse('Passwords do not match for user {}'.format(username), status=400)
+
+            return HttpResponse('Data uploaded successfully')
+        else:
+            return HttpResponse('Invalid form', status=400)
+    else:
+        form = UploadFileForm()
+        return render(request, 'chema/upload_csv.html', {'form': form})
+
 
 
 
