@@ -11,7 +11,7 @@
 <!----------------------- Main Content-------------------- -->
     {% block content %}
   
-<div class="main mt-5 pt-5"> 
+<div class="main mt-5 pt-5 mr-3"> 
   
     <div class="fixed">
         <div class="canvas mb-2 " >
@@ -60,8 +60,8 @@
         <img src="{% static 'icon_pngs/post_add_FILL0_wght300_GRAD0_opsz24.png' %}" alt="">
         <h3>Recent Posts</h3>
       </h3>
-       {% for post in active_group_posts %}
-        <div class="list-unstyled group p-1"> 
+      <div class="list-unstyled group p-1"> 
+          {% for post in active_group_posts %}
              <div class="group bg-success-subtle text-emphasis-success rounded p-1">
                 <div class=" p-1 rounded m-2">
                     <img class="rounded-circle account-img" width="30" src="{{ post.author.profile_pic.url }}">
