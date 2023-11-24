@@ -19,7 +19,7 @@ def profile(request):
             u_form.save()
             p_form.save()
             messages.success(request, f'Your account has been updated!')
-            return redirect('profile')
+            return redirect('home')
 
     else:
         u_form = UserUpdateForm(instance=request.user)
@@ -41,7 +41,7 @@ def user_register(request):
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account has been created{username}!')
-            return redirect('choice')
+            return redirect('profile')
     else:
         form = UserRegisterForm()
     return render(request, 'user/user-register.html', {'form': form})

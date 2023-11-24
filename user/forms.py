@@ -10,24 +10,23 @@ class UserRegisterForm(UserCreationForm):
         model  = User
         fields = ['username','email','password1', 'password2']
         
-        # widgets = {
-        #     'username': forms.TextInput(attrs={'class':'form-controls' }),
-        #     'email': forms.TextInput(attrs={'class':'form-controls' }),
-        #     'password1': forms.TextInput(attrs={'class':'form-controls' }),
-        #     'password2': forms.TextInput(attrs={'class':'form-controls' }),
-        # }
+        widgets = {
+            'username': forms.TextInput(attrs={'class':'form-controls' }),
+            'email': forms.TextInput(attrs={'class':'form-controls' }),
+            'password1': forms.TextInput(attrs={'class':'form-controls' }),
+            'password2': forms.TextInput(attrs={'class':'form-controls' }),
+        }
+        
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
     class Meta:
         model  = User
         fields = ['username', 'email']
         
-
-
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model  = Profile
-        fields = ['profile_pic','phone','bio','address']
+        fields = ['first_name', 'surname','profile_pic','phone','bio','address']
         widgets = {
             'phone': forms.TextInput(attrs={
                 'class': 'form-control',

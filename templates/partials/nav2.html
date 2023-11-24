@@ -25,13 +25,14 @@
      
       <!-- Profile links with responsive class -->
       
-      <div class="dropdown">
-        <button class="bt-outline-orange dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Menu
+      <div class="btn-group dropstart">
+        <button type="button" class="bt-outline-orange  dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">          Menu
         </button>
-        <ul class="dropdown-menu">
+        <ul class=" dropdown-menu">
           {% if user.is_authenticated %}
-          <img class="rounded-circle article-img" src="{{ user.profile.profile_pic.url }}" width="40">
+          <div class="d-flex justify-content-center">
+            <img class="rounded-circle article-img" src="{{ user.profile.profile_pic.url }}" width="40">
+          </div>
           <li><a class="dropdown-item"  href="{% url 'profile' %}">&nbsp;<strong>{{ user.username }}</strong></a></li>
           <li><a class="dropdown-item" href="{% url 'logout' %}">&nbsp; <strong>Logout</strong></a></li>
           <li><a class="dropdown-item" href="">&nbsp; <strong>Settings</strong></a></li>
