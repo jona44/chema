@@ -6,13 +6,20 @@ from chema.models import *
 class ContributionForm(forms.ModelForm):
     class Meta:
         model = Contribution
-        fields = [ 'contributing_member', 'amount', 'deceased_member']
+        fields = ['contributing_member', 'amount', 'deceased_member']
 
     def __init__(self, *args, **kwargs):
         super(ContributionForm, self).__init__(*args, **kwargs)
         # Filter the choices for deceased members to only include those marked as deceased
-        self.fields['contributing_member'].queryset = Profile.objects.filter(groups__is_active=True )
+        self.fields['contributing_member'].queryset = Profile.objects.filter(groups__is_active=True)
         self.fields['deceased_member'].queryset = Deceased.objects.filter(group__is_active=True)
+
+        # Exclude the contributing member if already in the contribution
+        existing_contributions = Contribution.objects.filter(group__is_active=True)
+        self.fields['contributing_member'].queryset = Profile.objects.exclude(
+            pk__in=[contribution.contributing_member.pk for contribution in existing_contributions]
+        )
+
 
 
 class DeceasedForm(forms.ModelForm):
