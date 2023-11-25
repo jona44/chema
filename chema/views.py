@@ -440,8 +440,12 @@ def member_detail(request, group_id, member_id ):
 def add_admin(request, group_id):
     group = get_object_or_404(Group, id=group_id)
     # Check if the user is an admin of the group
-    if not group.admin == request.user.profile:
-        return render(request, 'partials/error.html ')  # Handle the case where the user is not an admin
+    group_admins = group.get_admins()
+
+    # Check if the current user is not in the list of admins
+    if request.user.profile not in [admin.user.profile for admin in group_admins]:
+        return render(request, 'partials/error.html')
+    # Handle the case where the user is not an admin
 
     if request.method == 'POST':
         form = AddAdminForm(request.POST)
