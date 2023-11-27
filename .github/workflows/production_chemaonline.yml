@@ -29,9 +29,7 @@ jobs:
       
       - name: Install dependencies
         run: pip install -r requirements.txt
-       
-     
-          
+        
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
       - name: Zip artifact for deployment
@@ -68,4 +66,4 @@ jobs:
         with:
           app-name: 'chemaonline'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7DC2EA2D696D43C4B243AFC7E9C89178 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BCB030E4BB9F410EB481D72E14FCE19B }}
