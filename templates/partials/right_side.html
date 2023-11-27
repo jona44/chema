@@ -16,7 +16,11 @@
     <div class="card m-1 p-1">
         <h2 class="title text-orange">Contributions List </h2>
        <p >{%for deceased in deceased %}
-          <a href="{% url 'toggle_deceased' deceased.id %}"><span class="badge bg-c">{{deceased}}</span> </a>
+           {% if deceased.cont_is_active %}
+          <a href="{% url 'toggle_deceased' deceased.id %}"><span class="badge bg-c text-success">{{deceased}} (open)</span> </a>
+          {%else%}
+          <a href="{% url 'toggle_deceased' deceased.id %}"><span class="badge bg-c text-danger">{{deceased}} (closed) </span> </a>
+          {%endif%}
          {%endfor%}
        </p>
     </div>

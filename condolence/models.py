@@ -27,3 +27,7 @@ class Deceased(models.Model):
 
     def __str__ (self):
        return f"{self.deceased}"
+   
+    def stop_contributions(self):
+        self.cont_is_active = False
+        self.save()

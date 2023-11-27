@@ -1,7 +1,5 @@
 {% extends "partials/base.html" %}
 
-
-
 {% block content %}
 <div class="container mt-5">
     
@@ -52,7 +50,17 @@
                 
                   <li>
                     <strong class="text-light-blue">{{ member.deceased}}</strong> passed a away on <strong>{{member.date}}</strong>  group admin <strong> {{member.group_admin}}</strong></li>{{member.group}}
-                 
+                    {% for admin in group_admins %}
+                    {% if request.user.profile == admin %}
+                    {% if member.cont_is_active %}
+                    <a href="{% url 'stop_contributions' member.id %}"class="btn btn-outline-success">Contributions are open/ Click to close</a>
+               {% else %}
+                   <p class="text-danger"><strong>Contributions are already Closed.</strong></p>
+               {% endif %}
+               {% endif %}
+
+               {% endfor %}
+                <hr>
                 {% endfor %}
                
               </ol>

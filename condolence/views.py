@@ -37,8 +37,20 @@ def create_contribution(request):
             return redirect('contribution_detail', contribution.id)
     else:
         form = ContributionForm()
+        # Filter the choices for deceased members to only include those marked as deceased
+        deceased_members_queryset = Deceased.objects.filter(group__is_active=True, cont_is_active=True)
+        # Set the queryset for deceased_member
+        
+        form.fields['deceased_member'].queryset = deceased_members_queryset# Filter the choices for contributing members
+        
+        contributing_members_queryset = Profile.objects.filter(groups__is_active=True).exclude(
+        pk__in=Contribution.objects.filter(group__is_active=True).values_list('contributing_member', flat=True)
+        )# Set the queryset for contributing_member
+        
+        form.fields['contributing_member'].queryset = contributing_members_queryset
     
     return render(request, 'condolence/create_contribution.html', {'form': form})
+
 
 
 def contribution_detail(request, contribution_id):
@@ -82,3 +94,15 @@ def toggle_deceased(request, deceased_id):
     Deceased.objects.exclude(id=deceased_id).update(contributions_open=False)
 
     return redirect('home')
+
+
+
+def stop_contributions(request, deceased_id):
+    # Get the Deceased instance
+    deceased = get_object_or_404(Deceased, pk=deceased_id)
+
+    # Call the method to stop contributions
+    deceased.stop_contributions()
+
+    # Return a JSON response indicating success
+    return HttpResponse('<h1>Contributions for This Deceased Member Closed</h2>')

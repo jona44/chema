@@ -8,17 +8,16 @@ class ContributionForm(forms.ModelForm):
         model = Contribution
         fields = ['contributing_member', 'amount', 'deceased_member']
 
-    def __init__(self, *args, **kwargs):
-        super(ContributionForm, self).__init__(*args, **kwargs)
-        # Filter the choices for deceased members to only include those marked as deceased
-        self.fields['contributing_member'].queryset = Profile.objects.filter(groups__is_active=True)
-        self.fields['deceased_member'].queryset = Deceased.objects.filter(group__is_active=True)
+    # def __init__(self, *args, **kwargs):
+    #     super(ContributionForm, self).__init__(*args, **kwargs)
+    #     # Filter the choices for deceased members to only include those marked as deceased
+    #     self.fields['contributing_member'].queryset = Profile.objects.filter(groups__is_active=True)
+    #     self.fields['deceased_member'].queryset = Deceased.objects.filter(group__is_active=True)
 
-        # Exclude the contributing member if already in the contribution
-        existing_contributions = Contribution.objects.filter(group__is_active=True)
-        self.fields['contributing_member'].queryset = Profile.objects.exclude(
-            pk__in=[contribution.contributing_member.pk for contribution in existing_contributions]
-        )
+    #     # Exclude the contributing member if already in the contribution
+    #     self.fields['contributing_member'].queryset = Profile.objects.exclude(
+    #         pk__in=Contribution.objects.filter(group__is_active=True).values_list('contributing_member', flat=True)
+    #     )
 
 
 

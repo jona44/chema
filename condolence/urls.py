@@ -7,5 +7,6 @@ urlpatterns = [
     # path('contributions_list/', views.contributions_list, name='contributions_list'),
     path('deceased/', views.deceased, name='deceased'),
     path('toggle_deceased/<int:deceased_id>/', views.toggle_deceased, name='toggle_deceased'),
+    path('stop_contributions/<int:deceased_id>/', views.stop_contributions, name='stop_contributions'),
 ]
 

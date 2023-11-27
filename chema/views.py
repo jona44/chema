@@ -371,7 +371,7 @@ def edit_reply(request, reply_id):
 
 def group_detail_view(request, group_id):
     group = get_object_or_404(Group, pk=group_id)
-    deceased = Deceased.objects.filter(group__is_active=True)
+    deceased = Deceased.objects.filter(group__is_active=True).order_by('-date')
     # Use the reverse relationship to get the admin members
     group_admins = group.members.filter(groupmembership__is_admin=True)
 
@@ -414,7 +414,7 @@ def member_detail(request, group_id, member_id ):
       
     context = {
         'object': member,
-        # 'groups': groups,
+        'groups': groups,
         'bio': bio,
         'phone': phone,
         'address':address,
