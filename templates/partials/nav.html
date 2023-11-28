@@ -1,0 +1,54 @@
+{% load static %}
+<nav class="navbar navbar-expand-md fixed-top bg-c mb-5"  >
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home'%}"><h3 class="text-orange">Chema</h3></a>
+        <button class="navbar-toggler text-orange bg-orange " type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon  text-orange "></span>
+       </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <div class="btn">
+        
+                <a href="{% url 'create_group'%}"  class="badge rounded-pill bt-outline-orange ">Create Group</a>
+                {% if not is_member %}
+                <a href="{% url 'join_active_group' %}"  class="badge rounded-pill bt-outline-orange ">Join Group</a>
+                <!-- Show content for non-members -->
+               {% endif %}
+
+              </div>
+          <!-- <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-orange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Settings
+            </a>
+            <ul class=" dropdown-menu">
+                {% if user.is_authenticated %}
+                <div class="d-flex justify-content-center">
+                  <img class="rounded-circle article-img" src="{{ user.profile.profile_pic.url }}" width="40">
+                </div>
+                <li><a class="dropdown-item"  href="{% url 'profile' %}">&nbsp;<strong>{{ user.username }}</strong></a></li>
+                <li><a class="dropdown-item" href="{% url 'logout' %}">&nbsp; <strong>Logout</strong></a></li>
+                <li><a class="dropdown-item" href="">&nbsp; <strong>Settings</strong></a></li>
+                {% else %}
+                <li><a class="dropdown-item"href="{% url 'login' %}"> &nbsp;<strong> Login</strong></a></li>
+                {% endif %}
+              </ul>
+          </li> -->
+        </ul>
+           {% if user.is_authenticated %}
+                <div class=" d-flex justify-content-center">
+                  <img class="rounded-circle article-img" src="{{ user.profile.profile_pic.url }}" width="40">
+                  <li><a class=" text-orange dropdown-item"  href="{% url 'profile' %}">&nbsp;<strong>{{ user.username }}</strong></a></li>
+                </div>
+               
+                     <li><a class="text-orange dropdown-item" href="{% url 'logout' %}">&nbsp; <strong>Logout</strong></a></li>
+                    <!-- <li><a class="text-orange" href="">&nbsp; <strong>Settings</strong></a></li> -->
+                   {% else %}
+                     <li><a class="text-orange dropdown-item"href="{% url 'login' %}"> &nbsp;<strong> Login</strong></a></li>
+                
+            {% endif %}
+      </div>
+      
+             
+            
+    </div>
+  </nav>
