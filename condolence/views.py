@@ -42,12 +42,10 @@ def create_contribution(request):
         # Set the queryset for deceased_member
         
         form.fields['deceased_member'].queryset = deceased_members_queryset# Filter the choices for contributing members
+        form.fields['contributing_member'].queryset = Profile.objects.filter(groups__is_active=True)
         
-        contributing_members_queryset = Profile.objects.filter(groups__is_active=True).exclude(
-        pk__in=Contribution.objects.filter(group__is_active=True).values_list('contributing_member', flat=True)
-        )# Set the queryset for contributing_member
+       
         
-        form.fields['contributing_member'].queryset = contributing_members_queryset
     
     return render(request, 'condolence/create_contribution.html', {'form': form})
 

@@ -16,9 +16,12 @@ class Contribution(models.Model):
     
     def __str__(self):
         return f"Contribution by {self.contributing_member} on {self.contribution_date} in {self.group.name} for{self.deceased_member}"
-
+    
+    class Meta:
+        unique_together = ('deceased_member', 'contributing_member')
+    
 class Deceased(models.Model):
-    deceased  = models.ForeignKey(Profile, on_delete=models.CASCADE,related_name='profile_deceased',default=True)
+    deceased  = models.OneToOneField(Profile, on_delete=models.CASCADE,related_name='profile_deceased',default=True, unique=True)
     group     = models.ForeignKey(Group, on_delete=models.CASCADE)
     date      = models.DateField(auto_now_add=True)
     group_admin = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, blank=True, related_name='admin')
