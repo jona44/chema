@@ -115,3 +115,138 @@ def join_active_group_api(request):
     else:
         return Response({"detail": "No active group found to join."}, status=status.HTTP_404_NOT_FOUND)
     
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def edit_post_api(request, post_id):
+    post = Post.objects.get(id=post_id)
+
+    # Check if the requesting user is the author of the post
+    if request.user.profile != post.author:
+        return Response({"detail": "You don't have permission to edit this post."}, status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'PUT':
+        serializer = PostSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_post_api(request, post_id):
+    post = Post.objects.get(id=post_id)
+
+    # Check if the requesting user is the author of the post
+    if request.user.profile != post.author:
+        return Response({"detail": "You don't have permission to delete this post."}, status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'DELETE':
+        post.delete()
+        return Response({"detail": "Post deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+    
+    
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_comment_api(request, post_id):
+    # Retrieve the post based on the post_id
+    post = Post.objects.get(id=post_id, approved=True)
+
+    if request.method == 'POST':
+        # Process the form submission
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            # Set the comment's author and post
+            serializer.validated_data['author'] = request.user.profile
+            serializer.validated_data['post'] = post
+
+            # Save the comment
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def edit_comment_api(request, comment_id):
+    comment = Comment.objects.get(id=comment_id)
+
+    # Check if the requesting user is the author of the comment
+    if request.user.profile != comment.author:
+        return Response({"detail": "You don't have permission to edit this comment."}, status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'PUT':
+        serializer = CommentSerializer(comment, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+   
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_comment_api(request, comment_id):
+    comment = Comment.objects.get(id=comment_id)
+
+    # Check if the requesting user is the author of the comment
+    if request.user.profile != comment.author:
+        return Response({"detail": "You don't have permission to delete this comment."}, status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'DELETE':
+        comment.delete()
+        return Response({"detail": "Comment deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+    
+   
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_member_api(request, group_id):
+    # Get the group
+    group = Group.objects.get(id=group_id)
+
+    # Check if the current user is a member of the group
+    if request.user.profile not in group.members.all():
+        return Response({"detail": "You don't have permission to add a member to this group."}, status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'POST':
+        # Process the form submission
+        serializer = GroupMembershipSerializer(data=request.data)
+        if serializer.is_valid():
+            # Set the group and member based on the request
+            serializer.validated_data['group'] = group
+            serializer.validated_data['member'] = serializer.validated_data['member'].profile
+
+            # Save the membership
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_dependent_api(request):
+    user_profile = request.user.profile
+
+    if request.method == 'POST':
+        # Process the form submission
+        serializer = DependentSerializer(data=request.data)
+        if serializer.is_valid():
+            # Set the guardian and user based on the request
+            serializer.validated_data['guardian'] = user_profile
+
+            # Save the dependent
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   
+ 
+    
+    
