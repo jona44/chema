@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 from chema.models import *  # Import your model
-from user_api import ProfileSerializer
+from user_api.serializers import ProfileSerializer
 
 
 class GroupMembershipSerializer(serializers.ModelSerializer):

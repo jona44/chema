@@ -24,6 +24,9 @@ INSTALLED_APPS = [
     'chema',
     'user',
     'condolence',
+    'chema_api',
+    'user_api',
+    'condolence_api',
     'crispy_forms',
     "crispy_bootstrap5",
     

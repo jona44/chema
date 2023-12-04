@@ -8,7 +8,8 @@ from rest_framework.response import Response
 from chema.models import *
 from .serializers import *
 from condolence.models import Profile, Group, Deceased, Contribution
-from .serializers import ProfileSerializer, GroupSerializer, DeceasedSerializer, ContributionSerializer
+from .serializers import ProfileSerializer, GroupSerializer 
+from condolence_api. serializers import DeceasedSerializer, ContributionSerializer
 
 
 

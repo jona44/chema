@@ -10,6 +10,9 @@ urlpatterns = [
     path('', include('chema.urls')),
     path('', include('user.urls')),
     path('', include('condolence.urls')),
+    path('', include('chema_api.urls')),
+    path('', include('user_api.urls')),
+    path('', include('condolence_api.urls')),
 ]
 
 if settings.DEBUG:
