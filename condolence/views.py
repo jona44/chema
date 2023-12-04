@@ -43,12 +43,7 @@ def create_contribution(request):
         
         form.fields['deceased_member'].queryset = deceased_members_queryset# Filter the choices for contributing members
         form.fields['contributing_member'].queryset = Profile.objects.filter(groups__is_active=True)
-        
-       
-        
-    
     return render(request, 'condolence/create_contribution.html', {'form': form})
-
 
 
 def contribution_detail(request, contribution_id):
@@ -58,8 +53,6 @@ def contribution_detail(request, contribution_id):
         'contribution': contribution,
         }
     return render(request, 'condolence/contribution_detail.html', context)
-
-
 
 
 def deceased(request):

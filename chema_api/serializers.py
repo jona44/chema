@@ -2,11 +2,8 @@
 
 from rest_framework import serializers
 from chema.models import *  # Import your model
+from user_api import ProfileSerializer
 
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile  # Replace with your actual Profile model
-        fields = '__all__'  # Include all fields or specify specific fields as needed
 
 class GroupMembershipSerializer(serializers.ModelSerializer):
     member = ProfileSerializer(read_only=True)
