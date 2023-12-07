@@ -3,17 +3,21 @@ from condolence.models import Contribution, Deceased
 from chema.models import Group
 from user.models import Profile
 from rest_framework import serializers, status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import ContributionSerializer
 from condolence.forms import DeceasedForm
 from .serializers import DeceasedSerializer
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
+
+
 
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def create_contribution_api(request):
     if request.method == 'POST':
         serializer = ContributionSerializer(data=request.data)
@@ -28,9 +32,10 @@ def create_contribution_api(request):
         serializer = ContributionSerializer(contributions, many=True)
         return Response(serializer.data)
 
-# Make sure to update the URL configuration to point to this view
+
 
 @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
 def contribution_detail_api(request, contribution_id):
     # Retrieve the specific contribution instance
     contribution = get_object_or_404(Contribution, id=contribution_id)
@@ -43,6 +48,7 @@ def contribution_detail_api(request, contribution_id):
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def deceased_api(request):
     active_group = Group.objects.filter(is_active=True).first()
     group_admin = Profile.objects.filter(groupmembership__is_admin=True, groups=active_group)
@@ -62,6 +68,7 @@ def deceased_api(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def toggle_deceased_api(request, deceased_id):
     # Get the deceased being toggled
     deceased_to_toggle = get_object_or_404(Deceased, id=deceased_id)
@@ -79,6 +86,7 @@ def toggle_deceased_api(request, deceased_id):
 
 
 @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
 def stop_contributions_api(request, deceased_id):
     # Get the Deceased instance
     deceased = get_object_or_404(Deceased, pk=deceased_id)

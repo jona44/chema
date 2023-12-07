@@ -43,11 +43,7 @@ def home_api(request):
     reply_serializer = ReplySerializer(active_group_replies, many=True)
     group_data['replies'] = reply_serializer.data
 
-    # Fetch contributions and serialize them
-    contributions = Contribution.objects.filter(deceased_member_id__contributions_open=True, group=active_group)
-    contribution_serializer = ContributionSerializer(contributions, many=True)
-    group_data['contributions'] = contribution_serializer.data
-
+   
     # Fetch deceased members and serialize them
     deceased = Deceased.objects.filter(group=active_group)
     deceased_serializer = DeceasedSerializer(deceased, many=True)

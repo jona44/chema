@@ -1,12 +1,11 @@
-
 from rest_framework import serializers
 from condolence.models import Contribution, Deceased
-from chema_api.serializers import GroupSerializer  
+from chema_api.serializers import GroupMembershipSerializer, GroupSerializer  
 from user_api.serializers import ProfileSerializer 
 
 class ContributionSerializer(serializers.ModelSerializer):
     contributing_member = ProfileSerializer()
-    group = GroupSerializer()
+    group = GroupMembershipSerializer()
 
     class Meta:
         model = Contribution
