@@ -1,0 +1,208 @@
+<!-- groups/templates/groups/leave_group.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave {{ group.name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'get_started' %}" class="text-xl font-bold text-gray-900">Your App</a>
+                    <span class="text-gray-400">/</span>
+                    <a href="{% url 'group_detail' slug=group.slug %}" class="text-gray-600 hover:text-gray-900">{{ group.name }}</a>
+                    <span class="text-gray-400">/</span>
+                    <span class="text-red-600 font-medium">Leave Group</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'my_groups' %}" class="text-sm text-gray-600 hover:text-gray-900">My Groups</a>
+                    <a href="{% url 'logout' %}" class="text-sm text-gray-600 hover:text-gray-900">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-2xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L5.268 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Leave {{ group.name }}?</h1>
+            <p class="text-gray-600">Are you sure you want to leave this group?</p>
+        </div>
+
+        <!-- Confirmation Card -->
+        <div class="bg-white rounded-xl shadow-sm p-8">
+            <!-- Group Info -->
+            <div class="flex items-center mb-6 p-4 bg-gray-50 rounded-lg">
+                {% if group.cover_image %}
+                    <img src="{{ group.cover_image.url }}" 
+                         alt="{{ group.name }}" 
+                         class="w-16 h-16 rounded-lg object-cover mr-4">
+                {% else %}
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center mr-4">
+                        <span class="text-white font-bold text-xl">{{ group.name|first|upper }}</span>
+                    </div>
+                {% endif %}
+                
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ group.name }}</h3>
+                    <div class="flex items-center text-sm text-gray-600 mt-1">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        {{ group.member_count }} members
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warning Message -->
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-red-600 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L5.268 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                    <div>
+                        <h4 class="text-sm font-medium text-red-800 mb-2">What happens when you leave:</h4>
+                        <ul class="text-sm text-red-700 space-y-1">
+                            <li>• You'll lose access to group discussions and content</li>
+                            <li>• You won't receive group notifications or updates</li>
+                            <li>• Your posts and comments will remain in the group</li>
+                            {% if group.requires_approval %}
+                                <li>• You'll need approval to rejoin this group later</li>
+                            {% else %}
+                                <li>• You can rejoin this group at any time</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Membership Info -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <h4 class="font-medium text-gray-900 mb-3">Your membership details:</h4>
+                <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-600">Joined:</span>
+                        <span class="ml-2 font-medium">{{ membership.joined_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Member for:</span>
+                        <span class="ml-2 font-medium">{{ membership.joined_at|timesince }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Role:</span>
+                        <span class="ml-2 font-medium capitalize">{{ membership.role }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Status:</span>
+                        <span class="ml-2 font-medium capitalize">{{ membership.status }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confirmation Form -->
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Final Confirmation -->
+                <div class="border-t pt-6">
+                    <label class="flex items-center space-x-3">
+                        <input type="checkbox" 
+                               class="rounded text-red-600 focus:ring-red-500" 
+                               required 
+                               id="confirm-leave">
+                        <span class="text-sm text-gray-700">
+                            I understand the consequences and want to leave <strong>{{ group.name }}</strong>
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-between items-center pt-6 border-t">
+                    <a href="{% url 'group_detail' slug=group.slug %}" 
+                       class="text-gray-600 hover:text-gray-800 font-medium px-6 py-2">
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                            id="leave-button"
+                            disabled
+                            class="bg-red-600 text-white px-8 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        Leave Group
+                    </button>
+                </div>
+            </form>
+
+            <!-- Alternative Actions -->
+            <div class="mt-8 pt-6 border-t">
+                <h4 class="font-medium text-gray-900 mb-3">Not sure about leaving?</h4>
+                <div class="space-y-3">
+                    <div class="flex items-start p-3 bg-blue-50 rounded-lg">
+                        <svg class="w-5 h-5 text-blue-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div>
+                            <h5 class="text-sm font-medium text-blue-900">Take a break instead</h5>
+                            <p class="text-sm text-blue-800">You can mute notifications or reduce your activity without leaving completely.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start p-3 bg-green-50 rounded-lg">
+                        <svg class="w-5 h-5 text-green-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.697-.413l-2.415.805.813-2.407C8.364 16.708 8 14.866 8 13c0-4.418 3.582-8 8-8s8 3.582 8 8z"/>
+                        </svg>
+                        <div>
+                            <h5 class="text-sm font-medium text-green-900">Talk to group admins</h5>
+                            <p class="text-sm text-green-800">If there's an issue, consider discussing it with the group administrators first.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="mt-6 text-center text-sm text-gray-500">
+            <p>You've been a member of {{ group.member_count }} other groups</p>
+        </div>
+    </div>
+
+    <script>
+        // Enable/disable leave button based on confirmation checkbox
+        const confirmCheckbox = document.getElementById('confirm-leave');
+        const leaveButton = document.getElementById('leave-button');
+
+        confirmCheckbox.addEventListener('change', function() {
+            leaveButton.disabled = !this.checked;
+            if (this.checked) {
+                leaveButton.classList.remove('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                leaveButton.classList.add('bg-red-600', 'hover:bg-red-700');
+            } else {
+                leaveButton.classList.add('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                leaveButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+            }
+        });
+
+        // Form submission handling
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (!confirmCheckbox.checked) {
+                e.preventDefault();
+                alert('Please confirm that you want to leave this group.');
+                return false;
+            }
+            
+            const submitBtn = leaveButton;
+            submitBtn.innerHTML = 'Leaving Group...';
+            submitBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

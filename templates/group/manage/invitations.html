@@ -1,0 +1,304 @@
+<!-- groups/templates/groups/manage/invitations.html -->
+{% extends 'customuser/base.html' %}
+
+{% block title %}Manage Invitations - {{ group.name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+    <!-- Breadcrumb -->
+    <nav class="text-sm breadcrumbs mb-6">
+        <ol class="list-none p-0 inline-flex">
+            <li class="flex items-center">
+                <a href="{% url 'group_detail' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">{{ group.name }}</a>
+                <span class="mx-2 text-gray-400">/</span>
+            </li>
+            <li class="flex items-center">
+                <a href="{% url 'group_manage' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">Manage</a>
+                <span class="mx-2 text-gray-400">/</span>
+            </li>
+            <li class="text-gray-600">Invitations</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Send Invitations</h1>
+        <p class="text-gray-600">Invite people to join {{ group.name }} via email</p>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2">
+            <!-- Send Invitations Form -->
+            <div class="bg-white rounded-xl shadow-sm p-8 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">Send New Invitations</h2>
+                
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <!-- Email Addresses -->
+                    <div>
+                        <label for="{{ form.emails.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Email Addresses *
+                        </label>
+                        {{ form.emails }}
+                        {% if form.emails.errors %}
+                            <div class="text-red-600 text-sm mt-1">{{ form.emails.errors.0 }}</div>
+                        {% endif %}
+                        <p class="text-gray-500 text-sm mt-1">{{ form.emails.help_text }}</p>
+                    </div>
+
+                    <!-- Personal Message -->
+                    <div>
+                        <label for="{{ form.message.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Personal Message
+                        </label>
+                        {{ form.message }}
+                        {% if form.message.errors %}
+                            <div class="text-red-600 text-sm mt-1">{{ form.message.errors.0 }}</div>
+                        {% endif %}
+                        <p class="text-gray-500 text-sm mt-1">{{ form.message.help_text }}</p>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-medium text-gray-900 mb-2">Email Preview:</h3>
+                        <div class="text-sm text-gray-700">
+                            <p><strong>Subject:</strong> Invitation to join {{ group.name }}</p>
+                            <p class="mt-2"><strong>Content will include:</strong></p>
+                            <ul class="list-disc list-inside mt-2 space-y-1">
+                                <li>Your personal message (if provided)</li>
+                                <li>Group name and description</li>
+                                <li>Direct join link</li>
+                                <li>Group details (category, location, etc.)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Form Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="text-red-600 text-sm">{{ form.non_field_errors.0 }}</div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Action Buttons -->
+                    <div class="flex justify-between items-center pt-6 border-t">
+                        <a href="{% url 'group_manage' slug=group.slug %}" 
+                            class="text-gray-600 hover:text-gray-800 font-medium">
+                            Cancel
+                        </a>
+                        <button type="submit" 
+                                class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                            Send Invitations
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Previous Invitations -->
+            {% if invitations %}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-6">Invitation History</h2>
+                
+                <div class="space-y-4">
+                    {% for invitation in invitations %}
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <p class="font-medium text-gray-900">{{ invitation.invited_email }}</p>
+                                <div class="flex items-center space-x-2">
+                                    {% if invitation.status == 'pending' %}
+                                        <span class="bg-yellow-100 text-yellow-600 text-sm px-2 py-1 rounded-full">Pending</span>
+                                    {% elif invitation.status == 'accepted' %}
+                                        <span class="bg-green-100 text-green-600 text-sm px-2 py-1 rounded-full">Accepted</span>
+                                    {% elif invitation.status == 'declined' %}
+                                        <span class="bg-red-100 text-red-600 text-sm px-2 py-1 rounded-full">Declined</span>
+                                    {% elif invitation.status == 'expired' %}
+                                        <span class="bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded-full">Expired</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="text-sm text-gray-600 mt-1">
+                                <p>Sent by {{ invitation.invited_by.profile.full_name|default:invitation.invited_by.email }}</p>
+                                <p>{{ invitation.created_at|timesince }} ago</p>
+                                {% if invitation.expires_at %}
+                                    <p>Expires {{ invitation.expires_at|timeuntil }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            {% if invitation.message %}
+                                <div class="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700">
+                                    <strong>Message:</strong> "{{ invitation.message|truncatewords:20 }}"
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                {% if invitations|length > 10 %}
+                    <div class="mt-4 text-center">
+                        <p class="text-sm text-gray-500">Showing recent 10 invitations</p>
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Invitation Stats -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Invitation Statistics</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600 text-sm">Total Sent:</span>
+                        <span class="font-medium">{{ invitations.count }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600 text-sm">Accepted:</span>
+                        <span class="font-medium text-green-600">
+                            {{ invitations|length|add:0 }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600 text-sm">Pending:</span>
+                        <span class="font-medium text-yellow-600">
+                            {{ invitations|length|add:0 }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600 text-sm">Declined:</span>
+                        <span class="font-medium text-red-600">
+                            {{ invitations|length|add:0 }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Group Info -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Group Information</h3>
+                <div class="space-y-3 text-sm">
+                    <div>
+                        <span class="text-gray-600">Name:</span>
+                        <p class="font-medium">{{ group.name }}</p>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Privacy:</span>
+                        <p class="font-medium capitalize">{{ group.privacy }}</p>
+                    </div>
+                    <div>
+                        <span class="text-gray-600">Current Members:</span>
+                        <p class="font-medium">{{ group.member_count }}</p>
+                    </div>
+                    {% if group.max_members %}
+                    <div>
+                        <span class="text-gray-600">Member Limit:</span>
+                        <p class="font-medium">{{ group.max_members }}</p>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <span class="text-gray-600">Requires Approval:</span>
+                        <p class="font-medium">
+                            {% if group.requires_approval %}Yes{% else %}No{% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="bg-blue-50 rounded-xl p-6">
+                <h3 class="text-lg font-semibold text-blue-900 mb-3">💡 Invitation Tips</h3>
+                <ul class="space-y-2 text-blue-800 text-sm">
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span>Add a personal message to increase acceptance rates</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span>Invite people who share similar interests to your group</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span>You can send up to 50 invitations at once</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">•</span>
+                        <span>Invitations expire after 7 days for security</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                <div class="space-y-3">
+                    <a href="{% url 'group_manage_members' slug=group.slug %}" 
+                       class="flex items-center w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <span class="text-gray-900">View Members</span>
+                    </a>
+                    
+                    <a href="{% url 'group_manage' slug=group.slug %}" 
+                       class="flex items-center w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h2a2 2 0 012 2v1H8V5z"/>
+                        </svg>
+                        <span class="text-gray-900">Back to Dashboard</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-resize textarea
+        const textarea = document.getElementById('{{ form.message.id_for_label }}');
+        if (textarea) {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        }
+
+        // Form submission handling
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const emailsField = document.getElementById('{{ form.emails.id_for_label }}');
+            if (!emailsField.value.trim()) {
+                e.preventDefault();
+                alert('Please enter at least one email address.');
+                return false;
+            }
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = 'Sending Invitations...';
+            submitBtn.disabled = true;
+        });
+
+        // Email validation helper
+        document.getElementById('{{ form.emails.id_for_label }}').addEventListener('blur', function() {
+            const emails = this.value.split(/[,\n\r]+/);
+            const invalidEmails = [];
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            emails.forEach(email => {
+                email = email.trim();
+                if (email && !emailRegex.test(email)) {
+                    invalidEmails.push(email);
+                }
+            });
+            
+            if (invalidEmails.length > 0) {
+                this.style.borderColor = '#ef4444';
+                console.log('Invalid emails found:', invalidEmails);
+            } else {
+                this.style.borderColor = '#d1d5db';
+            }
+        });
+    </script>
+{% endblock %}

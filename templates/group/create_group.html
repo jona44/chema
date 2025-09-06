@@ -1,0 +1,259 @@
+<!-- groups/templates/groups/create_group.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create a Group{% endblock %}
+
+{% block content %}
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-200 mb-2">Create Your Group</h1>
+            <p class="text-gray-600">Build a community around your passion</p>
+        </div>
+
+        <!-- Form -->
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+            <form method="post" enctype="multipart/form-data" class="p-8 space-y-6">
+                {% csrf_token %}
+
+                <!-- Basic Information Section -->
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Basic Information</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Group Name -->
+                        <div class="md:col-span-2">
+                            <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Group Name *
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ form.name.errors.0 }}</div>
+                            {% endif %}
+                            <p class="text-gray-500 text-sm mt-1">Choose a clear, descriptive name for your group</p>
+                        </div>
+
+                        <!-- Category -->
+                        <div>
+                            <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Category
+                            </label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ form.category.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Tags -->
+                        <div>
+                            <label for="{{ form.tags.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Tags
+                            </label>
+                            {{ form.tags }}
+                            {% if form.tags.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ form.tags.errors.0 }}</div>
+                            {% endif %}
+                            <p class="text-gray-500 text-sm mt-1">Separate tags with commas (max 10)</p>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="md:col-span-2">
+                            <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Description *
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                            <p class="text-gray-500 text-sm mt-1">Tell people what your group is about, what you do, and who should join</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Section -->
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Location</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- City -->
+                        <div>
+                            <label for="{{ form.city.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                City
+                            </label>
+                            {{ form.city }}
+                            {% if form.city.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ form.city.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Country -->
+                        <div>
+                            <label for="{{ form.country.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Country
+                            </label>
+                            {{ form.country }}
+                            {% if form.country.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ form.country.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Online Only -->
+                        <div class="md:col-span-2">
+                            <label class="flex items-center space-x-3">
+                                {{ form.is_online_only }}
+                                <span class="text-sm font-medium text-gray-700">This is an online-only group</span>
+                            </label>
+                            {% if form.is_online_only.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ form.is_online_only.errors.0 }}</div>
+                            {% endif %}
+                            <p class="text-gray-500 text-sm mt-1">Check this if your group meets exclusively online</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group Settings Section -->
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Group Settings</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Privacy -->
+                        <div>
+                            <label for="{{ form.privacy.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Privacy *
+                            </label>
+                            {{ form.privacy }}
+                            {% if form.privacy.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ form.privacy.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Max Members -->
+                        <div>
+                            <label for="{{ form.max_members.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Member Limit
+                            </label>
+                            {{ form.max_members }}
+                            {% if form.max_members.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ form.max_members.errors.0 }}</div>
+                            {% endif %}
+                            <p class="text-gray-500 text-sm mt-1">Leave empty for unlimited members</p>
+                        </div>
+
+                        <!-- Requires Approval -->
+                        <div class="md:col-span-2">
+                            <label class="flex items-center space-x-3">
+                                {{ form.requires_approval }}
+                                <span class="text-sm font-medium text-gray-700">Require approval for new members</span>
+                            </label>
+                            {% if form.requires_approval.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ form.requires_approval.errors.0 }}</div>
+                            {% endif %}
+                            <p class="text-gray-500 text-sm mt-1">If checked, you'll need to approve each new member request</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cover Image Section -->
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Visual</h2>
+                    
+                    <div>
+                        <label for="{{ form.cover_image.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Cover Image
+                        </label>
+                        {{ form.cover_image }}
+                        {% if form.cover_image.errors %}
+                            <div class="text-red-600 text-sm mt-1">{{ form.cover_image.errors.0 }}</div>
+                        {% endif %}
+                        <p class="text-gray-500 text-sm mt-1">Upload a banner image for your group (optional)</p>
+                    </div>
+                </div>
+
+                <!-- Form Errors -->
+                {% if form.non_field_errors %}
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="text-red-600 text-sm">{{ form.non_field_errors.0 }}</div>
+                    </div>
+                {% endif %}
+
+                <!-- Action Buttons -->
+                <div class="flex justify-between items-center pt-6 border-t">
+                    <a href="{% url 'get_started' %}" 
+                       class="text-gray-600 hover:text-gray-800 font-medium">
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                            class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        Create Group
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="mt-8 bg-blue-50 rounded-xl p-6">
+            <h3 class="text-lg font-semibold text-blue-900 mb-3">💡 Tips for Creating a Great Group</h3>
+            <ul class="space-y-2 text-blue-800">
+                <li class="flex items-start">
+                    <span class="text-blue-600 mr-2">•</span>
+                    <span class="text-sm">Use a clear, descriptive name that tells people what your group is about</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-600 mr-2">•</span>
+                    <span class="text-sm">Write a detailed description explaining your group's purpose and activities</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-600 mr-2">•</span>
+                    <span class="text-sm">Add relevant tags to help people find your group in searches</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-600 mr-2">•</span>
+                    <span class="text-sm">Upload an attractive cover image to make your group stand out</span>
+                </li>
+                <li class="flex items-start">
+                    <span class="text-blue-600 mr-2">•</span>
+                    <span class="text-sm">Consider starting with a smaller member limit to build a tight-knit community</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Simple form validation feedback
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const name = document.getElementById('{{ form.name.id_for_label }}').value.trim();
+            const description = document.getElementById('{{ form.description.id_for_label }}').value.trim();
+            
+            if (!name || !description) {
+                e.preventDefault();
+                alert('Please fill in all required fields (marked with *)');
+                return false;
+            }
+            
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = 'Creating Group...';
+            submitBtn.disabled = true;
+        });
+
+        // Toggle location fields based on online-only checkbox
+        const onlineOnlyCheckbox = document.getElementById('{{ form.is_online_only.id_for_label }}');
+        const cityField = document.getElementById('{{ form.city.id_for_label }}');
+        const countryField = document.getElementById('{{ form.country.id_for_label }}');
+
+        onlineOnlyCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                cityField.disabled = true;
+                countryField.disabled = true;
+                cityField.style.opacity = '0.5';
+                countryField.style.opacity = '0.5';
+            } else {
+                cityField.disabled = false;
+                countryField.disabled = false;
+                cityField.style.opacity = '1';
+                countryField.style.opacity = '1';
+            }
+        });
+    </script>
+{% endblock %}

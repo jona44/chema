@@ -1,0 +1,63 @@
+<!-- customuser/templates/customuser/profile_edit.html -->
+{% extends "base.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+    <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Edit Profile</h2>
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="id_first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+                    <input type="text" name="first_name" id="id_first_name" value="{{ form.first_name.value|default:'' }}"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="id_surname" class="block text-sm font-medium text-gray-700">Surname</label>
+                    <input type="text" name="surname" id="id_surname" value="{{ form.surname.value|default:'' }}"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="id_date_of_birth" class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                    <input type="date" name="date_of_birth" id="id_date_of_birth" value="{{ form.date_of_birth.value|date:'Y-m-d'|default:'' }}"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="id_contact_number" class="block text-sm font-medium text-gray-700">Contact Number</label>
+                    <input type="text" name="contact_number" id="id_contact_number" value="{{ form.contact_number.value|default:'' }}"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+            
+            <div>
+                <label for="id_profile_picture" class="block text-sm font-medium text-gray-700">Profile Picture</label>
+                <input type="file" name="profile_picture" id="id_profile_picture" accept="image/*"
+                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                {% if profile.profile_picture %}
+                    <p class="mt-2 text-sm text-gray-500">Current: <a href="{{ profile.profile_picture.url }}" target="_blank" class="text-blue-600 hover:underline">{{ profile.profile_picture.name }}</a></p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <label for="id_bio" class="block text-sm font-medium text-gray-700">Bio</label>
+                <textarea name="bio" id="id_bio" rows="4" placeholder="Tell us about yourself..."
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ form.bio.value|default:'' }}</textarea>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <a href="{% url 'profile' %}" class="inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Cancel
+                </a>
+                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,62 @@
+<!-- customuser/templates/customuser/login.html -->
+{% extends 'base.html' %}
+
+{% block title %}Login - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen-minus-nav">
+    <div class="max-w-3xl w-full bg-white p-8 rounded-lg shadow-md">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Sign In</h2>
+        <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <div>
+                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700">Email Address</label>
+                        <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}"
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            value="{{ form.email.value|default:'' }}" required>
+                        {% if form.email.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.email.errors }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}"
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            required>
+                        {% if form.password.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.password.errors }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex items-center">
+                        <input type="checkbox" name="{{ form.remember_me.name }}" id="{{ form.remember_me.id_for_label }}"
+                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="{{ form.remember_me.id_for_label }}" class="ml-2 block text-sm text-gray-900">
+                            Remember me 
+                        </label> 
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-error" role="alert">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center text-sm">
+                    <p class="mb-1">
+                        <a href="{% url 'resend_verification' %}">Didn't receive verification email?</a>
+                    </p>
+                    <p class="mb-0">
+                        Don't have an account? <a href="{% url 'register' %}">Create one here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

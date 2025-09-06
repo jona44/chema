@@ -1,0 +1,204 @@
+<!-- groups/templates/groups/get_started.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started - Find Your Group</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-gray-900">Chema</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">Welcome, {{ user.profile.full_name|default:user.email }}!</span>
+                    <div class="relative">
+                        {% if user.profile.profile_picture %}
+                            <img src="{{ user.profile.profile_picture.url }}" 
+                                alt="Profile" 
+                                class="w-8 h-8 rounded-full object-cover">
+                        {% else %}
+                            <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                                <span class="text-white text-sm font-medium">{{ user.email|first|upper }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'my_groups' %}" class="text-sm text-gray-600 hover:text-gray-900">My Groups</a>
+                    <a href="{% url 'profile' %}" class="text-sm text-gray-600 hover:text-gray-900">Profile</a>
+                    <a href="{% url 'logout' %}" class="text-sm text-gray-600 hover:text-gray-900">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                Ready to Get Started?
+            </h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Join an existing group or create your own community. Connect with like-minded people and start your journey.
+            </p>
+        </div>
+
+        <!-- User's Current Groups (if any) -->
+        {% if user_groups %}
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Your Groups</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for group in user_groups %}
+                <a href="{% url 'group_detail' slug=group.slug %}" 
+                    class="block bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                    <h3 class="font-medium text-gray-900">{{ group.name }}</h3>
+                    <p class="text-sm text-gray-600 mt-1">{{ group.num_members }} members</p>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Search Section -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-2">Find a Group</h2>
+                <p class="text-gray-600">Search for groups that match your interests</p>
+            </div>
+            
+            <form action="{% url 'browse_groups' %}" method="get" class="relative max-w-2xl mx-auto">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <input 
+                    type="text" 
+                    name="query"
+                    placeholder="Search groups by name, topic, or location..." 
+                    class="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg transition-all duration-200 hover:shadow-md"
+                    id="group-search"
+                >
+                <button type="submit" class="absolute right-2 top-2 bottom-2 bg-blue-600 text-white px-6 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium">
+                    Search
+                </button>
+            </form>
+            
+            <!-- Search suggestions/tags -->
+            <div class="flex flex-wrap justify-center gap-2 mt-4">
+                {% for category in categories %}
+                <a href="{% url 'browse_groups' %}?category={{ category.id }}" 
+                    class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-gray-200 cursor-pointer transition-colors">
+                    {{ category.icon }} {{ category.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Join Group Card -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="p-8 text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Join a Group</h3>
+                    <p class="text-gray-600 mb-6">
+                        Browse existing groups and connect with people who share your interests. Perfect for exploring new communities.
+                    </p>
+                    <a href="{% url 'browse_groups' %}" 
+                        class="inline-block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 transform hover:scale-105 text-center">
+                        Browse Groups
+                    </a>
+                </div>
+            </div>
+
+            <!-- Create Group Card -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="p-8 text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Create a Group</h3>
+                    <p class="text-gray-600 mb-6">
+                        Start your own community around your passion. Set the rules, invite members, and build something amazing.
+                    </p>
+                    <a href="{% url 'create_group' %}" 
+                        class="inline-block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200 transform hover:scale-105 text-center">
+                        Start a Group
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured Groups -->
+        {% if featured_groups %}
+        <div class="mt-16">
+            <h2 class="text-2xl font-bold text-gray-900 text-center mb-8">Featured Groups</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for group in featured_groups %}
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                    {% if group.cover_image %}
+                        <img src="{{ group.cover_image.url }}" 
+                            alt="{{ group.name }}" 
+                            class="w-full h-32 object-cover">
+                    {% else %}
+                        <div class="w-full h-32 bg-gradient-to-r from-blue-400 to-purple-500"></div>
+                    {% endif %}
+                    <div class="p-4">
+                        <h3 class="font-semibold text-gray-900">{{ group.name }}</h3>
+                        <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{ group.description|truncatewords:20 }}</p>
+                        <div class="flex justify-between items-center mt-3">
+                            <span class="text-sm text-gray-500">{{ group.num_members }} members</span>
+                            <a href="{% url 'group_detail' slug=group.slug %}" 
+                                class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                                View Group →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Stats Section -->
+        <div class="mt-16 bg-white rounded-2xl shadow-lg p-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div>
+                    <div class="text-3xl font-bold text-blue-600">{{ total_groups|default:"0" }}</div>
+                    <div class="text-gray-600">Active Groups</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-green-600">{{ total_members|default:"0" }}</div>
+                    <div class="text-gray-600">Members</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-purple-600">{{ categories.count }}</div>
+                    <div class="text-gray-600">Categories</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Search suggestions (if you want to implement AJAX later)
+        document.getElementById('group-search').addEventListener('input', function(e) {
+            const query = this.value;
+            if (query.length >= 2) {
+                // TODO: Implement AJAX search suggestions
+                console.log('Searching for:', query);
+            }
+        });
+    </script>

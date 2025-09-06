@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <!-- Navigation
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'get_started' %}" class="text-xl font-bold text-gray-900">Your App</a>
+                    <span class="text-gray-400">/</span>
+                    <span class="text-blue-600 font-medium">My Groups</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'browse_groups' %}" class="text-sm text-gray-600 hover:text-gray-900">Browse Groups</a>
+                    <a href="{% url 'create_group' %}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Create Group</a>
+                    <a href="{% url 'logout' %}" class="text-sm text-gray-600 hover:text-gray-900">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav> -->
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-200 mb-2">My Groups</h1>
+            <p class="text-gray-600">Manage your group memberships and communities</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-xl p-6 text-center shadow-sm">
+                <div class="text-2xl font-bold text-blue-600">{{ active_memberships.count }}</div>
+                <div class="text-sm text-gray-600">Active Groups</div>
+            </div>
+            <div class="bg-white rounded-xl p-6 text-center shadow-sm">
+                <div class="text-2xl font-bold text-green-600">{{ created_groups.count }}</div>
+                <div class="text-sm text-gray-600">Groups Created</div>
+            </div>
+            <div class="bg-white rounded-xl p-6 text-center shadow-sm">
+                <div class="text-2xl font-bold text-yellow-600">{{ pending_memberships.count }}</div>
+                <div class="text-sm text-gray-600">Pending Approval</div>
+            </div>
+            <div class="bg-white rounded-xl p-6 text-center shadow-sm">
+                <div class="text-2xl font-bold text-purple-600">{{ total_groups }}</div>
+                <div class="text-sm text-gray-600">Total Groups</div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Groups I Created -->
+                {% if created_groups %}
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold text-gray-900">Groups I Created</h2>
+                        <span class="text-sm text-gray-500">{{ created_groups.count }} group{{ created_groups.count|pluralize }}</span>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        {% for group in created_groups %}
+                        <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-2">
+                                        <h3 class="text-lg font-medium text-gray-900">{{ group.name }}</h3>
+                                        <span class="ml-3 bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">Creator</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ group.description|truncatewords:20 }}</p>
+                                    
+                                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                            </svg>
+                                            {{ group.num_members }} members
+                                        </div>
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            Created {{ group.created_at|timesince }} ago
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center space-x-2 ml-4">
+                                    <a href="{% url 'group_detail' slug=group.slug %}" 
+                                        class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                                        View
+                                    </a>
+                                    <button class="text-gray-600 hover:text-gray-700 text-sm font-medium">
+                                        Manage
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Active Memberships -->
+                {% if active_memberships %}
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold text-gray-900">Groups I'm In</h2>
+                        <span class="text-sm text-gray-500">{{ active_memberships.count }} group{{ active_memberships.count|pluralize }}</span>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        {% for membership in active_memberships %}
+                        <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="text-lg font-medium text-gray-900">{{ membership.group.name }}</h3>
+                                {% if membership.role != 'member' %}
+                                    <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">{{ membership.role|title }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ membership.group.description|truncatewords:15 }}</p>
+                            
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="text-gray-500">
+                                    Joined {{ membership.joined_at|timesince }} ago
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <a href="{% url 'group_detail' slug=membership.group.slug %}" 
+                                        class="text-blue-600 hover:text-blue-700 font-medium">
+                                        View
+                                    </a>
+                                    {% if membership.user != membership.group.creator %}
+                                        <a href="{% url 'leave_group' slug=membership.group.slug %}" 
+                                            class="text-red-600 hover:text-red-700 font-medium">
+                                            Leave
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Pending Memberships -->
+                {% if pending_memberships %}
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold text-gray-900">Pending Approval</h2>
+                        <span class="text-sm text-gray-500">{{ pending_memberships.count }} group{{ pending_memberships.count|pluralize }}</span>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        {% for membership in pending_memberships %}
+                        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-yellow-400">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-medium text-gray-900 mb-1">{{ membership.group.name }}</h3>
+                                    <p class="text-gray-600 text-sm mb-2">{{ membership.group.description|truncatewords:20 }}</p>
+                                    <div class="text-sm text-gray-500">
+                                        Requested {{ membership.joined_at|timesince }} ago
+                                    </div>
+                                </div>
+                                
+                                <div class="ml-4">
+                                    <span class="bg-yellow-100 text-yellow-600 text-sm px-3 py-1 rounded-full">
+                                        Awaiting Approval
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Empty State -->
+                {% if not active_memberships and not created_groups and not pending_memberships %}
+                <div class="text-center py-12">
+                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">No groups yet</h3>
+                    <p class="text-gray-600 mb-4">You haven't joined or created any groups yet.</p>
+                    <div class="flex items-center justify-center space-x-4">
+                        <a href="{% url 'browse_groups' %}" 
+                            class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                            Browse Groups
+                        </a>
+                        <a href="{% url 'create_group' %}" 
+                            class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+                            Create Group
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                    <div class="space-y-3">
+                        <a href="{% url 'create_group' %}" 
+                            class="flex items-center w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                            <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            <span class="text-gray-900">Create New Group</span>
+                        </a>
+                        
+                        <a href="{% url 'browse_groups' %}" 
+                            class="flex items-center w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                            <svg class="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <span class="text-gray-900">Find Groups to Join</span>
+                        </a>
+                        
+                        <a href="{% url 'get_started' %}" 
+                            class="flex items-center w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                            <svg class="w-5 h-5 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h2a2 2 0 012 2v1H8V5z"/>
+                            </svg>
+                            <span class="text-gray-900">Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Activity Summary -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Activity Summary</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Groups Joined</span>
+                            <span class="text-sm font-medium">{{ active_memberships.count }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Groups Created</span>
+                            <span class="text-sm font-medium">{{ created_groups.count }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Pending Requests</span>
+                            <span class="text-sm font-medium">{{ pending_memberships.count }}</span>
+                        </div>
+                        <hr>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-gray-900">Total Groups</span>
+                            <span class="text-sm font-bold text-blue-600">{{ total_groups }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="bg-blue-50 rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-blue-900 mb-3">💡 Group Tips</h3>
+                    <ul class="space-y-2 text-blue-800 text-sm">
+                        <li class="flex items-start">
+                            <span class="text-blue-600 mr-2">•</span>
+                            <span>Stay active in your groups to build stronger connections</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-blue-600 mr-2">•</span>
+                            <span>Create groups around your unique interests or skills</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-blue-600 mr-2">•</span>
+                            <span>Invite friends to join groups you think they'd enjoy</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-blue-600 mr-2">•</span>
+                            <span>Use group search to discover new communities</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
