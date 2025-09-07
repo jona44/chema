@@ -1,0 +1,388 @@
+<!-- memorial/templates/memorial/memorial_detail.html -->
+{% extends 'customuser/base.html' %}
+{% load static %}
+
+{% block title %}{{ memorial.full_name }} - Memorial - {{ block.super }}{% endblock %}
+
+{% block content %}
+    <!-- Memorial Header -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
+        <!-- Cover Photo Area -->
+        <div class="relative h-48 bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800">
+            {% if memorial.photo %}
+                <img src="{{ memorial.photo.url }}" 
+                     alt="{{ memorial.full_name }}" 
+                     class="w-full h-48 object-cover">
+                <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+            {% endif %}
+            
+            <!-- Memorial Info Overlay -->
+            <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <div class="flex items-end space-x-6">
+                    {% if memorial.photo %}
+                        <div class="w-24 h-24 rounded-full border-4 border-white overflow-hidden flex-shrink-0">
+                            <img src="{{ memorial.photo.url }}" 
+                                 alt="{{ memorial.full_name }}" 
+                                 class="w-full h-full object-cover">
+                        </div>
+                    {% else %}
+                        <div class="w-24 h-24 rounded-full border-4 border-white bg-gray-400 flex items-center justify-center flex-shrink-0">
+                            <span class="text-white text-2xl font-bold">{{ memorial.full_name|first|upper }}</span>
+                        </div>
+                    {% endif %}
+                    
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">{{ memorial.full_name }}</h1>
+                        {% if memorial.traditional_names %}
+                            <p class="text-lg text-gray-200 mb-2">{{ memorial.traditional_names }}</p>
+                        {% endif %}
+                        <div class="flex items-center space-x-6 text-sm text-gray-200">
+                            <span>{{ memorial.date_of_birth|date:"F j, Y" }} - {{ memorial.date_of_death|date:"F j, Y" }}</span>
+                            <span>Age {{ memorial.age_at_death }}</span>
+                            {% if memorial.cultural_background %}
+                                <span>{{ memorial.cultural_background }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memorial Stats and Actions -->
+        <div class="p-6 bg-gray-50 border-b">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-8">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600">{{ stats.total_posts }}</div>
+                        <div class="text-sm text-gray-600">Memories</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-600">{{ stats.total_condolences }}</div>
+                        <div class="text-sm text-gray-600">Condolences</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-purple-600">{{ stats.days_since_passing }}</div>
+                        <div class="text-sm text-gray-600">Days Remembered</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3">
+                    {% if can_post %}
+                        <a href="{% url 'create_post' memorial_pk=memorial.pk %}" 
+                           class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                            Share Memory
+                        </a>
+                    {% endif %}
+                    
+                    {% if memorial.allow_condolences %}
+                        <a href="{% url 'condolences' memorial_pk=memorial.pk %}" 
+                           class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                            Send Condolences
+                        </a>
+                    {% endif %}
+                    
+                    {% if is_family_admin %}
+                        <a href="{% url 'memorial_manage' memorial_pk=memorial.pk %}" 
+                           class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                            Manage
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-8">
+            
+            <!-- Biography -->
+            {% if memorial.biography %}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Life Story</h2>
+                <div class="prose prose-gray max-w-none">
+                    {{ memorial.biography|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Funeral Updates -->
+            {% if updates %}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900">Funeral Information</h2>
+                    <a href="{% url 'funeral_updates' memorial_pk=memorial.pk %}" 
+                       class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        View All Updates
+                    </a>
+                </div>
+                
+                <div class="space-y-4">
+                    {% for update in updates %}
+                    <div class="border border-gray-200 rounded-lg p-4 {% if update.is_urgent %}border-red-300 bg-red-50{% elif update.is_pinned %}border-blue-300 bg-blue-50{% endif %}">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <h3 class="font-medium text-gray-900">{{ update.title }}</h3>
+                                    {% if update.is_urgent %}
+                                        <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">Urgent</span>
+                                    {% endif %}
+                                    {% if update.is_pinned %}
+                                        <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">Pinned</span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-gray-600 text-sm mb-2">{{ update.content|truncatewords:30 }}</p>
+                                <div class="text-xs text-gray-500">
+                                    {{ update.get_update_type_display }} • {{ update.created_at|timesince }} ago
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recent Posts/Memories -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900">Recent Memories</h2>
+                    <a href="{% url 'memorial_posts' pk=memorial.pk %}" 
+                       class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        View All Posts
+                    </a>
+                </div>
+                
+                {% if posts %}
+                    <div class="space-y-6">
+                        {% for post in posts %}
+                        <div class="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
+                            <div class="flex items-start space-x-4">
+                                <!-- Author Avatar -->
+                                {% if not post.is_anonymous and post.author.profile.profile_picture %}
+                                    <img src="{{ post.author.profile.profile_picture.url }}" 
+                                         alt="{{ post.author.profile.full_name }}" 
+                                         class="w-10 h-10 rounded-full object-cover">
+                                {% else %}
+                                    <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                        <span class="text-white text-sm">
+                                            {% if post.is_anonymous %}A{% else %}{{ post.author.email|first|upper }}{% endif %}
+                                        </span>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="flex-1">
+                                    <!-- Post Header -->
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <p class="font-medium text-gray-900">
+                                                {% if post.is_anonymous %}
+                                                    Anonymous Friend
+                                                {% else %}
+                                                    {{ post.author.profile.full_name|default:post.author.email }}
+                                                {% endif %}
+                                            </p>
+                                            <div class="flex items-center space-x-2 text-sm text-gray-500">
+                                                <span>{{ post.created_at|timesince }} ago</span>
+                                                <span>•</span>
+                                                <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
+                                                    {{ post.get_post_type_display }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        {% if post.can_edit and user == post.author %}
+                                            <div class="flex items-center space-x-2">
+                                                <a href="{% url 'edit_post' post_pk=post.pk %}" 
+                                                   class="text-gray-400 hover:text-gray-600">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Post Content -->
+                                    {% if post.title %}
+                                        <h4 class="font-medium text-gray-900 mb-2">{{ post.title }}</h4>
+                                    {% endif %}
+                                    
+                                    <div class="text-gray-700 mb-4">
+                                        {{ post.content|linebreaks }}
+                                    </div>
+                                    
+                                    <!-- Post Images -->
+                                    {% if post.images.all %}
+                                        <div class="grid grid-cols-2 gap-2 mb-4">
+                                            {% for image in post.images.all|slice:":4" %}
+                                                <img src="{{ image.image.url }}" 
+                                                     alt="{{ image.caption }}" 
+                                                     class="w-full h-32 object-cover rounded-lg">
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <!-- Post Actions -->
+                                    <div class="flex items-center space-x-6">
+                                        {% if user.is_authenticated %}
+                                            <button onclick="toggleLike('{{ post.pk }}')" 
+                                                    class="flex items-center space-x-2 text-gray-500 hover:text-blue-600">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                                </svg>
+                                                <span id="likes-{{ post.pk }}">{{ post.likes_count }}</span>
+                                            </button>
+                                        {% endif %}
+                                        
+                                        <button class="flex items-center space-x-2 text-gray-500 hover:text-blue-600">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.697-.413l-2.415.805.813-2.407C8.364 16.708 8 14.866 8 13c0-4.418 3.582-8 8-8s8 3.582 8 8z"/>
+                                            </svg>
+                                            <span>{{ post.comments_count }}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8 text-gray-500">
+                        <p>No memories shared yet. Be the first to share a memory.</p>
+                        {% if can_post %}
+                            <a href="{% url 'create_post' memorial_pk=memorial.pk %}" 
+                               class="text-blue-600 hover:text-blue-700 font-medium">
+                                Share a Memory
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            
+            <!-- Memorial Details -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Memorial Details</h3>
+                <div class="space-y-3 text-sm">
+                    {% if memorial.location_of_death %}
+                    <div>
+                        <span class="text-gray-600">Passed away:</span>
+                        <p class="font-medium">{{ memorial.location_of_death }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if memorial.burial_location %}
+                    <div>
+                        <span class="text-gray-600">Resting place:</span>
+                        <p class="font-medium">{{ memorial.burial_location }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if memorial.religious_affiliation %}
+                    <div>
+                        <span class="text-gray-600">Faith:</span>
+                        <p class="font-medium">{{ memorial.religious_affiliation }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Funeral Information -->
+            {% if memorial.funeral_date or memorial.funeral_venue %}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Funeral Service</h3>
+                <div class="space-y-3 text-sm">
+                    {% if memorial.funeral_date %}
+                    <div>
+                        <span class="text-gray-600">Date & Time:</span>
+                        <p class="font-medium">{{ memorial.funeral_date|date:"F j, Y \a\t g:i A" }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if memorial.funeral_venue %}
+                    <div>
+                        <span class="text-gray-600">Venue:</span>
+                        <p class="font-medium">{{ memorial.funeral_venue }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if memorial.funeral_details %}
+                    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-700">{{ memorial.funeral_details|linebreaks }}</p>
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Recent Condolences -->
+            {% if condolences %}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Recent Condolences</h3>
+                    <a href="{% url 'condolences' memorial_pk=memorial.pk %}" 
+                       class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        View All
+                    </a>
+                </div>
+                
+                <div class="space-y-4">
+                    {% for condolence in condolences %}
+                    <div class="border-l-4 border-blue-200 pl-4">
+                        <p class="text-sm text-gray-700 mb-2">"{{ condolence.message|truncatewords:15 }}"</p>
+                        <div class="text-xs text-gray-500">
+                            — {{ condolence.display_name }}
+                            {% if condolence.author_relationship %}({{ condolence.author_relationship }}){% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Support Group Link -->
+            <div class="bg-blue-50 rounded-xl p-6">
+                <h3 class="text-lg font-semibold text-blue-900 mb-3">💙 Support Community</h3>
+                <p class="text-blue-800 text-sm mb-3">
+                    Join the support group to contribute to funeral expenses and stay connected with the family.
+                </p>
+                <a href="{% url 'group_detail' slug=memorial.associated_group.slug %}" 
+                    class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Join Support Group
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Like functionality
+        function toggleLike(postId) {
+            if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+                alert('Please log in to like posts.');
+                return;
+            }
+            
+            fetch(`/memorial/post/${postId}/like/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById(`likes-${postId}`).textContent = data.likes_count;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+{% endblock %}

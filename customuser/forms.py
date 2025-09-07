@@ -10,7 +10,13 @@ class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
         required=True,
         widget=forms.EmailInput(attrs={
-            'class': 'form-control',
+            'class': 'w-full px-3 py-2 '
+            'border '
+            'border-gray-300 '
+            'rounded-md shadow-sm '
+            'focus:outline-none '
+            'focus:ring-indigo-500 '
+            'focus:border-indigo-500 sm:text-sm',
             'placeholder': 'Enter your email address',
             'autocomplete': 'email',
         })
@@ -19,7 +25,13 @@ class CustomUserCreationForm(UserCreationForm):
         max_length=30,
         required=False,
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'w-full px-3 py-2 '
+            'border '
+            'border-gray-300 '
+            'rounded-md shadow-sm '
+            'focus:outline-none '
+            'focus:ring-indigo-500 '
+            'focus:border-indigo-500 sm:text-sm',
             'placeholder': 'Username (optional)',
             'autocomplete': 'username',
         })
@@ -27,7 +39,13 @@ class CustomUserCreationForm(UserCreationForm):
     password1 = forms.CharField(
         label='Password',
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
+            'class': 'w-full px-3 py-2 '
+            'border '
+            'border-gray-300 '
+            'rounded-md shadow-sm '
+            'focus:outline-none '
+            'focus:ring-indigo-500 '
+            'focus:border-indigo-500 sm:text-sm',
             'placeholder': 'Enter password',
             'autocomplete': 'new-password',
         })
@@ -35,7 +53,13 @@ class CustomUserCreationForm(UserCreationForm):
     password2 = forms.CharField(
         label='Confirm Password',
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
+            'class': 'w-full px-3 py-2 '
+            'border '
+            'border-gray-300 '
+            'rounded-md shadow-sm '
+            'focus:outline-none '
+            'focus:ring-indigo-500 '
+            'focus:border-indigo-500 sm:text-sm',
             'placeholder': 'Confirm password',
             'autocomplete': 'new-password',
         })
@@ -44,7 +68,9 @@ class CustomUserCreationForm(UserCreationForm):
     # Optional: Terms and conditions checkbox
     agree_to_terms = forms.BooleanField(
         required=True,
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        widget=forms.CheckboxInput(attrs={'class': 'h-4 w-4 text-indigo-600 '
+        'focus:ring-indigo-500 '
+        'border-gray-300 rounded'}),
         label='I agree to the Terms of Service and Privacy Policy'
     )
 
@@ -84,7 +110,13 @@ class CustomUserCreationForm(UserCreationForm):
 class CustomUserLoginForm(forms.Form):
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
-            'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+            'class': 'w-full px-4 py-3 '
+            'border'
+            'border-gray-300'
+            'rounded-lg'
+            'focus:ring-2'
+            'focus:ring-blue-500'
+            'focus:border-blue-500',
             'placeholder': 'Enter your email',
             'autocomplete': 'email',
             'autofocus': True,
@@ -92,7 +124,13 @@ class CustomUserLoginForm(forms.Form):
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
-            'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+            'class': 'w-full px-4 py-3'
+            'border'
+            'border-gray-300'
+            'rounded-lg'
+            'focus:ring-2'
+            'focus:ring-blue-500'
+            'focus:border-blue-500',
             'placeholder': 'Enter your password',
             'autocomplete': 'current-password',
         })
@@ -119,27 +157,62 @@ class ProfileUpdateForm(forms.ModelForm):
         ]
         widgets = {
             'first_name': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                'class': 'w-full px-4 py-3 '
+                'border '
+                'border-gray-300 '
+                'rounded-lg focus:ring-2 '
+                'focus:ring-blue-500 '
+                'focus:border-blue-500',
                 'placeholder': 'First Name'
             }),
             'surname': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                'class': 'w-full px-4 py-3 '
+                'border '
+                'border-gray-300 '
+                'rounded-lg '
+                'focus:ring-2 '
+                'focus:ring-blue-500 '
+                'focus:border-blue-500',
                 'placeholder': 'Last Name'
             }),
             'date_of_birth': forms.DateInput(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                'class': 'w-full px-4 py-3 '
+                'border '
+                'border-gray-300 '
+                'rounded-lg '
+                'focus:ring-2 '
+                'focus:ring-blue-500 '
+                'focus:border-blue-500',
                 'type': 'date'
             }),
             'contact_number': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                'class': 'w-full px-4 py-3 '
+                'border '
+                'border-gray-300 '
+                'rounded-lg '
+                'focus:ring-2 '
+                'focus:ring-blue-500 '
+                'focus:border-blue-500',
                 'placeholder': '+27 XX XXX XXXX'
             }),
             'profile_picture': forms.FileInput(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                'class': 'w-full px-4 py-3 '
+                'border '
+                'border-gray-300 '
+                'rounded-lg '
+                'focus:ring-2 '
+                'focus:ring-blue-500 '
+                'focus:border-blue-500',
                 'accept': 'image/*'
             }),
             'bio': forms.Textarea(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                'class': 'w-full px-4 py-3 '
+                'border '
+                'border-gray-300 '
+                'rounded-lg '
+                'focus:ring-2 '
+                'focus:ring-blue-500 '
+                'focus:border-blue-500',
                 'rows': 4,
                 'placeholder': 'Tell us about yourself...'
             }),
@@ -174,7 +247,7 @@ class CustomPasswordResetForm(forms.Form):
     email = forms.EmailField(
         max_length=254,
         widget=forms.EmailInput(attrs={
-            'class': 'form-control',
+            'class': 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
             'placeholder': 'Enter your email address',
             'autocomplete': 'email',
         })
