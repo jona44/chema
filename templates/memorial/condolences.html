@@ -1,0 +1,311 @@
+<!-- memorial/templates/memorial/condolences.html -->
+{% extends 'customuser/base.html' %}
+
+{% block title %}Condolences - {{ memorial.full_name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+    <!-- Breadcrumb -->
+    <nav class="text-sm breadcrumbs mb-6">
+        <ol class="list-none p-0 inline-flex">
+            <li class="flex items-center">
+                <a href="{% url 'memorial_detail' pk=memorial.pk %}" class="text-blue-600 hover:text-blue-700">{{ memorial.full_name }}</a>
+                <span class="mx-2 text-gray-400">/</span>
+            </li>
+            <li class="text-gray-600">Condolences</li>
+        </ol>
+    </nav>
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Condolence Messages</h1>
+            <p class="text-gray-600">
+                Messages of support and sympathy for {{ memorial.full_name }}'s family
+                <span class="text-sm text-gray-500">({{ total_condolences }} messages)</span>
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Condolence Form -->
+            {% if condolence_form %}
+            <div class="lg:col-span-1 order-2 lg:order-1">
+                <div class="bg-white rounded-xl shadow-sm p-6 sticky top-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Send Condolences</h2>
+                    
+                    <form method="post" class="space-y-4">
+                        {% csrf_token %}
+                        
+                        <!-- Author Name (Optional) -->
+                        <div>
+                            <label for="{{ condolence_form.author_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Your Name
+                            </label>
+                            {{ condolence_form.author_name }}
+                            {% if condolence_form.author_name.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ condolence_form.author_name.errors.0 }}</div>
+                            {% endif %}
+                            <p class="text-xs text-gray-500 mt-1">Optional if you prefer to use your profile name</p>
+                        </div>
+
+                        <!-- Relationship -->
+                        <div>
+                            <label for="{{ condolence_form.author_relationship.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Your Relationship
+                            </label>
+                            {{ condolence_form.author_relationship }}
+                            {% if condolence_form.author_relationship.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ condolence_form.author_relationship.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Message -->
+                        <div>
+                            <label for="{{ condolence_form.message.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Your Message *
+                            </label>
+                            {{ condolence_form.message }}
+                            {% if condolence_form.message.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ condolence_form.message.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Language -->
+                        <div>
+                            <label for="{{ condolence_form.language.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Language
+                            </label>
+                            {{ condolence_form.language }}
+                            {% if condolence_form.language.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ condolence_form.language.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Cultural Options -->
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                {{ condolence_form.includes_prayer }}
+                                <label for="{{ condolence_form.includes_prayer.id_for_label }}" class="text-sm text-gray-700">
+                                    This message includes a prayer
+                                </label>
+                            </div>
+
+                            <div class="flex items-center space-x-3">
+                                {{ condolence_form.includes_blessing }}
+                                <label for="{{ condolence_form.includes_blessing.id_for_label }}" class="text-sm text-gray-700">
+                                    This message includes a blessing
+                                </label>
+                            </div>
+
+                            <div class="flex items-center space-x-3">
+                                {{ condolence_form.is_anonymous }}
+                                <label for="{{ condolence_form.is_anonymous.id_for_label }}" class="text-sm text-gray-700">
+                                    Send anonymously
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" 
+                                class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
+                            Send Condolences
+                        </button>
+                    </form>
+
+                    <!-- Guidelines -->
+                    <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                        <h4 class="font-medium text-blue-900 mb-2">Guidelines</h4>
+                        <ul class="text-xs text-blue-800 space-y-1">
+                            <li>• Be respectful and supportive</li>
+                            <li>• Share comfort and positive thoughts</li>
+                            <li>• Traditional prayers and blessings are welcome</li>
+                            <li>• Messages in any language are accepted</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Condolence Messages -->
+            <div class="lg:col-span-2 order-1 lg:order-2">
+                {% if condolences %}
+                    <div class="space-y-6">
+                        {% for condolence in condolences %}
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                            <div class="flex items-start space-x-4">
+                                <!-- Avatar -->
+                                {% if not condolence.is_anonymous and condolence.author and condolence.author.profile.profile_picture %}
+                                    <img src="{{ condolence.author.profile.profile_picture.url }}" 
+                                        alt="{{ condolence.display_name }}" 
+                                        class="w-12 h-12 rounded-full object-cover flex-shrink-0">
+                                {% else %}
+                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-green-400 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-white font-medium">
+                                            {{ condolence.display_name|first|upper }}
+                                        </span>
+                                    </div>
+                                {% endif %}
+
+                                <div class="flex-1">
+                                    <!-- Header -->
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div>
+                                            <h3 class="font-semibold text-gray-900">{{ condolence.display_name }}</h3>
+                                            <div class="flex items-center space-x-2 text-sm text-gray-500">
+                                                {% if condolence.author_relationship %}
+                                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
+                                                        {{ condolence.author_relationship }}
+                                                    </span>
+                                                {% endif %}
+                                                {% if condolence.language and condolence.language != "English" %}
+                                                    <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs">
+                                                        {{ condolence.language }}
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="text-xs text-gray-400">
+                                            {{ condolence.created_at|timesince }} ago
+                                        </div>
+                                    </div>
+
+                                    <!-- Message -->
+                                    <div class="prose prose-gray prose-sm max-w-none mb-4">
+                                        {{ condolence.message|linebreaks }}
+                                    </div>
+
+                                    <!-- Cultural Indicators -->
+                                    {% if condolence.includes_prayer or condolence.includes_blessing %}
+                                        <div class="flex items-center space-x-3 text-xs text-gray-500 border-t pt-3">
+                                            {% if condolence.includes_prayer %}
+                                                <span class="flex items-center">
+                                                    <span class="text-purple-600 mr-1">🙏</span>
+                                                    Includes Prayer
+                                                </span>
+                                            {% endif %}
+                                            {% if condolence.includes_blessing %}
+                                                <span class="flex items-center">
+                                                    <span class="text-indigo-600 mr-1">✨</span>
+                                                    Includes Blessing
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if condolences.has_other_pages %}
+                    <div class="mt-8 flex justify-center">
+                        <nav class="flex space-x-2">
+                            {% if condolences.has_previous %}
+                                <a href="?page=1" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50">First</a>
+                                <a href="?page={{ condolences.previous_page_number }}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50">Previous</a>
+                            {% endif %}
+
+                            <span class="px-3 py-2 text-sm bg-blue-600 text-white border border-blue-600 rounded-md">
+                                {{ condolences.number }}
+                            </span>
+
+                            {% if condolences.has_next %}
+                                <a href="?page={{ condolences.next_page_number }}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50">Next</a>
+                                <a href="?page={{ condolences.paginator.num_pages }}" class="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50">Last</a>
+                            {% endif %}
+                        </nav>
+                    </div>
+                    {% endif %}
+
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="bg-white rounded-xl shadow-sm p-12 text-center">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.697-.413l-2.415.805.813-2.407C8.364 16.708 8 14.866 8 13c0-4.418 3.582-8 8-8s8 3.582 8 8z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No condolences yet</h3>
+                        <p class="text-gray-600 mb-6">
+                            Be the first to send condolences to {{ memorial.full_name }}'s family.
+                        </p>
+                        {% if condolence_form %}
+                            <p class="text-sm text-gray-500">Use the form on the left to share your message of support.</p>
+                        {% else %}
+                            <p class="text-sm text-gray-500">Please log in to send condolences.</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Memorial Summary -->
+        <div class="mt-12 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6">
+            <div class="text-center">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                    💙 Support {{ memorial.full_name }}'s Family
+                </h3>
+                <p class="text-gray-600 mb-4">
+                    Join the support group to contribute to funeral expenses and stay connected with the family during this difficult time.
+                </p>
+                <a href="{% url 'group_detail' slug=memorial.associated_group.slug %}" 
+                    class="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Join Support Group
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-resize textarea
+        const textarea = document.getElementById('{{ condolence_form.message.id_for_label }}');
+        if (textarea) {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        }
+
+        // Form validation
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const message = textarea.value.trim();
+                
+                if (message.length < 20) {
+                    e.preventDefault();
+                    alert('Please write a meaningful condolence message (at least 20 characters).');
+                    textarea.focus();
+                    return false;
+                }
+                
+                // Show loading state
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = 'Sending...';
+                submitBtn.disabled = true;
+            });
+        }
+
+        // Character suggestions for different languages
+        const languageInput = document.getElementById('{{ condolence_form.language.id_for_label }}');
+        if (languageInput) {
+            languageInput.addEventListener('change', function() {
+                const suggestions = {
+                    'Zulu': 'Siyaxolisa / Our condolences',
+                    'Xhosa': 'Siyacela uxolo / We ask for forgiveness',
+                    'Afrikaans': 'Ons innige meegevoel / Our sincere condolences',
+                    'Shona': 'Tinomborega / We are sorry',
+                    'Swahili': 'Pole sana / Very sorry'
+                };
+                
+                if (suggestions[this.value] && textarea.value.trim() === '') {
+                    // Don't auto-fill, but could show suggestion
+                    console.log('Suggestion for ' + this.value + ': ' + suggestions[this.value]);
+                }
+            });
+        }
+    </script>
+{% endblock %}

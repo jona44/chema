@@ -140,7 +140,7 @@
                         <!-- Action Buttons -->
                         <div class="flex justify-between items-center pt-6 border-t">
                             <a href="{% url 'memorial_detail' pk=memorial.pk %}" 
-                                class="text-gray-600 hover:text-gray-800 font-medium">
+                               class="text-gray-600 hover:text-gray-800 font-medium">
                                 Cancel
                             </a>
                             <button type="submit" 
@@ -159,8 +159,8 @@
                     <div class="text-center">
                         {% if memorial.photo %}
                             <img src="{{ memorial.photo.url }}" 
-                                alt="{{ memorial.full_name }}" 
-                                class="w-20 h-20 rounded-full object-cover mx-auto mb-4">
+                                 alt="{{ memorial.full_name }}" 
+                                 class="w-20 h-20 rounded-full object-cover mx-auto mb-4">
                         {% else %}
                             <div class="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <span class="text-white text-xl font-bold">{{ memorial.full_name|first|upper }}</span>
@@ -180,6 +180,172 @@
                     <ul class="space-y-2 text-blue-800 text-sm">
                         <li class="flex items-start">
                             <span class="text-blue-600 mr-2">•</span>
+                            <span>Use the anonymous option if you prefer privacy</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-blue-600 mr-2">•</span>
+                            <span>Family-only posts are visible to memorial administrators only</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Post Types Info -->
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Post Types</h3>
+                    <div class="space-y-3 text-sm">
+                        <div>
+                            <span class="font-medium text-gray-700">💭 Memory:</span>
+                            <p class="text-gray-600">Share personal stories, experiences, or moments you shared together</p>
+                        </div>
+                        <div>
+                            <span class="font-medium text-gray-700">🕊️ Condolence:</span>
+                            <p class="text-gray-600">Express sympathy and support to the family</p>
+                        </div>
+                        <div>
+                            <span class="font-medium text-gray-700">🌹 Tribute:</span>
+                            <p class="text-gray-600">Share poems, quotes, or written tributes</p>
+                        </div>
+                        <div>
+                            <span class="font-medium text-gray-700">📸 Photo:</span>
+                            <p class="text-gray-600">Share photos and visual memories</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Recent Activity</h3>
+                    <div class="text-center text-gray-500 text-sm">
+                        <p>{{ memorial.posts.count }} memories shared</p>
+                        <p>{{ memorial.condolences.count }} condolences received</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Post type selection
+        document.querySelectorAll('input[name="post_type"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Reset all cards
+                document.querySelectorAll('.post-type-card').forEach(card => {
+                    card.classList.remove('border-blue-500', 'bg-blue-50');
+                    card.classList.add('border-gray-200');
+                });
+                
+                // Highlight selected card
+                const selectedCard = this.closest('.post-type-option').querySelector('.post-type-card');
+                selectedCard.classList.remove('border-gray-200');
+                selectedCard.classList.add('border-blue-500', 'bg-blue-50');
+                
+                // Update placeholder text
+                updatePlaceholder(this.value);
+            });
+        });
+
+        // Set initial selection
+        const checkedRadio = document.querySelector('input[name="post_type"]:checked');
+        if (checkedRadio) {
+            checkedRadio.dispatchEvent(new Event('change'));
+        }
+
+        function updatePlaceholder(postType) {
+            const textarea = document.getElementById('{{ form.content.id_for_label }}');
+            const placeholders = {
+                'memory': 'Share a special memory you have of them...',
+                'condolence': 'Express your condolences and support to the family...',
+                'tribute': 'Write a tribute, poem, or meaningful quote...',
+                'photo': 'Describe the photos you\'re sharing and their significance...',
+                'update': 'Share important information or updates...',
+                'announcement': 'Share an important announcement...'
+            };
+            
+            textarea.placeholder = placeholders[postType] || 'Share your thoughts...';
+        }
+
+        // Character counter
+        const textarea = document.getElementById('{{ form.content.id_for_label }}');
+        const charCount = document.getElementById('char-count');
+        
+        textarea.addEventListener('input', function() {
+            const count = this.value.length;
+            charCount.textContent = count;
+            
+            if (count > 1800) {
+                charCount.classList.add('text-orange-500');
+            } else if (count > 1900) {
+                charCount.classList.add('text-red-500');
+            } else {
+                charCount.classList.remove('text-orange-500', 'text-red-500');
+            }
+        });
+
+        // Image preview
+        const imageInput = document.getElementById('{{ form.images.id_for_label }}');
+        const imagePreview = document.getElementById('image-preview');
+
+        imageInput.addEventListener('change', function(e) {
+            imagePreview.innerHTML = '';
+            imagePreview.classList.add('hidden');
+            
+            if (e.target.files.length > 0) {
+                imagePreview.classList.remove('hidden');
+                
+                Array.from(e.target.files).forEach(file => {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.className = 'w-full h-24 object-cover rounded-lg';
+                            
+                            const wrapper = document.createElement('div');
+                            wrapper.className = 'relative';
+                            wrapper.appendChild(img);
+                            
+                            imagePreview.appendChild(wrapper);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+
+        // Form validation and submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const content = textarea.value.trim();
+            
+            if (content.length < 10) {
+                e.preventDefault();
+                alert('Please write at least 10 characters.');
+                textarea.focus();
+                return false;
+            }
+            
+            if (content.length > 2000) {
+                e.preventDefault();
+                alert('Your message is too long. Please keep it under 2000 characters.');
+                textarea.focus();
+                return false;
+            }
+            
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = 'Sharing Memory...';
+            submitBtn.disabled = true;
+        });
+
+        // Auto-resize textarea
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Initial character count
+        charCount.textContent = textarea.value.length;
+    </script>
+{% endblock %}            <span class="text-blue-600 mr-2">•</span>
                             <span>Share respectful memories and positive thoughts</span>
                         </li>
                         <li class="flex items-start">

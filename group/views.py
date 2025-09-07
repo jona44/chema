@@ -8,8 +8,9 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
 from group.forms import GroupCreationForm, GroupInvitationForm, GroupJoinForm, GroupSearchForm, GroupEditForm
-from group.forms import GroupCreationForm, GroupInvitationForm, GroupJoinForm, GroupSearchForm
 from .models import Group, GroupMembership, GroupInvitation, Category
+from datetime import timezone
+from django.utils import timezone
 
 
 
@@ -44,8 +45,7 @@ def get_started_view(request):
     }
     
     return render(request, 'group/get_started.html', context)
-from datetime import timezone
-from django.utils import timezone
+
 
 @login_required
 def create_group_view(request):

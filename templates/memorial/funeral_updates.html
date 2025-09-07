@@ -1,0 +1,344 @@
+<!-- memorial/templates/memorial/funeral_updates.html -->
+{% extends 'customuser/base.html' %}
+
+{% block title %}Funeral Updates - {{ memorial.full_name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+    <!-- Breadcrumb -->
+    <nav class="text-sm breadcrumbs mb-6">
+        <ol class="list-none p-0 inline-flex">
+            <li class="flex items-center">
+                <a href="{% url 'memorial_detail' pk=memorial.pk %}" class="text-blue-600 hover:text-blue-700">{{ memorial.full_name }}</a>
+                <span class="mx-2 text-gray-400">/</span>
+            </li>
+            <li class="text-gray-600">Funeral Updates</li>
+        </ol>
+    </nav>
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Funeral Information & Updates</h1>
+            <p class="text-gray-600">
+                Official announcements and information about {{ memorial.full_name }}'s funeral arrangements
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Update Form (Family Admins Only) -->
+            {% if update_form and is_family_admin %}
+            <div class="lg:col-span-1 order-2 lg:order-1">
+                <div class="bg-white rounded-xl shadow-sm p-6 sticky top-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+                        </svg>
+                        Post Update
+                    </h2>
+                    
+                    <form method="post" class="space-y-4">
+                        {% csrf_token %}
+                        
+                        <!-- Update Type -->
+                        <div>
+                            <label for="{{ update_form.update_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Update Type *
+                            </label>
+                            {{ update_form.update_type }}
+                            {% if update_form.update_type.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ update_form.update_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Title -->
+                        <div>
+                            <label for="{{ update_form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Title *
+                            </label>
+                            {{ update_form.title }}
+                            {% if update_form.title.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ update_form.title.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Content -->
+                        <div>
+                            <label for="{{ update_form.content.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                Details *
+                            </label>
+                            {{ update_form.content }}
+                            {% if update_form.content.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ update_form.content.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Priority Options -->
+                        <div class="space-y-3 pt-3 border-t">
+                            <div class="flex items-center space-x-3">
+                                {{ update_form.is_urgent }}
+                                <div>
+                                    <label for="{{ update_form.is_urgent.id_for_label }}" class="text-sm font-medium text-red-700">
+                                        Mark as urgent
+                                    </label>
+                                    <p class="text-xs text-red-600 mt-1">Important information that needs immediate attention</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-3">
+                                {{ update_form.is_pinned }}
+                                <div>
+                                    <label for="{{ update_form.is_pinned.id_for_label }}" class="text-sm font-medium text-blue-700">
+                                        Pin to top
+                                    </label>
+                                    <p class="text-xs text-blue-600 mt-1">Keep this update at the top of the list</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" 
+                                class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Post Update
+                        </button>
+                    </form>
+
+                    <!-- Guidelines for Family Admins -->
+                    <div class="mt-6 p-4 bg-yellow-50 rounded-lg">
+                        <h4 class="font-medium text-yellow-900 mb-2">Family Administrator</h4>
+                        <ul class="text-xs text-yellow-800 space-y-1">
+                            <li>• Share official funeral information</li>
+                            <li>• Post schedule changes immediately</li>
+                            <li>• Use urgent marking for time-sensitive updates</li>
+                            <li>• Keep community informed about logistics</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Updates List -->
+            <div class="{% if is_family_admin %}lg:col-span-2 order-1 lg:order-2{% else %}lg:col-span-3{% endif %}">
+                {% if updates %}
+                    <div class="space-y-6">
+                        {% for update in updates %}
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden {% if update.is_urgent %}border-l-4 border-red-500{% elif update.is_pinned %}border-l-4 border-blue-500{% endif %}">
+                            <div class="p-6">
+                                <!-- Header -->
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-3 mb-2">
+                                            <h3 class="text-xl font-semibold text-gray-900">{{ update.title }}</h3>
+                                            
+                                            <!-- Priority Badges -->
+                                            {% if update.is_urgent %}
+                                                <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full font-medium">
+                                                    🚨 URGENT
+                                                </span>
+                                            {% endif %}
+                                            
+                                            {% if update.is_pinned %}
+                                                <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full font-medium">
+                                                    📌 PINNED
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- Meta Information -->
+                                        <div class="flex items-center space-x-4 text-sm text-gray-500 mb-3">
+                                            <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                                                {{ update.get_update_type_display }}
+                                            </span>
+                                            <span>Posted by {{ update.created_by.profile.full_name|default:update.created_by.email }}</span>
+                                            <span>{{ update.created_at|timesince }} ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Content -->
+                                <div class="prose prose-gray max-w-none">
+                                    {{ update.content|linebreaks }}
+                                </div>
+
+                                <!-- Action for Urgent Updates -->
+                                {% if update.is_urgent %}
+                                <div class="mt-4 p-3 bg-red-50 rounded-lg border border-red-200">
+                                    <div class="flex items-center">
+                                        <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L5.268 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                        </svg>
+                                        <span class="text-red-800 text-sm font-medium">
+                                            This is time-sensitive information. Please read carefully.
+                                        </span>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="bg-white rounded-xl shadow-sm p-12 text-center">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No updates yet</h3>
+                        <p class="text-gray-600 mb-6">
+                            Funeral information and updates will be posted here by the family.
+                        </p>
+                        {% if is_family_admin %}
+                            <p class="text-sm text-gray-500">Use the form on the left to post the first update.</p>
+                        {% else %}
+                            <p class="text-sm text-gray-500">Check back regularly for updates from the family.</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Funeral Service Summary (if available) -->
+        {% if memorial.funeral_date or memorial.funeral_venue %}
+        <div class="mt-12 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-8">
+            <h3 class="text-xl font-semibold text-gray-900 mb-6 text-center">
+                ⛪ Funeral Service Information
+            </h3>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                {% if memorial.funeral_date %}
+                <div class="text-center">
+                    <div class="bg-white rounded-lg p-6 shadow-sm">
+                        <svg class="w-8 h-8 text-indigo-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 8a4 4 0 01-8 0V7a4 4 0 014-4h4m0 0v4.01"/>
+                        </svg>
+                        <h4 class="font-semibold text-gray-900 mb-2">Date & Time</h4>
+                        <p class="text-gray-700">{{ memorial.funeral_date|date:"l, F j, Y" }}</p>
+                        <p class="text-gray-700">{{ memorial.funeral_date|time:"g:i A" }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if memorial.funeral_venue %}
+                <div class="text-center">
+                    <div class="bg-white rounded-lg p-6 shadow-sm">
+                        <svg class="w-8 h-8 text-purple-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <h4 class="font-semibold text-gray-900 mb-2">Venue</h4>
+                        <p class="text-gray-700">{{ memorial.funeral_venue }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if memorial.funeral_details %}
+            <div class="mt-6 bg-white rounded-lg p-6">
+                <h4 class="font-semibold text-gray-900 mb-3">Additional Details</h4>
+                <div class="prose prose-gray max-w-none">
+                    {{ memorial.funeral_details|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Support Group Link -->
+        <div class="mt-12 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-8 text-center">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">
+                💙 Support the Family During This Time
+            </h3>
+            <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
+                Join the support group to contribute to funeral expenses, transportation, and other needs. 
+                Your support helps the family focus on grieving and remembrance.
+            </p>
+            <div class="flex justify-center space-x-4">
+                <a href="{% url 'group_detail' slug=memorial.associated_group.slug %}" 
+                   class="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 515.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Join Support Group
+                </a>
+                
+                <a href="{% url 'memorial_detail' pk=memorial.pk %}" 
+                   class="inline-flex items-center bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Back to Memorial
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-resize textarea
+        const textarea = document.getElementById('{{ update_form.content.id_for_label }}');
+        if (textarea) {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        }
+
+        // Form validation
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const title = document.getElementById('{{ update_form.title.id_for_label }}').value.trim();
+                const content = textarea.value.trim();
+                
+                if (!title || !content) {
+                    e.preventDefault();
+                    alert('Please fill in both title and details.');
+                    return false;
+                }
+                
+                if (content.length < 10) {
+                    e.preventDefault();
+                    alert('Please provide more detailed information (at least 10 characters).');
+                    textarea.focus();
+                    return false;
+                }
+                
+                // Confirm urgent updates
+                const isUrgent = document.getElementById('{{ update_form.is_urgent.id_for_label }}').checked;
+                if (isUrgent) {
+                    if (!confirm('Are you sure this update is urgent? Urgent updates get special highlighting and should only be used for time-sensitive information.')) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+                
+                // Show loading state
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = 'Posting Update...';
+                submitBtn.disabled = true;
+            });
+        }
+
+        // Update type suggestions
+        const updateTypeSelect = document.getElementById('{{ update_form.update_type.id_for_label }}');
+        const titleInput = document.getElementById('{{ update_form.title.id_for_label }}');
+
+        if (updateTypeSelect && titleInput) {
+            updateTypeSelect.addEventListener('change', function() {
+                const suggestions = {
+                    'schedule': 'Funeral Schedule Update',
+                    'venue': 'Venue Information',
+                    'logistics': 'Transportation & Logistics',
+                    'contribution': 'Contribution Update',
+                    'general': 'General Announcement'
+                };
+                
+                if (suggestions[this.value] && titleInput.value.trim() === '') {
+                    titleInput.value = suggestions[this.value];
+                    titleInput.focus();
+                    titleInput.setSelectionRange(titleInput.value.length, titleInput.value.length);
+                }
+            });
+        }
+    </script>
+{% endblock %}
