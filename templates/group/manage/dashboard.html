@@ -1,5 +1,5 @@
 <!-- groups/templates/groups/manage/dashboard.html -->
-{% extends 'customuser/base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Manage {{ group.name }} - {{ block.super }}{% endblock %}
 
@@ -335,7 +335,7 @@
                                 </form>
                             </div>
                         </div>
-                        {% endfor %}
+                        
                     </div>
                     
                     {% if pending_requests.count > 3 %}
@@ -347,7 +347,7 @@
                         </div>
                     {% endif %}
                 </div>
-                {% endif %}
+                
 
                 <!-- Recent Activity -->
                 <div class="bg-white rounded-xl shadow-sm p-6">

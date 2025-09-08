@@ -36,7 +36,7 @@ class Memorial(models.Model):
     # Platform Management
     created_by       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='created_memorials')
     family_admins    = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='administered_memorials', blank=True)
-    associated_group = models.ForeignKey('group.Group', on_delete=models.CASCADE, related_name='memorial')
+    associated_group = models.OneToOneField('group.Group', on_delete=models.CASCADE, related_name='memorial')
     
     # Settings
     is_public         = models.BooleanField(default=False, help_text="Can non-group members view?")
@@ -281,3 +281,8 @@ def increment_comment_count(sender, instance, created, **kwargs):
     if created:
         instance.post.comments_count = instance.post.comments.count()
         instance.post.save(update_fields=['comments_count'])
+
+@receiver(post_delete, sender=Comment)
+def decrement_comment_count(sender, instance, **kwargs):
+    instance.post.comments_count = instance.post.comments.count()
+    instance.post.save(update_fields=['comments_count'])

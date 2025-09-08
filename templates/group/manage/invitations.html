@@ -1,5 +1,5 @@
 <!-- groups/templates/groups/manage/invitations.html -->
-{% extends 'customuser/base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Manage Invitations - {{ group.name }} - {{ block.super }}{% endblock %}
 
@@ -84,7 +84,7 @@
                     <!-- Action Buttons -->
                     <div class="flex justify-between items-center pt-6 border-t">
                         <a href="{% url 'group_manage' slug=group.slug %}" 
-                            class="text-gray-600 hover:text-gray-800 font-medium">
+                           class="text-gray-600 hover:text-gray-800 font-medium">
                             Cancel
                         </a>
                         <button type="submit" 

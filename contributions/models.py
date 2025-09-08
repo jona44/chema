@@ -19,7 +19,7 @@ class ContributionCampaign(models.Model):
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    group = models.OneToOneField('groups.Group', on_delete=models.CASCADE, related_name='contribution_campaign')
+    group = models.OneToOneField('group.Group', on_delete=models.CASCADE, related_name='contribution_campaign')
     memorial = models.ForeignKey('memorial.Memorial', on_delete=models.SET_NULL, null=True, blank=True, related_name='contribution_campaign')
     
     # Campaign Details
@@ -153,16 +153,12 @@ class Contribution(models.Model):
         )
 
     def complete_contribution(self, transaction_id=None):
-        """Mark contribution as completed and update campaign total"""
+        """Mark contribution as completed"""
         self.status = 'completed'
         self.completed_at = timezone.now()
         if transaction_id:
             self.transaction_id = transaction_id
         self.save()
-        
-        # Update campaign total
-        self.campaign.current_amount += self.amount
-        self.campaign.save()
 
 
 class ExpenseRecord(models.Model):

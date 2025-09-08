@@ -117,7 +117,7 @@ class Notification(models.Model):
         ]
     
     def __str__(self):
-        return f"{self.title} - {self.recipient.get_full_name() or self.recipient.username}"
+        return f"{self.title} - {self.recipient.profile.full_name or self.recipient.email}"
     
     def mark_as_read(self):
         """Mark notification as read"""
@@ -200,7 +200,7 @@ class NotificationPreference(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"Notification preferences for {self.user.get_full_name() or self.user.username}"
+        return f"Notification preferences for {self.user.profile.full_name or self.user.email}"
     
     def is_quiet_time(self):
         """Check if current time is within quiet hours"""

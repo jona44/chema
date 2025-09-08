@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{{ campaign.title }}</h1>
+  <p>For {{ group.name }}</p>
+  
+  <p>{{ campaign.description }}</p>
+  
+  <p>Target: {{ campaign.target_amount }} {{ campaign.currency }}</p>
+  <p>Current: {{ campaign.current_amount }} {{ campaign.currency }}</p>
+  
+  <p>Progress: {{ campaign.progress_percentage|floatformat:2 }}%</p>
+  
+  <a href="#">Contribute</a>
+{% endblock %}

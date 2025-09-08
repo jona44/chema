@@ -1,0 +1,323 @@
+<!-- notifications/templates/notifications/list.html -->
+{% extends 'notifications/base.html' %}
+
+{% block title %}Notifications - Chema{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="bi bi-bell text-primary"></i>
+                Notifications 
+                <span class="badge bg-secondary">{{ total_count }}</span>
+                {% if unread_count > 0 %}
+                    <span class="badge bg-danger">{{ unread_count }} unread</span>
+                {% endif %}
+            </h2>
+            
+            <div class="d-flex gap-2">
+                {% if unread_count > 0 %}
+                    <button type="button" class="btn btn-outline-success" id="mark-all-read-btn">
+                        <i class="bi bi-check-all"></i> Mark All Read
+                    </button>
+                {% endif %}
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="collapse" 
+                        data-bs-target="#filters-collapse">
+                    <i class="bi bi-funnel"></i> Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="collapse mb-4" id="filters-collapse">
+            <div class="card card-body">
+                <form method="get" id="filter-form">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Type</label>
+                            <select name="type" class="form-select">
+                                <option value="">All Types</option>
+                                {% for value, display in notification_types %}
+                                    <option value="{{ value }}" {% if current_type == value %}selected{% endif %}>
+                                        {{ display }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="">All</option>
+                                <option value="unread" {% if current_status == 'unread' %}selected{% endif %}>Unread</option>
+                                <option value="read" {% if current_status == 'read' %}selected{% endif %}>Read</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Priority</label>
+                            <select name="priority" class="form-select">
+                                <option value="">All Priorities</option>
+                                {% for value, display in priority_levels %}
+                                    <option value="{{ value }}" {% if current_priority == value %}selected{% endif %}>
+                                        {{ display }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="bi bi-search"></i> Filter
+                            </button>
+                            <a href="{% url 'notifications:list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x"></i> Clear
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bulk Actions -->
+        {% if notifications %}
+            <form id="bulk-action-form" method="post" action="{% url 'notifications:bulk_action' %}">
+                {% csrf_token %}
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="select-all">
+                        <label class="form-check-label" for="select-all">
+                            Select All
+                        </label>
+                    </div>
+                    
+                    <div class="d-flex gap-2" id="bulk-actions" style="display: none;">
+                        <button type="button" class="btn btn-sm btn-success" 
+                                onclick="performBulkAction('mark_read')">
+                            <i class="bi bi-check"></i> Mark Read
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" 
+                                onclick="performBulkAction('delete')">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Notifications List -->
+                <div class="list-group">
+                    {% for notification in notifications %}
+                        <div class="list-group-item notification-item {% if not notification.is_read %}unread{% endif %} priority-{{ notification.priority }}"
+                            onclick="window.location.href='{% url 'notifications:detail' notification.id %}'">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <input class="form-check-input notification-checkbox" type="checkbox" 
+                                        name="notification_ids" value="{{ notification.id }}"
+                                        onclick="event.stopPropagation();">
+                                </div>
+                                
+                                <div class="col">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="mb-0 {% if not notification.is_read %}fw-bold{% endif %}">
+                                            {{ notification.title }}
+                                            
+                                            {% if notification.priority == 'high' %}
+                                                <span class="badge bg-warning text-dark priority-badge">High</span>
+                                            {% elif notification.priority == 'urgent' %}
+                                                <span class="badge bg-danger priority-badge">Urgent</span>
+                                            {% endif %}
+                                        </h6>
+                                        
+                                        <div class="d-flex align-items-center gap-2">
+                                            <small class="text-muted">
+                                                {{ notification.created_at|timesince }} ago
+                                            </small>
+                                            
+                                            <div class="notification-actions">
+                                                {% if not notification.is_read %}
+                                                    <button type="button" class="btn btn-sm btn-outline-success mark-read-btn"
+                                                            data-notification-id="{{ notification.id }}"
+                                                            onclick="event.stopPropagation();">
+                                                        <i class="bi bi-check"></i>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            {% if not notification.is_read %}
+                                                <i class="bi bi-circle-fill text-primary" style="font-size: 0.5rem;"></i>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <p class="mb-1 text-muted">
+                                        {{ notification.message|truncatewords:20 }}
+                                    </p>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="bi bi-tag"></i> {{ notification.get_notification_type_display }}
+                                            <i class="bi bi-send ms-2"></i> {{ notification.get_delivery_method_display }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </form>
+
+            <!-- Pagination -->
+            {% if notifications.has_other_pages %}
+                <nav aria-label="Notifications pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if notifications.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ notifications.previous_page_number }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                                    Previous
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in notifications.paginator.page_range %}
+                            {% if notifications.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > notifications.number|add:'-3' and num < notifications.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                                        {{ num }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if notifications.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ notifications.next_page_number }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                                    Next
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <!-- Empty State -->
+            <div class="text-center py-5">
+                <i class="bi bi-bell-slash text-muted" style="font-size: 4rem;"></i>
+                <h4 class="text-muted mt-3">No notifications found</h4>
+                <p class="text-muted">
+                    {% if current_type or current_status or current_priority %}
+                        Try adjusting your filters or <a href="{% url 'notifications:list' %}">view all notifications</a>.
+                    {% else %}
+                        You're all caught up! New notifications will appear here.
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Select all functionality
+    $('#select-all').change(function() {
+        const isChecked = $(this).prop('checked');
+        $('.notification-checkbox').prop('checked', isChecked);
+        toggleBulkActions();
+    });
+
+    // Individual checkbox change
+    $(document).on('change', '.notification-checkbox', function() {
+        toggleBulkActions();
+        
+        // Update select all checkbox
+        const totalCheckboxes = $('.notification-checkbox').length;
+        const checkedCheckboxes = $('.notification-checkbox:checked').length;
+        $('#select-all').prop('checked', totalCheckboxes === checkedCheckboxes);
+    });
+
+    // Mark individual notification as read
+    $(document).on('click', '.mark-read-btn', function() {
+        const notificationId = $(this).data('notification-id');
+        const button = $(this);
+        const notificationItem = button.closest('.notification-item');
+
+        $.post('{% url "notifications:mark_as_read" "00000000-0000-0000-0000-000000000000" %}'.replace('00000000-0000-0000-0000-000000000000', notificationId), {
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        }).done(function(data) {
+            if (data.success) {
+                notificationItem.removeClass('unread');
+                button.closest('.notification-actions').remove();
+                updateNotificationCount();
+                
+                // Show success message
+                showMessage('Notification marked as read', 'success');
+            }
+        }).fail(function() {
+            showMessage('Error marking notification as read', 'danger');
+        });
+    });
+
+    // Mark all as read
+    $('#mark-all-read-btn').click(function() {
+        if (confirm('Mark all notifications as read?')) {
+            $.post('{% url "notifications:mark_all_as_read" %}', {
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }).done(function(data) {
+                if (data.success) {
+                    location.reload();
+                }
+            }).fail(function() {
+                showMessage('Error marking notifications as read', 'danger');
+            });
+        }
+    });
+});
+
+function toggleBulkActions() {
+    const checkedCount = $('.notification-checkbox:checked').length;
+    if (checkedCount > 0) {
+        $('#bulk-actions').show();
+    } else {
+        $('#bulk-actions').hide();
+    }
+}
+
+function performBulkAction(action) {
+    const checkedNotifications = $('.notification-checkbox:checked');
+    if (checkedNotifications.length === 0) {
+        showMessage('Please select notifications first', 'warning');
+        return;
+    }
+
+    let confirmMessage = '';
+    if (action === 'delete') {
+        confirmMessage = `Delete ${checkedNotifications.length} notification(s)?`;
+    } else if (action === 'mark_read') {
+        confirmMessage = `Mark ${checkedNotifications.length} notification(s) as read?`;
+    }
+
+    if (confirm(confirmMessage)) {
+        $('#bulk-action-form').append(`<input type="hidden" name="action" value="${action}">`);
+        $('#bulk-action-form').submit();
+    }
+}
+
+function showMessage(message, type) {
+    const alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message} 
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    $('.container').prepend(alertHtml);
+    
+    // Auto-dismiss after 3 seconds
+    setTimeout(function() {
+        $('.alert').alert('close');
+    }, 3000);
+}
+</script>
+{% endblock %}

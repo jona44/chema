@@ -123,13 +123,34 @@ def browse_groups_view(request):
 
 
 
-
-
 @login_required
 def join_group_view(request, slug):
     """Join a group"""
     group = get_object_or_404(Group, slug=slug, is_active=True)
-    
+    invitation_id = request.GET.get('invitation')
+
+    if invitation_id:
+        try:
+            invitation = GroupInvitation.objects.get(id=invitation_id, group=group)
+            if invitation.is_expired:
+                messages.error(request, "This invitation has expired.")
+                return redirect('group_detail', slug=slug)
+            
+            if invitation.invited_email != request.user.email:
+                messages.error(request, "This invitation is not for you.")
+                return redirect('group_detail', slug=slug)
+
+            success, message = invitation.accept()
+            if success:
+                messages.success(request, message)
+            else:
+                messages.error(request, message)
+            return redirect('group_detail', slug=slug)
+
+        except GroupInvitation.DoesNotExist:
+            messages.error(request, "Invalid invitation link.")
+            return redirect('group_detail', slug=slug)
+
     can_join, message = group.can_join(request.user)
     if not can_join:
         messages.error(request, message)
@@ -261,34 +282,6 @@ def group_search_suggestions(request):
         ]
     
     return JsonResponse({'suggestions': suggestions})
-
-
-
-
-@login_required
-def group_edit_view(request, slug):
-    """Edit group settings"""
-    group = get_object_or_404(Group, slug=slug, is_active=True)
-    
-    if not group.is_admin(request.user):
-        messages.error(request, "You don't have permission to edit this group.")
-        return redirect('group_detail', slug=slug)
-    
-    if request.method == 'POST':
-        form = GroupEditForm(request.POST, request.FILES, instance=group)
-        if form.is_valid():
-            updated_group = form.save()
-            messages.success(request, 'Group settings updated successfully!')
-            return redirect('group_manage', slug=updated_group.slug)
-    else:
-        form = GroupEditForm(instance=group)
-    
-    return render(request, 'group/manage/edit.html', {
-        'form': form,
-        'group': group,
-        'categories': Category.objects.filter(is_active=True)
-    })
-
 
 
 @login_required

@@ -93,8 +93,11 @@ class MemorialCreationForm(forms.ModelForm):
 
 
 class PostForm(forms.ModelForm):
+    class MultiFileInput(forms.ClearableFileInput):
+        allow_multiple_selected = True
+
     images = forms.FileField(
-        widget=forms.ClearableFileInput(attrs={
+        widget=MultiFileInput(attrs={
             'multiple': True,
             'accept': 'image/*',
             'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'

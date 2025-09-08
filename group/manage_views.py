@@ -7,9 +7,20 @@ from django.db.models import Q, Count
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
+from django.urls import reverse
+from contributions.models import Contribution
 from group.forms import GroupCreationForm, GroupInvitationForm, GroupJoinForm, GroupSearchForm, GroupEditForm
-from group.forms import GroupCreationForm, GroupInvitationForm, GroupJoinForm, GroupSearchForm
 from .models import Group, GroupMembership, GroupInvitation, Category
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.db.models import Sum, Count, Q
+from django.utils import timezone
+from contributions.models import ExpenseRecord, ContributionCampaign
+
+from datetime import timedelta
+# Ensure all models are imported
+
 
 
 @login_required
@@ -113,7 +124,7 @@ def group_invitations_view(request, slug):
                 # Send invitation email
                 try:
                     invitation_link = request.build_absolute_uri(
-                        f'/groups/{group.slug}/join/?invitation={invitation.id}'
+                        reverse('join_group', kwargs={'slug': group.slug}) + f'?invitation={invitation.id}'
                     )
                     
                     send_mail(
@@ -233,47 +244,148 @@ def group_manage_view(request, slug):
     return render(request, 'group/manage/dashboard.html', context)
 
 
+@login_required
 def group_detail_view(request, slug):
-    """Group detail page"""
+    """
+    Enhanced group detail view.
+    """
     group = get_object_or_404(
         Group.objects.annotate(
-            num_members=Count('memberships', filter=Q(memberships__is_active=True))
+            num_members=Count('memberships', filter=Q(memberships__is_active=True, memberships__status='active'))
         ),
         slug=slug,
         is_active=True
     )
-    
-    # Check user's relationship with group
-    user_membership = None
-    can_join = False
-    join_message = ""
 
-    if request.user.is_authenticated:
-        try:
-            user_membership = GroupMembership.objects.get(
-                group=group, 
-                user=request.user
-            )
-        except GroupMembership.DoesNotExist:
-            can_join, join_message = group.can_join(request.user)
-    
-    # Get recent members
-    recent_members = GroupMembership.objects.filter(
-        group=group, 
-        is_active=True,
-        status='active'
-    ).select_related('user__profile').order_by('-joined_at')[:10]
-    
+    # User's relationship with the group
+    user_membership = GroupMembership.objects.filter(
+        group=group,
+        user=request.user,
+        is_active=True
+    ).first()
+
+    # Determine if user can join
+    can_join, join_message = False, ""
+    if not user_membership:
+        can_join, join_message = group.can_join(request.user)
+
+    # Initialize context with basic group and user info
     context = {
         'group': group,
         'user_membership': user_membership,
         'can_join': can_join,
         'join_message': join_message,
-        'recent_members': recent_members,
-        'is_admin': group.is_admin(request.user) if request.user.is_authenticated else False,
+        'is_admin': group.is_admin(request.user)
     }
-    
-    return render(request, 'group/manage/group_detail.html', context)
+
+    # Only fetch detailed stats and recent activity for group members
+    if user_membership:
+        # Get financial statistics
+        contributions_stats = Contribution.objects.filter(
+            campaign__group=group
+        ).aggregate(
+            total_amount=Sum('amount'),
+            total_contributions=Count('id')
+        )
+        expenses_stats = ExpenseRecord.objects.filter(
+            campaign__group=group
+        ).aggregate(
+            total_expenses=Sum('amount')
+        )
+
+        # Active campaigns
+        active_campaigns_count = ContributionCampaign.objects.filter(
+            group=group,
+            status='active',
+            deadline__gt=timezone.now()
+        ).count()
+        
+        # Recent members
+        recent_members = GroupMembership.objects.filter(
+            group=group,
+            is_active=True,
+            status='active'
+        ).select_related('user__profile').order_by('-joined_at')[:10]
+
+        # Recent activities (last 30 days)
+        recent_activities = []
+        recent_date = timezone.now() - timedelta(days=30)
+        
+        # Using a single query to fetch all relevant recent activities
+        recent_contributions = Contribution.objects.filter(
+            campaign__group=group,
+            created_at__gte=recent_date
+        ).order_by('-created_at')[:5]
+
+        recent_expenses = ExpenseRecord.objects.filter(
+            campaign__group=group,
+            created_at__gte=recent_date
+        ).order_by('-created_at')[:3]
+        
+        recent_members_joined = GroupMembership.objects.filter(
+            group=group,
+            joined_at__gte=recent_date,
+            status='active'
+        ).order_by('-joined_at')[:3]
+
+        for contrib in recent_contributions:
+            recent_activities.append({
+                'type': 'contribution',
+                'icon': 'bi-cash',
+                'color': 'success',
+                'title': f'New contribution of R{contrib.amount}',
+                'description': f'by {contrib.contributor.get_full_name() or contrib.contributor.username}', # type: ignore
+                'timestamp': contrib.created_at,
+                'url': f'/contributions/{contrib.id}/'
+            })
+
+        for expense in recent_expenses:
+            recent_activities.append({
+                'type': 'expense',
+                'icon': 'bi-receipt',
+                'color': 'warning',
+                'title': f'Expense recorded: R{expense.amount}',
+                'description': expense.description[:50] + '...' if len(expense.description) > 50 else expense.description,
+                'timestamp': expense.created_at,
+                'url': f'/expenses/{expense.id}/'
+            })
+            
+        for membership in recent_members_joined:
+            recent_activities.append({
+                'type': 'member_joined',
+                'icon': 'bi-person-plus',
+                'color': 'info',
+                'title': 'New member joined',
+                'description': membership.user.email or membership.user.username,
+                'timestamp': membership.joined_at,
+                'url': f'/groups/{group.id}/members/'
+            })
+
+        # Sort and limit all activities
+        recent_activities.sort(key=lambda x: x['timestamp'], reverse=True)
+        recent_activities = recent_activities[:10]
+
+        # Add all member-only data to the context
+        context.update({
+            'total_contributions': contributions_stats['total_contributions'] or 0,
+            'total_amount': contributions_stats['total_amount'] or 0,
+            'total_expenses': expenses_stats['total_expenses'] or 0,
+            'active_campaigns': active_campaigns_count,
+            'net_amount': (contributions_stats['total_amount'] or 0) - (expenses_stats['total_expenses'] or 0),
+            'recent_activities': recent_activities,
+            'recent_members': recent_members,
+        })
+    else:
+        # Fetch recent members even for non-members to display on the public page
+        recent_members = GroupMembership.objects.filter(
+            group=group, 
+            is_active=True,
+            status='active'
+        ).select_related('user__profile').order_by('-joined_at')[:10]
+        context['recent_members'] = recent_members
+
+
+    return render(request, 'group/detail.html', context)
 
 
 @login_required
@@ -299,5 +411,3 @@ def group_edit_view(request, slug):
         'group': group,
         'categories': Category.objects.filter(is_active=True)
     })
-
-

@@ -1,32 +1,7 @@
-<!-- groups/templates/groups/leave_group.html -->
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leave {{ group.name }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-4">
-                    <a href="{% url 'get_started' %}" class="text-xl font-bold text-gray-900">Your App</a>
-                    <span class="text-gray-400">/</span>
-                    <a href="{% url 'group_detail' slug=group.slug %}" class="text-gray-600 hover:text-gray-900">{{ group.name }}</a>
-                    <span class="text-gray-400">/</span>
-                    <span class="text-red-600 font-medium">Leave Group</span>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="{% url 'my_groups' %}" class="text-sm text-gray-600 hover:text-gray-900">My Groups</a>
-                    <a href="{% url 'logout' %}" class="text-sm text-gray-600 hover:text-gray-900">Logout</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+{% block title %}Leave {{ group.name }} - {{ block.super }}{% endblock %}
+{% block content %}
 
     <div class="max-w-2xl mx-auto px-4 py-8">
         <!-- Header -->
@@ -46,8 +21,8 @@
             <div class="flex items-center mb-6 p-4 bg-gray-50 rounded-lg">
                 {% if group.cover_image %}
                     <img src="{{ group.cover_image.url }}" 
-                         alt="{{ group.name }}" 
-                         class="w-16 h-16 rounded-lg object-cover mr-4">
+                        alt="{{ group.name }}" 
+                        class="w-16 h-16 rounded-lg object-cover mr-4">
                 {% else %}
                     <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center mr-4">
                         <span class="text-white font-bold text-xl">{{ group.name|first|upper }}</span>
@@ -174,7 +149,7 @@
             <p>You've been a member of {{ group.member_count }} other groups</p>
         </div>
     </div>
-
+{% endblock %}
     <script>
         // Enable/disable leave button based on confirmation checkbox
         const confirmCheckbox = document.getElementById('confirm-leave');

@@ -38,7 +38,7 @@
                 <p class="text-gray-600 mt-1">{{ memberships.paginator.count }} total members</p>
             </div>
             <a href="{% url 'group_manage_invitations' slug=group.slug %}" 
-                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+              class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                 Send Invitations
             </a>
         </div>
@@ -48,10 +48,10 @@
             <form method="get" class="flex flex-wrap gap-4">
                 <div class="flex-1 min-w-64">
                     <input type="text" 
-                            name="search" 
-                            value="{{ search_query }}"
-                            placeholder="Search members by name or email..."
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                          name="search" 
+                          value="{{ search_query }}"
+                          placeholder="Search members by name or email..."
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div>
                     <select name="role" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
@@ -74,7 +74,7 @@
                 </button>
                 {% if search_query or role_filter or status_filter != 'active' %}
                     <a href="{% url 'group_manage_members' slug=group.slug %}" 
-                        class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200">
+                      class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200">
                         Clear
                     </a>
                 {% endif %}
@@ -180,8 +180,8 @@
                                         </div>
                                     {% elif membership.user != group.creator %}
                                         <form method="post" action="{% url 'remove_member' slug=group.slug membership_id=membership.id %}" 
-                                            class="inline"
-                                            onsubmit="return confirm('Are you sure you want to remove this member?')">
+                                              class="inline"
+                                              onsubmit="return confirm('Are you sure you want to remove this member?')">
                                             {% csrf_token %}
                                             <button type="submit" 
                                                     class="text-red-600 hover:text-red-900">
@@ -202,26 +202,15 @@
                     <div class="flex-1 flex justify-between sm:hidden">
                         {% if memberships.has_previous %}
                             <a href="?page={{ memberships.previous_page_number }}" 
-                                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                              class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                                 Previous
                             </a>
                         {% endif %}
                         {% if memberships.has_next %}
                             <a href="?page={{ memberships.next_page_number }}" 
-                                class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                              class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                                 Next
                             </a>
                         {% endif %}
-                    </div>
-                </div>
+                      {% endif %}
                 {% endif %}
-            {% else %}
-                <div class="text-center py-12 px-6">
-                    <h3 class="text-lg font-medium text-gray-900">No members found</h3>
-                    <p class="mt-1 text-sm text-gray-500">No members match the current filters.</p>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-</body>
-</html>

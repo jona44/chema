@@ -13,6 +13,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-xzc(9za@)w6e=!5!!5r6k(x8i%ct@5=ee+mecif!@p*=9(0mo3'
 
+SITE_NAME = 'Chema'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -28,20 +30,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    
     'customuser',
     'group',
     'memorial',
-    'django.contrib.sites',
+    'notifications',
+    'contributions',
+    
 ]
 
 
 MIDDLEWARE = [
-    
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

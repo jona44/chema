@@ -93,10 +93,4 @@ def create_user_profile(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
 
 
-@receiver(post_save, sender=CustomUser)
-def save_user_profile(sender, instance, **kwargs):
-    """Ensure profile exists and is saved when user is saved"""
-    if hasattr(instance, 'profile'):
-        instance.profile.save()
-    else:
-        Profile.objects.create(user=instance)
+
