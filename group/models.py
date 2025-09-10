@@ -9,6 +9,8 @@ from django.urls import reverse
 from django.core.validators import MinLengthValidator
 import uuid
 
+from customuser.models import CustomUser
+
 
 class Category(models.Model):
     """Group categories for organization"""
@@ -110,6 +112,15 @@ class Group(models.Model):
 
     def is_admin(self, user):
         return user == self.creator or user in self.admins.all()
+    
+    @property
+    def members(self):
+        """Return all active members of this group"""
+        return CustomUser.objects.filter(
+            group_memberships__group=self,
+            group_memberships__is_active=True,
+            group_memberships__status='active'
+        )
 
     def is_member(self, user):
         return self.memberships.filter(user=user, is_active=True).exists() # type: ignore

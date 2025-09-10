@@ -88,25 +88,26 @@ def create_memorial_view(request, group_slug):
         return redirect('group_detail', slug=group_slug)
     
     # Check if memorial already exists
-    if hasattr(group, 'memorial'):
-        messages.info(request, "This group already has a memorial page.")
-        return redirect('memorial_detail', pk=group.memorial.pk) # type: ignore
-    
     if request.method == 'POST':
-        form = MemorialCreationForm(request.POST, request.FILES)
+        form = MemorialCreationForm(request.POST, request.FILES, group=group)
         if form.is_valid():
             memorial = form.save(commit=False)
             memorial.created_by = request.user
             memorial.associated_group = group
+
+            deceased_user = form.cleaned_data.get('deceased_user')
+            if deceased_user:
+                # Auto-fill from user profile
+                memorial.full_name = deceased_user.get_full_name()
+                if hasattr(deceased_user, "date_of_birth"):
+                    memorial.date_of_birth = deceased_user.date_of_birth
+
             memorial.save()
-            
-            # Add group creator as family admin
             memorial.family_admins.add(request.user)
-            
-            messages.success(request, f'Memorial page created for {memorial.full_name}.')
+            messages.success(request, f"Memorial page created for {memorial.full_name}.")
             return redirect('memorial_detail', pk=memorial.pk)
     else:
-        form = MemorialCreationForm()
+        form = MemorialCreationForm(group=group)
     
     return render(request, 'memorial/create_memorial.html', {
         'form': form,

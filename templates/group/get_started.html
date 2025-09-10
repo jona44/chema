@@ -1,41 +1,6 @@
-<!-- groups/templates/groups/get_started.html -->
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Get Started - Find Your Group</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <h1 class="text-xl font-bold text-gray-900">Chema</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-gray-600">Welcome, {{ user.profile.full_name|default:user.email }}!</span>
-                    <div class="relative">
-                        {% if user.profile.profile_picture %}
-                            <img src="{{ user.profile.profile_picture.url }}" 
-                                alt="Profile" 
-                                class="w-8 h-8 rounded-full object-cover">
-                        {% else %}
-                            <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                                <span class="text-white text-sm font-medium">{{ user.email|first|upper }}</span>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <a href="{% url 'my_groups' %}" class="text-sm text-gray-600 hover:text-gray-900">My Groups</a>
-                    <a href="{% url 'profile' %}" class="text-sm text-gray-600 hover:text-gray-900">Profile</a>
-                    <a href="{% url 'logout' %}" class="text-sm text-gray-600 hover:text-gray-900">Logout</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+{% block content %}
 
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 py-12">
@@ -191,7 +156,7 @@
             </div>
         </div>
     </div>
-
+{% endblock %}
     <script>
         // Search suggestions (if you want to implement AJAX later)
         document.getElementById('group-search').addEventListener('input', function(e) {

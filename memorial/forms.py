@@ -7,14 +7,24 @@ from .models import Memorial, Post, Comment, CondolenceMessage, FuneralUpdate, P
 
 
 class MemorialCreationForm(forms.ModelForm):
+    deceased_user = forms.ModelChoiceField(
+        queryset=None,
+        required=False,
+        label="Select from group members (optional)",
+        widget=forms.Select(attrs={
+            'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+        })
+    )
+
     class Meta:
         model = Memorial
         fields = [
+            'deceased_user',  # <-- new logical field, not in the model
             'full_name', 'date_of_birth', 'date_of_death', 'photo', 'biography',
-            'location_of_death', 'burial_location', 'cultural_background', 
-            'religious_affiliation', 'traditional_names', 'funeral_date', 
-            'funeral_venue', 'funeral_details', 'is_public', 'allow_condolences', 
-            'allow_memories', 'allow_photos'
+            'location_of_death', 'burial_location', 'cultural_background',
+            'religious_affiliation', 'traditional_names', 'funeral_date',
+            'funeral_venue', 'funeral_details', 'is_public',
+            'allow_condolences', 'allow_memories', 'allow_photos'
         ]
         
         widgets = {
@@ -74,6 +84,13 @@ class MemorialCreationForm(forms.ModelForm):
             }),
         }
 
+    def __init__(self, *args, **kwargs):
+        group = kwargs.pop("group", None)
+        super().__init__(*args, **kwargs)
+
+        if group:
+            self.fields["deceased_user"].queryset = group.members # type: ignore
+
     def clean_date_of_death(self):
         date_of_death = self.cleaned_data.get('date_of_death')
         if date_of_death and date_of_death > date.today():
@@ -84,11 +101,10 @@ class MemorialCreationForm(forms.ModelForm):
         cleaned_data = super().clean()
         date_of_birth = cleaned_data.get('date_of_birth')
         date_of_death = cleaned_data.get('date_of_death')
-        
-        if date_of_birth and date_of_death:
-            if date_of_birth >= date_of_death:
-                raise ValidationError("Date of death must be after date of birth.")
-        
+
+        if date_of_birth and date_of_death and date_of_birth >= date_of_death:
+            raise ValidationError("Date of death must be after date of birth.")
+
         return cleaned_data
 
 

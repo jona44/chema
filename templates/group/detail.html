@@ -43,6 +43,17 @@
                             Online Group
                         </div>
                         {% endif %}
+                                <span class="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Member
+                                </span>
+                                <a href="{% url 'leave_group' slug=group.slug %}" 
+                                    class="bg-fuchsia-500 text-300 text-white px-4 py-2 rounded-lg hover:bg-fuchsia-700">
+                                        Group Feeds
+                                </a>
+                        
                     </div>
                 </div>
                 
@@ -50,15 +61,18 @@
                     {% if user_membership %}
                         {% if user_membership.status == 'active' %}
                             <div class="flex items-center space-x-3">
-                                <span class="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                    Member
-                                </span>
+                                
                                 {% if is_admin %}
                                     <a href="{% url 'group_manage' slug=group.slug %}"
                                         class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                                        Manage Group
+                                    </a>
+                                    <a href="{% url 'create_memorial' group_slug=group.slug %}"
+                                        class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-400">
+                                        Create Memorial
+                                    </a>
+                                    <a href="{% url 'group_manage' slug=group.slug %}"
+                                        class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-500">
                                         Manage Group
                                     </a>
                                 {% else %}
@@ -177,10 +191,12 @@
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Chema Hub</h3>
                 <div class="space-y-3">
                     {% if group.memorial %}
-                    <a href="{% url 'memorial_detail' pk=group.memorial.pk %}" class="flex items-center text-gray-600 hover:text-blue-600">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                        <span>Memorial Page</span>
-                    </a>
+                    {% for memorial in group.memorials.all %}
+                        <a href="{{ memorial.get_absolute_url }}">{{ memorial.full_name }}</a>
+                        {% empty %}
+                        <p>No memorials yet.</p>
+                        {% endfor %}
+
                     {% endif %}
                     {% if group.contribution_campaign %}
                     <a href="{% url 'campaign_detail' group_slug=group.slug %}" class="flex items-center text-gray-600 hover:text-blue-600">
@@ -271,6 +287,13 @@
         </div>
     </div>
 </div>
+
+{% for memorial in group.memorials.all %}
+    <a href="{{ memorial.get_absolute_url }}">{{ memorial.full_name }}</a>
+{% empty %}
+    <p>No memorials yet.</p>
+{% endfor %}
+
 
 <script>
     function copyGroupLink() {

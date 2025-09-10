@@ -43,7 +43,6 @@ def get_started_view(request):
         'total_groups': Group.objects.filter(is_active=True).count(),
         'total_members': GroupMembership.objects.filter(is_active=True).values('user').distinct().count(),
     }
-    
     return render(request, 'group/get_started.html', context)
 
 
@@ -122,7 +121,6 @@ def browse_groups_view(request):
     return render(request, 'group/browse_groups.html', context)
 
 
-
 @login_required
 def join_group_view(request, slug):
     """Join a group"""
@@ -193,31 +191,61 @@ def join_group_view(request, slug):
 @login_required
 def my_groups_view(request):
     """User's groups dashboard"""
-    memberships = GroupMembership.objects.filter(
-        user=request.user,
-        is_active=True
-    ).select_related('group').order_by('-joined_at')
-    
-    # Separate by status
-    active_groups = memberships.filter(status='active')
-    pending_groups = memberships.filter(status='pending')
-    
-    # Groups user created
-    created_groups = Group.objects.filter(
-        creator=request.user,
-        is_active=True
-    ).annotate(
-        num_members=Count('memberships', filter=Q(memberships__is_active=True))
+    # Active memberships (joined groups)
+    memberships = (
+        GroupMembership.objects.filter(
+            user=request.user,
+            is_active=True,
+            status="active"
+        )
+        .select_related("group")
+        .order_by("-joined_at")
     )
-    
+
+    # Groups user created
+    created_groups = (
+        Group.objects.filter(
+            creator=request.user,
+            is_active=True
+        )
+        .annotate(
+            num_members=Count("memberships", filter=Q(memberships__is_active=True))
+        )
+    )
+
+    # Build unified list
+    my_groups = []
+
+    # Created groups (tag them as creator)
+    for group in created_groups:
+        my_groups.append({
+            "group": group,
+            "role": "creator",
+            "joined_at": group.created_at,
+        })
+
+    # Membership groups (exclude duplicates if user also creator)
+    for membership in memberships:
+        if membership.group not in [g["group"] for g in my_groups]:
+            my_groups.append({
+                "group": membership.group,
+                "role": membership.role,
+                "joined_at": membership.joined_at,
+            })
+
+    # Pending memberships
+    pending_groups = GroupMembership.objects.filter(
+        user=request.user,
+        is_active=True,
+        status="pending"
+    ).select_related("group").order_by("-joined_at")
+
     context = {
-        'active_memberships': active_groups,
-        'pending_memberships': pending_groups,
-        'created_groups': created_groups,
-        'total_groups': active_groups.count(),
+        "my_groups": my_groups,
+        "pending_groups": pending_groups,
+        "total_groups": len(my_groups),
     }
-    
-    return render(request, 'group/my_groups.html', context)
+    return render(request, "group/my_groups.html", context)
 
 
 @login_required
