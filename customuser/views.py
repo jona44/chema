@@ -99,44 +99,48 @@ def verify_email_view(request, uidb64, token):
 def login_view(request):
     """Custom login view"""
     if request.user.is_authenticated:
-        return redirect('profile')
-    
-    if request.method == 'POST':
+        # Redirect authenticated users with a profile straight to my-groups
+        if getattr(request.user, "profile", None):
+            return redirect("my_groups")
+        return redirect("my_groups")
+
+    if request.method == "POST":
         form = CustomUserLoginForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data.get('email')
-            password = form.cleaned_data.get('password')
-            
-            try:
-                user = CustomUser.objects.get(email=email)
-                if not user.is_email_verified:
-                    messages.error(
-                        request, 
-                        'Please verify your email address before logging in. Check your inbox for the verification link.'
-                    )
-                    return render(request, 'customuser/login.html', {'form': form})
-            except CustomUser.DoesNotExist:
-                pass  # Let authenticate handle the error
-            
+            email = form.cleaned_data.get("email")
+            password = form.cleaned_data.get("password")
+
             user = authenticate(request, username=email, password=password)
             if user is not None:
+                # Check email verification
+                if not getattr(user, 'is_email_verified', False):
+                    messages.error(
+                        request,
+                        "Please verify your email address before logging in. "
+                        "Check your inbox for the verification link.",
+                    )
+                    return render(request, "customuser/login.html", {"form": form})
+
+                # Log user in
                 login(request, user)
-                messages.success(request, f'Welcome back, {user.email}!')
-                
-                # Check if profile is complete and redirect accordingly
-                next_page = request.GET.get('next')
+                messages.success(request, f"Welcome back, {user.email}!")
+
+                # Redirect logic
+                next_page = request.GET.get("next")
                 if next_page:
                     return redirect(next_page)
-                elif user.profile.is_complete: # type: ignore
-                    return redirect('get_started')
+                elif getattr(user, "profile", None) and user.profile.is_complete: # type: ignore
+                    return redirect("my_groups")
                 else:
-                    return redirect('profile')
+                    return redirect("my_groups")
             else:
-                messages.error(request, 'Invalid email or password.')
+                messages.error(request, "Invalid email or password.")
     else:
         form = CustomUserLoginForm()
-    
-    return render(request, 'customuser/login.html', {'form': form})
+
+    return render(request, "customuser/login.html", {"form": form})
+
+
 
 def logout_view(request):
     """Logout view"""
@@ -150,7 +154,7 @@ def profile_view(request):
     """User profile view"""
     profile = request.user.profile
     return render(request, 'customuser/profile.html', {
-        'user': request.user,
+        'user': request.user, # type: ignore
         'profile': profile,
     })
 
@@ -192,5 +196,3 @@ def resend_verification_view(request):
             messages.error(request, 'No account found with this email address.')
     
     return render(request, 'customuser/resend_verification.html')
-
-

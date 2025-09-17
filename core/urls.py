@@ -26,6 +26,7 @@ urlpatterns = [
     path('groups/', include('group.urls')),
     path('notifications/', include('notifications.urls')),
     path('memorial/', include('memorial.urls')),
+    path('feeds/', include('feeds.urls')),
 
 ]
 

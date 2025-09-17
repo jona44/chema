@@ -278,6 +278,14 @@ def group_detail_view(request, slug):
         'is_admin': group.is_admin(request.user)
     }
 
+    # Fetch recent members for all viewers
+    recent_members = GroupMembership.objects.filter(
+        group=group,
+        is_active=True,
+        status='active'
+    ).select_related('user__profile').order_by('-joined_at')[:10]
+    context['recent_members'] = recent_members
+
     # Only fetch detailed stats and recent activity for group members
     if user_membership:
         # Get financial statistics
@@ -300,13 +308,6 @@ def group_detail_view(request, slug):
             deadline__gt=timezone.now()
         ).count()
         
-        # Recent members
-        recent_members = GroupMembership.objects.filter(
-            group=group,
-            is_active=True,
-            status='active'
-        ).select_related('user__profile').order_by('-joined_at')[:10]
-
         # Recent activities (last 30 days)
         recent_activities = []
         recent_date = timezone.now() - timedelta(days=30)
@@ -373,16 +374,7 @@ def group_detail_view(request, slug):
             'active_campaigns': active_campaigns_count,
             'net_amount': (contributions_stats['total_amount'] or 0) - (expenses_stats['total_expenses'] or 0),
             'recent_activities': recent_activities,
-            'recent_members': recent_members,
         })
-    else:
-        # Fetch recent members even for non-members to display on the public page
-        recent_members = GroupMembership.objects.filter(
-            group=group, 
-            is_active=True,
-            status='active'
-        ).select_related('user__profile').order_by('-joined_at')[:10]
-        context['recent_members'] = recent_members
 
 
     return render(request, 'group/detail.html', context)

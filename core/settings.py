@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'memorial',
     'notifications',
     'contributions',
+    'feeds',
     
+
 ]
 
 

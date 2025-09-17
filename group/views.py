@@ -14,36 +14,7 @@ from django.utils import timezone
 
 
 
-@login_required
-def get_started_view(request):
-    """Main landing page for authenticated users with complete profiles"""
-    # Get some featured groups and categories for display
-    featured_groups = Group.objects.filter(
-        privacy='public', 
-        is_active=True
-    ).annotate(
-        num_members=Count('memberships', filter=Q(memberships__is_active=True))
-    ).order_by('-num_members')[:6]
-    
-    categories = Category.objects.filter(is_active=True).order_by('name')
-    
-    # User's current groups
-    user_groups = Group.objects.filter(
-        memberships__user=request.user,
-        memberships__is_active=True
-    ).annotate(
-        num_members=Count('memberships', filter=Q(memberships__is_active=True))
-    ).order_by('name')
-    
-    context = {
-        'user': request.user,
-        'featured_groups': featured_groups,
-        'categories': categories,
-        'user_groups': user_groups,
-        'total_groups': Group.objects.filter(is_active=True).count(),
-        'total_members': GroupMembership.objects.filter(is_active=True).values('user').distinct().count(),
-    }
-    return render(request, 'group/get_started.html', context)
+
 
 
 @login_required

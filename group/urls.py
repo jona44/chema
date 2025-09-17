@@ -5,7 +5,7 @@ from . import manage_views
 
 urlpatterns = [
     # Main pages
-    path('get-started/', views.get_started_view, name='get_started'),
+    # Main pages
     path('browse/', views.browse_groups_view, name='browse_groups'),
     path('my-groups/', views.my_groups_view, name='my_groups'),
     

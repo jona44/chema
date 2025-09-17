@@ -49,7 +49,7 @@
                                     </svg>
                                     Member
                                 </span>
-                                <a href="{% url 'leave_group' slug=group.slug %}" 
+                                <a href="{% url 'feeds:group_feed' slug=group.slug %}" 
                                     class="bg-fuchsia-500 text-300 text-white px-4 py-2 rounded-lg hover:bg-fuchsia-700">
                                         Group Feeds
                                 </a>
@@ -223,6 +223,7 @@
                             <span class="text-white font-medium">{{ group.creator.email|first|upper }}</span>
                         </div>
                     {% endif %}
+
                     <div>
                         <div class="font-medium text-gray-900">{{ group.creator.profile.full_name|default:group.creator.email }}</div>
                         <div class="text-sm text-gray-500">Group Creator</div>

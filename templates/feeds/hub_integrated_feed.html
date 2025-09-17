@@ -1,0 +1,818 @@
+<!-- feeds/templates/feeds/hub_integrated_feed.html -->
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ group.name }} - Feed{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Enhanced Header with Hub Button -->
+    <div class="feed-header">
+        {% if group.avatar %}
+            <img src="{{ group.avatar.url }}" alt="{{ group.name }}" class="group-avatar">
+        {% else %}
+            <div class="group-avatar">{{ group.name|first }}</div>
+        {% endif %}
+        
+        <div class="group-info">
+            <h1>{{ group.name }}</h1>
+            <div class="group-meta">
+                {{ group.category }} • {{ group.members.count }} member{{ group.members.count|pluralize }}
+                {% if group.is_private %}• Private Group{% endif %}
+            </div>
+        </div>
+        
+        <!-- Hub Access Button -->
+        <div class="ms-auto">
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#chemaHub">
+                    <i class="bi bi-grid-3x3-gap-fill"></i> Chema Hub
+                    {% if recent_notifications %}
+                        <span class="badge bg-danger ms-1">{{ recent_notifications|length }}</span>
+                    {% endif %}
+                </button>
+                
+                {% if can_post %}
+                    <button type="button" class="btn btn-success" onclick="openPostModal()">
+                        <i class="bi bi-plus-circle"></i> Create Post
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="feed-layout">
+        <!-- Main Feed Content (Your existing feed content) -->
+        <div class="main-feed">
+            <!-- Enhanced Post Creator with Hub Integration -->
+            {% if can_post %}
+            <div class="post-creator">
+                <div class="creator-input">
+                    <div class="user-avatar">{{ user.get_full_name|default:user.username|first }}</div>
+                    <input type="text" class="post-input" placeholder="What's on your mind, {{ user.get_full_name|default:user.username|truncatechars:20 }}?" onclick="openPostModal()">
+                </div>
+                <div class="creator-actions">
+                    <div class="creator-action photo" onclick="openPostModal('photo')">
+                        📷 Photo/Video
+                    </div>
+                    {% if feed.allow_events %}
+                    <div class="creator-action event" onclick="openPostModal('event')">
+                        📅 Event
+                    </div>
+                    {% endif %}
+                    {% if feed.allow_polls %}
+                    <div class="creator-action poll" onclick="openPostModal('poll')">
+                        📊 Poll
+                    </div>
+                    {% endif %}
+                    {% if group.memorial %}
+                    <div class="creator-action memorial" onclick="openPostModal('memory')">
+                        💭 Memory
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Real-time Updates Banner -->
+            <div id="updates-banner" class="alert alert-info d-none" role="alert">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span id="updates-message">New posts available</span>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="refreshFeed()">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Your existing post filters and posts container -->
+            {% include 'feeds/post_filters.html' %}
+            
+            <div class="posts-container" id="posts-container">
+                {% for post in posts %}
+                    {% include 'feeds/post_card.html' %}
+                {% empty %}
+                <div class="empty-state">
+                    <div class="empty-icon">📝</div>
+                    <h3 class="empty-title">No posts yet</h3>
+                    <p class="empty-description">
+                        {% if can_post %}
+                            Be the first to share something with the group!
+                        {% else %}
+                            Check back later for updates from the community.
+                        {% endif %}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Load More -->
+            {% if posts.has_next %}
+            <div class="text-center" style="margin-top: 20px;">
+                <button class="btn btn-outline-primary" onclick="loadMorePosts()">
+                    <i class="bi bi-arrow-down-circle"></i> Load More Posts
+                </button>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Enhanced Sidebar with Hub Integration -->
+        <div class="sidebar">
+            <!-- Enhanced Group Stats -->
+            <div class="sidebar-card">
+                <div class="sidebar-header">
+                    <i class="bi bi-graph-up text-primary"></i>
+                    Group Analytics
+                </div>
+                <div class="sidebar-content">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ feed_stats.total_posts }}</span>
+                            <div class="stat-label">Total Posts</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ feed_stats.posts_today }}</span>
+                            <div class="stat-label">Today</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ feed_stats.total_comments }}</span>
+                            <div class="stat-label">Comments</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ feed_stats.total_likes }}</span>
+                            <div class="stat-label">Reactions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Notifications Widget -->
+            {% if recent_notifications %}
+            <div class="sidebar-card">
+                <div class="sidebar-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-bell text-warning"></i> Recent Activity</span>
+                    <a href="{% url 'notifications:list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="sidebar-content">
+                    {% for notification in recent_notifications %}
+                    <div class="notification-item small mb-2 p-2 rounded {% if not notification.is_read %}bg-light{% endif %}">
+                        <div class="d-flex align-items-start">
+                            <div class="me-2">
+                                {% if notification.priority == 'urgent' %}
+                                    <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                                {% elif notification.notification_type == 'new_memory_posted' %}
+                                    <i class="bi bi-heart text-danger"></i>
+                                {% elif notification.notification_type == 'new_condolence' %}
+                                    <i class="bi bi-chat-heart text-info"></i>
+                                {% else %}
+                                    <i class="bi bi-bell text-primary"></i>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold small">{{ notification.title }}</div>
+                                <div class="text-muted" style="font-size: 0.8rem;">
+                                    {{ notification.message|truncatechars:60 }}
+                                </div>
+                                <div class="text-muted" style="font-size: 0.75rem;">
+                                    {{ notification.created_at|timesince }} ago
+                                </div>
+                            </div>
+                            {% if not notification.is_read %}
+                                <div class="text-primary">
+                                    <i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Your existing sidebar content -->
+            {% include 'feeds/sidebar_content.html' %}
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Chema Hub Offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="chemaHub" style="width: 400px;">
+    <div class="offcanvas-header bg-primary text-white">
+        <h5 class="offcanvas-title">
+            <i class="bi bi-grid-3x3-gap-fill me-2"></i>
+            Chema Hub
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        
+        <!-- Feed Quick Actions -->
+        <div class="p-3 border-bottom">
+            <h6 class="text-muted mb-3">Feed Actions</h6>
+            <div class="row g-2">
+                {% for action in quick_actions %}
+                <div class="col-6">
+                    <a href="{{ action.url }}" class="btn btn-outline-{{ action.color }} w-100 py-3 text-center">
+                        <i class="{{ action.icon }} d-block mb-1" style="font-size: 1.5rem;"></i>
+                        <small>{{ action.name }}</small>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Enhanced Features Navigation -->
+        <div class="list-group list-group-flush">
+            
+            <!-- Social Feed -->
+            <div class="list-group-item">
+                <h6 class="mb-2">
+                    <i class="bi bi-chat-dots text-primary me-2"></i>
+                    Social Feed
+                </h6>
+                <div class="ms-4">
+                    <a href="{% url 'group_feed_view' group.slug %}" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-house me-2"></i>Main Feed
+                    </a>
+                    <a href="?filter=photo" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-images me-2"></i>Photos & Videos
+                    </a>
+                    <a href="?filter=event" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-calendar me-2"></i>Events
+                    </a>
+                    <a href="?filter=poll" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-bar-chart me-2"></i>Polls
+                    </a>
+                    {% if group.memorial %}
+                    <a href="?filter=memory" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-heart me-2"></i>Memories
+                    </a>
+                    <a href="?filter=condolence" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-chat-heart me-2"></i>Condolences
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Contributions & Finance -->
+            <div class="list-group-item">
+                <h6 class="mb-2">
+                    <i class="bi bi-cash text-success me-2"></i>
+                    Contributions & Finance
+                </h6>
+                <div class="ms-4">
+                    <a href="{% url 'contributions:list' group.id %}" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-list-ul me-2"></i>All Contributions
+                    </a>
+                    <a href="{% url 'contributions:create' group.id %}" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-plus-circle me-2"></i>New Contribution
+                    </a>
+                    <a href="{% url 'expenses:list' group.id %}" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-receipt me-2"></i>Expense Tracking
+                    </a>
+                    <a href="{% url 'campaigns:list' group.id %}" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-bullseye me-2"></i>Campaigns
+                    </a>
+                </div>
+            </div>
+
+            <!-- Memorials (if applicable) -->
+            {% if group.memorial %}
+            <div class="list-group-item">
+                <h6 class="mb-2">
+                    <i class="bi bi-heart text-danger me-2"></i>
+                    Memorial
+                </h6>
+                <div class="ms-4">
+                    <a href="{% url 'memorials:detail' group.memorial.id %}" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-person me-2"></i>Memorial Page
+                    </a>
+                    <a href="?filter=memory" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-images me-2"></i>Shared Memories
+                    </a>
+                    <a href="?filter=condolence" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-chat-heart me-2"></i>Condolences
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Group Management -->
+            <div class="list-group-item">
+                <h6 class="mb-2">
+                    <i class="bi bi-people text-primary me-2"></i>
+                    Group Management
+                </h6>
+                <div class="ms-4">
+                    <a href="{% url 'groups:members' group.id %}" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-people me-2"></i>Members
+                    </a>
+                    <a href="{% url 'groups:settings' group.id %}" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-gear me-2"></i>Settings
+                    </a>
+                    <a href="{% url 'groups:invitations' group.id %}" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-envelope me-2"></i>Invitations
+                    </a>
+                </div>
+            </div>
+
+            <!-- Communications -->
+            <div class="list-group-item">
+                <h6 class="mb-2">
+                    <i class="bi bi-chat text-info me-2"></i>
+                    Communications
+                </h6>
+                <div class="ms-4">
+                    <a href="{% url 'notifications:list' %}" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-bell me-2"></i>Notifications
+                        <span class="badge bg-danger ms-2" id="hub-notification-count" style="display: none;">0</span>
+                    </a>
+                    <a href="{% url 'messages:inbox' %}" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-inbox me-2"></i>Messages
+                    </a>
+                    <a href="{% url 'notifications:preferences' %}" class="d-block text-decoration-none py-1">
+                        <i class="bi bi-sliders me-2"></i>Settings
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Actions -->
+        <div class="p-3 border-top mt-auto">
+            <div class="d-grid gap-2">
+                <a href="{% url 'help:index' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-question-circle me-2"></i>Help & Support
+                </a>
+                {% if user.is_staff %}
+                    <a href="{% url 'notifications:admin_dashboard' %}" class="btn btn-outline-info">
+                        <i class="bi bi-gear me-2"></i>Admin Dashboard
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced JavaScript with Real-time Updates -->
+<script>
+class EnhancedSocialFeed {
+    constructor(groupId) {
+        this.groupId = groupId;
+        this.lastUpdateCheck = new Date().toISOString();
+        this.isLoading = false;
+        this.initializeFeed();
+    }
+    
+    initializeFeed() {
+        this.setupEventListeners();
+        this.startRealTimeUpdates();
+        this.initializeNotifications();
+    }
+    
+    setupEventListeners() {
+        // Enhanced post interactions
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.action-btn[data-action="like"]')) {
+                e.preventDefault();
+                this.handlePostLike(e.target.closest('.action-btn'));
+            }
+            
+            if (e.target.closest('.poll-option')) {
+                e.preventDefault();
+                this.handlePollVote(e.target.closest('.poll-option'));
+            }
+            
+            if (e.target.matches('.read-more')) {
+                this.expandPost(e.target);
+            }
+        });
+        
+        // Comment form submissions
+        document.addEventListener('submit', (e) => {
+            if (e.target.classList.contains('comment-form')) {
+                e.preventDefault();
+                this.submitComment(e.target);
+            }
+        });
+        
+        // Filter tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                this.filterPosts(e.target.dataset.filter);
+            });
+        });
+    }
+    
+    async handlePostLike(button) {
+        const postId = button.dataset.postId;
+        const reactionType = button.dataset.reactionType || 'like';
+        
+        if (this.isLoading) return;
+        this.isLoading = true;
+        
+        try {
+            const response = await fetch(`/api/posts/${postId}/like/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': this.getCookie('csrftoken'),
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `reaction_type=${reactionType}`
+            });
+            
+            const data = await response.json();
+            
+            if (data.success || response.ok) {
+                this.updateLikeButton(button, data);
+                this.updateLikeCounts(postId, data);
+                
+                // Show brief feedback
+                this.showFeedback(button, data.liked ? 'Liked!' : 'Removed');
+            }
+        } catch (error) {
+            console.error('Error toggling like:', error);
+            this.showFeedback(button, 'Error', 'error');
+        } finally {
+            this.isLoading = false;
+        }
+    }
+    
+    async handlePollVote(option) {
+        const optionId = option.dataset.optionId;
+        
+        try {
+            const response = await fetch(`/api/poll-options/${optionId}/vote/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': this.getCookie('csrftoken')
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success || response.ok) {
+                this.updatePollResults(option.closest('.poll-container'), data);
+                this.showFeedback(option, 'Vote recorded!');
+            }
+        } catch (error) {
+            console.error('Error voting in poll:', error);
+            this.showFeedback(option, 'Error voting', 'error');
+        }
+    }
+    
+    async submitComment(form) {
+        const postId = form.dataset.postId;
+        const formData = new FormData(form);
+        
+        try {
+            const response = await fetch(`/api/posts/${postId}/comments/`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success || response.ok) {
+                this.addCommentToPost(postId, data);
+                form.reset();
+                this.showFeedback(form, 'Comment added!');
+            }
+        } catch (error) {
+            console.error('Error submitting comment:', error);
+            this.showFeedback(form, 'Error posting comment', 'error');
+        }
+    }
+    
+    updateLikeButton(button, data) {
+        button.classList.toggle('liked', data.liked);
+        button.classList.toggle('active', data.liked);
+        
+        const icon = button.querySelector('i');
+        if (data.liked) {
+            if (data.reaction_type === 'love') {
+                icon.className = 'bi bi-heart-fill';
+                button.style.color = '#f33e58';
+            } else if (data.reaction_type === 'care') {
+                icon.className = 'bi bi-emoji-smile-fill';
+                button.style.color = '#f7b125';
+            } else {
+                icon.className = 'bi bi-hand-thumbs-up-fill';
+                button.style.color = '#1877f2';
+            }
+        } else {
+            icon.className = 'bi bi-hand-thumbs-up';
+            button.style.color = '';
+        }
+    }
+    
+    updateLikeCounts(postId, data) {
+        const post = document.querySelector(`[data-post-id="${postId}"]`);
+        if (!post) return;
+        
+        const likesCount = post.querySelector('.likes-count');
+        if (likesCount && data.total_likes !== undefined) {
+            likesCount.textContent = data.total_likes;
+            likesCount.style.display = data.total_likes > 0 ? 'inline' : 'none';
+        }
+        
+        // Update reaction summary
+        const reactionSummary = post.querySelector('.reaction-summary');
+        if (reactionSummary && data.reaction_counts) {
+            this.updateReactionSummary(reactionSummary, data.reaction_counts);
+        }
+    }
+    
+    updateReactionSummary(container, counts) {
+        const icons = container.querySelector('.reaction-icons');
+        if (!icons) return;
+        
+        icons.innerHTML = '';
+        
+        Object.entries(counts).forEach(([type, count]) => {
+            if (count > 0) {
+                const icon = document.createElement('div');
+                icon.className = `reaction-icon reaction-${type}`;
+                icon.innerHTML = this.getReactionEmoji(type);
+                icons.appendChild(icon);
+            }
+        });
+    }
+    
+    getReactionEmoji(type) {
+        const emojis = {
+            'like': '👍',
+            'love': '❤️',
+            'care': '🤗',
+            'support': '🙏'
+        };
+        return emojis[type] || '👍';
+    }
+    
+    updatePollResults(pollContainer, data) {
+        data.options.forEach(option => {
+            const optionElement = pollContainer.querySelector(`[data-option-id="${option.id}"]`);
+            if (!optionElement) return;
+            
+            const progress = optionElement.querySelector('.poll-progress');
+            const percentage = optionElement.querySelector('.poll-percentage');
+            
+            if (progress) progress.style.width = `${option.percentage}%`;
+            if (percentage) percentage.textContent = `${option.percentage}%`;
+            
+            optionElement.classList.toggle('voted', option.voted);
+        });
+        
+        // Update total votes
+        const stats = pollContainer.querySelector('.poll-stats');
+        if (stats && data.total_votes !== undefined) {
+            stats.innerHTML = `<span>${data.total_votes} vote${data.total_votes !== 1 ? 's' : ''}</span>`;
+        }
+    }
+    
+    addCommentToPost(postId, commentData) {
+        const post = document.querySelector(`[data-post-id="${postId}"]`);
+        if (!post) return;
+        
+        let commentsContainer = post.querySelector('.comments-container');
+        if (!commentsContainer) {
+            commentsContainer = document.createElement('div');
+            commentsContainer.className = 'comments-container mt-3';
+            post.querySelector('.post-content').appendChild(commentsContainer);
+        }
+        
+        const commentHtml = `
+            <div class="comment-item" data-comment-id="${commentData.comment_id}">
+                <div class="d-flex">
+                    <div class="user-avatar me-2">${commentData.author_name.charAt(0)}</div>
+                    <div class="flex-grow-1">
+                        <div class="comment-bubble">
+                            <strong>${commentData.author_name}</strong>
+                            <p class="mb-0">${commentData.content}</p>
+                        </div>
+                        <div class="comment-meta">
+                            <small class="text-muted">Just now</small>
+                            ${commentData.can_edit ? '<button class="btn btn-sm btn-link text-muted">Edit</button>' : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
+        
+        // Update comment count
+        this.updateCommentCount(postId, 1);
+    }
+    
+    updateCommentCount(postId, increment) {
+        const post = document.querySelector(`[data-post-id="${postId}"]`);
+        if (!post) return;
+        
+        const commentCount = post.querySelector('.comments-count');
+        if (commentCount) {
+            const current = parseInt(commentCount.textContent) || 0;
+            const newCount = current + increment;
+            commentCount.textContent = newCount;
+            commentCount.style.display = newCount > 0 ? 'inline' : 'none';
+        }
+    }
+    
+    startRealTimeUpdates() {
+        // Check for updates every 30 seconds
+        setInterval(() => {
+            this.checkForUpdates();
+        }, 30000);
+    }
+    
+    async checkForUpdates() {
+        try {
+            const response = await fetch(`/api/groups/${this.groupId}/feed/updates/?since=${this.lastUpdateCheck}`);
+            const data = await response.json();
+            
+            if (data.has_updates) {
+                this.showUpdatesBanner(data);
+            }
+            
+            this.lastUpdateCheck = data.timestamp || new Date().toISOString();
+        } catch (error) {
+            console.error('Error checking for updates:', error);
+        }
+    }
+    
+    showUpdatesBanner(updateData) {
+        const banner = document.getElementById('updates-banner');
+        if (!banner) return;
+        
+        let message = '';
+        if (updateData.new_posts > 0) {
+            message += `${updateData.new_posts} new post${updateData.new_posts !== 1 ? 's' : ''}`;
+        }
+        if (updateData.new_comments > 0) {
+            if (message) message += ', ';
+            message += `${updateData.new_comments} new comment${updateData.new_comments !== 1 ? 's' : ''}`;
+        }
+        if (updateData.new_notifications > 0) {
+            if (message) message += ', ';
+            message += `${updateData.new_notifications} new notification${updateData.new_notifications !== 1 ? 's' : ''}`;
+        }
+        
+        document.getElementById('updates-message').textContent = message;
+        banner.classList.remove('d-none');
+    }
+    
+    initializeNotifications() {
+        // Update notification count in hub
+        this.updateNotificationCount();
+        
+        // Check for notifications every minute
+        setInterval(() => {
+            this.updateNotificationCount();
+        }, 60000);
+    }
+    
+    async updateNotificationCount() {
+        try {
+            const response = await fetch('/api/notifications/unread-count/');
+            const data = await response.json();
+            
+            const badge = document.getElementById('hub-notification-count');
+            if (badge) {
+                if (data.unread_count > 0) {
+                    badge.textContent = data.unread_count;
+                    badge.style.display = 'inline';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        } catch (error) {
+            console.error('Error updating notification count:', error);
+        }
+    }
+    
+    expandPost(readMoreBtn) {
+        const postContent = readMoreBtn.closest('.post-content');
+        const truncatedText = postContent.querySelector('.post-text.truncated');
+        
+        if (truncatedText) {
+            truncatedText.classList.remove('truncated');
+            readMoreBtn.style.display = 'none';
+        }
+    }
+    
+    filterPosts(filter) {
+        // Update active tab
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.filter === filter);
+        });
+        
+        // Filter posts
+        document.querySelectorAll('.post').forEach(post => {
+            const postType = post.dataset.postType;
+            const shouldShow = filter === 'all' || postType === filter;
+            post.style.display = shouldShow ? 'block' : 'none';
+        });
+        
+        // Update URL without reload
+        const url = new URL(window.location);
+        if (filter === 'all') {
+            url.searchParams.delete('filter');
+        } else {
+            url.searchParams.set('filter', filter);
+        }
+        window.history.replaceState({}, '', url);
+    }
+    
+    showFeedback(element, message, type = 'success') {
+        const feedback = document.createElement('div');
+        feedback.className = `feedback-toast ${type}`;
+        feedback.textContent = message;
+        feedback.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 16px;
+            background: ${type === 'error' ? '#dc3545' : '#28a745'};
+            color: white;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+        `;
+        
+        document.body.appendChild(feedback);
+        
+        setTimeout(() => {
+            feedback.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => feedback.remove(), 300);
+        }, 2000);
+    }
+    
+    getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+}
+
+// Global functions for template compatibility
+function openPostModal(type = 'text') {
+    // Your existing post modal logic
+    console.log('Opening post modal for type:', type);
+}
+
+function refreshFeed() {
+    window.location.reload();
+}
+
+function loadMorePosts() {
+    // Your existing load more logic
+    const nextPage = parseInt(new URLSearchParams(window.location.search).get('page') || '1') + 1;
+    window.location.href = `?page=${nextPage}`;
+}
+
+// Initialize enhanced feed
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof groupId !== 'undefined') {
+        window.enhancedFeed = new EnhancedSocialFeed(groupId);
+    }
+});
+
+// CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+    
+    .comment-bubble {
+        background: #f0f2f5;
+        border-radius: 16px;
+        padding: 8px 12px;
+    }
+    
+    .comment-meta {
+        margin-top: 4px;
+        margin-left: 12px;
+    }
+`;
+document.head.appendChild(style);
+</script>
+
+<script>
+    // Set group ID for JavaScript
+    window.groupId = {{ group.id }};
+</script>
+{% endblock %}
