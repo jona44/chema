@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q, F
+from django.db.models import Q, F, Prefetch
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 from django.template.loader import render_to_string
@@ -265,7 +265,9 @@ def load_more_posts(request, slug):
         feed=feed,
         is_approved=True
     ).select_related('author', 'author__profile').prefetch_related(
-        'media', 'likes', 'comments__author'
+        'media', 'likes',
+        # Prefetch comments in descending order to get the latest ones for the preview
+        Prefetch('comments', queryset=Comment.objects.order_by('-created_at').select_related('author__profile'))
     )
     
     # Apply privacy filtering

@@ -1,71 +1,53 @@
-<!-- Original Post Preview -->
-<div class="mb-6 p-4 bg-gray-50 rounded-lg">
-    <div class="flex items-start space-x-3">
-        <div class="flex-shrink-0">
-            <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
-                <span class="text-white text-sm">
-                    {% if post.is_anonymous %}?{% else %}{{
-                    post.author.profile.full_name.0|default:post.author.email.0|upper }}{% endif %}
-                </span>
-            </div>
+<div class="flex flex-col h-full">
+    <!------------------- Comments List (Scrollable) ------------------------->
+    <div id="comments-list" class="flex-1 overflow-y-auto p-6 space-y-4">
+        {% for comment in comments %}
+        {% include 'feeds/partials/comment_item.html' with comment=comment user=user %}
+        {% empty %}
+        <div class="text-center py-8">
+            <i class="far fa-comments text-4xl text-gray-300 mb-4"></i>
+            <p class="text-gray-500">No comments yet. Be the first to comment!</p>
         </div>
-        <div class="flex-1">
-            <h4 class="font-medium text-gray-900">
-                {% if post.is_anonymous %}Anonymous{% else %}{{ post.author.profile.full_name|default:post.author.email
-                }}{% endif %}
-            </h4>
-            <p class="text-gray-700 mt-1">{{ post.content|truncatewords:20 }}</p>
-        </div>
+        {% endfor %}
     </div>
-</div>
 
-<!-------------- Add Comment Form --------------->
-
-<div class="mb-6">
-    <form hx-post="{% url 'feeds:create_comment' post.id %}" 
-        hx-target="#comments-list" 
-        hx-swap="afterbegin"
-        hx-on::after-request="this.reset()" 
-        class="space-y-3">
-        {% csrf_token %}
-        <div class="flex items-start space-x-3">
-            <div class="flex-shrink-0">
-                <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
-                    <span class="text-white text-sm">{{ user.profile.full_name.0|default:user.email.0|upper }}</span>
+    <!-------------- Add Comment Form (Fixed at bottom) --------------->
+    <div class="p-4 bg-white border-t border-blue-200">
+        <form hx-post="{% url 'feeds:create_comment' post.id %}" hx-target="#comments-list" hx-swap="beforeend"
+            hx-on::after-request="this.reset()" class="space-y-3">
+            {% csrf_token %}
+            <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                    {% if user.profile.profile_picture %}
+                    <img src="{{ user.profile.profile_picture.url }}" alt="Your profile picture"
+                        class="h-8 w-8 rounded-full object-cover">
+                    {% else %}
+                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+                        <span class="text-white text-sm">{{ user.profile.full_name.0|default:user.email.0|upper
+                            }}</span>
+                    </div>
+                    {% endif %}
                 </div>
-            </div>
-            <div class="flex-1">
-                <textarea name="content" rows="3"
-                    class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                    placeholder="Write a comment..." required></textarea>
-                <div class="flex items-center justify-between mt-2">
-                    <div class="flex items-center space-x-2">
-                        <button type="button" class="text-gray-500 hover:text-blue-600">
-                            <i class="far fa-image"></i>
-                        </button>
-                        <button type="button" class="text-gray-500 hover:text-blue-600">
-                            <i class="far fa-smile"></i>
+                <div class="flex-1">
+                    <textarea name="content" rows="3"
+                        class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                        placeholder="Write a comment..." required></textarea>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="flex items-center space-x-2">
+                            <button type="button" class="text-gray-500 hover:text-blue-600">
+                                <i class="far fa-image"></i>
+                            </button>
+                            <button type="button" class="text-gray-500 hover:text-blue-600">
+                                <i class="far fa-smile"></i>
+                            </button>
+                        </div>
+                        <button type="submit"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            Comment
                         </button>
                     </div>
-                    <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                        Comment
-                    </button>
                 </div>
             </div>
-        </div>
-    </form>
-</div>
-
-<!------------------- Comments List ------------------------->
-
-<div id="comments-list" class="space-y-4">
-    {% for comment in comments %}
-    {% include 'feeds/partials/comment_item.html' with comment=comment user=user %}
-    {% empty %}
-    <div class="text-center py-8">
-        <i class="far fa-comments text-4xl text-gray-300 mb-4"></i>
-        <p class="text-gray-500">No comments yet. Be the first to comment!</p>
+        </form>
     </div>
-    {% endfor %}
 </div>

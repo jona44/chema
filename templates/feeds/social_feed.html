@@ -167,7 +167,8 @@
                     </div>
                 </div>
 
-                <!-- Post List -->
+                <!------------------------------- Post List ---------------------------->
+
                 <div id="post-list">
                     {% for post in posts %}
                     <div class="post-container bg-white rounded-lg shadow-md p-4" id="post-{{post.id}}">
@@ -181,7 +182,8 @@
                         </div>
                         <div class="mb-2">{{ post.content }}</div>
 
-                        <!-- Media (Images, Videos) -->
+                        <!--------------------- Media (Images, Videos) -------------------------->
+
                         {% if post.media.all %}
                         <div class="flex overflow-x-auto mb-2">
                             {% for media in post.media.all %}
@@ -191,7 +193,8 @@
                         </div>
                         {% endif %}
 
-                        <!-- Like/Comment Actions -->
+                        <!------------------- Like/Comment Actions ----------------------->
+                        
                         <div class="flex items-center text-sm text-gray-600">
                             <div id="like-button-{{ post.id }}">
                                 {% include 'feeds/partials/like_button.html' with post=post user=request.user

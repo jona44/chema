@@ -1,5 +1,5 @@
 {% load feed_tags %}
-<div id="post-{{ post.id }}" class="bg-white rounded-lg shadow mb-6 transition-all duration-200">
+<div id="post-{{ post.id }}" class="bg-gray-200 rounded-lg shadow mb-6 transition-all duration-200">
 
     <!------------ Post Header --------------->
     <div class="p-4 border-b border-gray-100">
@@ -9,15 +9,19 @@
                 <!------------ Author Avatar ---------->
 
                 <div class="flex-shrink-0">
-                    <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
-                        <span class="text-white font-medium text-sm">
-                            {% if post.is_anonymous %}
-                            ?
-                            {% else %}
-                            {{ post.author.profile.full_name.0|default:post.author.email.0|upper }}
-                            {% endif %}
-                        </span>
+                    {% if post.is_anonymous %}
+                    <div class="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">?</span>
                     </div>
+                    {% elif post.author.profile.profile_picture %}
+                    <img src="{{ post.author.profile.profile_picture.url }}" alt="{{ post.author.profile.full_name }}"
+                        class="h-10 w-10 rounded-full object-cover">
+                    {% else %}
+                    <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
+                        <span class="text-white font-medium text-sm">{{
+                            post.author.profile.full_name.0|default:post.author.email.0|upper }}</span>
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!---------------- Author Info --------->
@@ -256,16 +260,21 @@
 
     {% if post.comments_count > 0 %}
     <div class="px-4 pb-4">
-        <div class="bg-gray-50 rounded-lg p-3">
+        <div class="bg-gray-300 rounded-lg p-3">
             <div class="space-y-2">
-                {% for comment in post.comments.all|slice:":2" %}
+                {% for comment in post.comments.all|slice:":3" %}
                 <div class="flex items-start space-x-2">
                     <div class="flex-shrink-0">
+                        {% if comment.author.profile.profile_picture %}
+                        <img src="{{ comment.author.profile.profile_picture.url }}"
+                            alt="{{ comment.author.profile.full_name }}" class="h-6 w-6 rounded-full object-cover">
+                        {% else %}
                         <div class="h-6 w-6 rounded-full bg-gray-400 flex items-center justify-center">
                             <span class="text-white text-xs">
                                 {{ comment.author.profile.full_name.0|default:comment.author.email.0|upper }}
                             </span>
                         </div>
+                        {% endif %}
                     </div>
                     <div class="flex-1">
                         <p class="text-sm">
@@ -279,8 +288,11 @@
                 {% endfor %}
 
                 {% if post.comments_count > 2 %}
-                <button hx-get="{% url 'feeds:load_comments' post.id %}" hx-target="#comments-modal-content"
-                    hx-swap="innerHTML" data-modal-target="comments-modal" data-modal-toggle="comments-modal"
+                <button hx-get="{% url 'feeds:load_comments' post.id %}" 
+                    hx-target="#comments-modal-content"
+                    hx-swap="innerHTML" 
+                    data-modal-target="comments-modal" 
+                    data-modal-toggle="comments-modal"
                     class="text-sm text-blue-600 hover:underline">
                     View all {{ post.comments_count }} comments
                 </button>

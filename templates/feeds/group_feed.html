@@ -27,7 +27,17 @@
                         }}</a>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span class="text-gray-700">{{ user.profile.full_name|default:user.email }}</span>
+                    <a href="{% url 'profile' %}" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900">
+                        {% if user.profile.profile_picture %}
+                        <img src="{{ user.profile.profile_picture.url }}" alt="Profile"
+                            class="w-8 h-8 rounded-full object-cover">
+                        {% else %}
+                        <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-medium">{{ user.email.0|upper }}</span>
+                        </div>
+                        {% endif %}
+                        <span>{{ user.profile.full_name|default:user.email }}</span>
+                    </a>
                     <a href="/logout/" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-sign-out-alt"></i>
                     </a>
@@ -48,11 +58,15 @@
                 <div class="bg-white rounded-lg shadow mb-6 p-4">
                     <div class="flex items-start space-x-3">
                         <div class="flex-shrink-0">
+                            {% if user.profile.profile_picture %}
+                            <img src="{{ user.profile.profile_picture.url }}" alt="Your profile picture"
+                                class="h-10 w-10 rounded-full object-cover">
+                            {% else %}
                             <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
-                                <span class="text-white font-medium text-sm">
-                                    {{ user.profile.full_name.0|default:user.email.0|upper }}
-                                </span>
+                                <span class="text-white font-medium text-sm">{{
+                                    user.profile.full_name.0|default:user.email.0|upper }}</span>
                             </div>
+                            {% endif %}
                         </div>
                         <div class="flex-1">
                             <button data-modal-target="create-post-modal" data-modal-toggle="create-post-modal"
@@ -84,12 +98,14 @@
                 </div>
                 {% endif %}
 
-                <!-- Posts Container -->
+                <!--------------- Posts Container --------------->
+
                 <div id="posts-container">
                     {% include 'feeds/partials/post_list.html' %}
                 </div>
 
-                <!-- Load More Button -->
+                <!----------------- Load More Button -------------->
+
                 {% if posts.has_next %}
                 <div class="text-center mt-6">
                     <button hx-get="{% url 'feeds:load_more_posts' group.slug %}?page={{ posts.next_page_number }}"
@@ -102,10 +118,12 @@
 
             </div>
 
-            <!-- Right Sidebar -->
+            <!---------------- Right Sidebar ------------------>
+
             <div class="lg:col-span-4 mt-6 lg:mt-0">
 
-                <!-- Group Info Card -->
+                <!------------------ Group Info Card ---------------------->
+                
                 <div class="bg-white rounded-lg shadow p-6 mb-6">
                     <div class="text-center">
                         <div class="h-16 w-16 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -145,7 +163,8 @@
                     {% endif %}
                 </div>
 
-                <!-- Recent Activity -->
+                <!---------------------- Recent Activity--------------- -->
+
                 <div class="bg-white rounded-lg shadow p-6">
                     <h4 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h4>
 
@@ -154,11 +173,19 @@
                         {% for activity in recent_activities %}
                         <div class="flex items-start space-x-3">
                             <div class="flex-shrink-0">
+                                {% if activity.user.profile.profile_picture %}
+                                <img src="{{ activity.user.profile.profile_picture.url }}"
+                                    alt="{{ activity.user.profile.full_name }}"
+                                    class="h-8 w-8 rounded-full object-cover">
+                                {% else %}
                                 <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
                                     <span class="text-gray-600 text-xs font-medium">
                                         {{ activity.user.profile.full_name.0|default:activity.user.email.0|upper }}
                                     </span>
                                 </div>
+                                {% endif %}
+
+
                             </div>
                             <div class="flex-1">
                                 <p class="text-sm text-gray-600">
@@ -173,7 +200,17 @@
                                     {% endif %}
                                 </p>
                                 <p class="text-xs text-gray-500">{{ activity.created_at|timesince }} ago</p>
+                            </div> {% if activity.user.profile.profile_picture %}
+                            <img src="{{ activity.user.profile.profile_picture.url }}"
+                                alt="{{ activity.user.profile.full_name }}" class="h-8 w-8 rounded-full object-cover">
+                            {% else %}
+                            <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+                                <span class="text-gray-600 text-xs font-medium">
+                                    {{ activity.user.email.0|upper }}
+                                </span>
                             </div>
+                            {% endif %}
+
                         </div>
                         {% endfor %}
                     </div>
@@ -186,14 +223,17 @@
         </div>
     </div>
 
-    <!-- Create Post Modal -->
+    <!------------------ Create Post Modal -------------------->
+
     {% include 'feeds/partials/create_post_modal.html' %}
 
-    <!-- Comments Modal -->
+    <!-------------- Comments Modal ------------>
+
     <div id="comments-modal" tabindex="-1" aria-hidden="true"
-        class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
-        <div class="relative w-full h-full max-w-2xl md:h-auto">
-            <div class="relative bg-white rounded-lg shadow">
+        class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative w-full max-w-2xl max-h-full">
+            <!-- Modal content with fixed height -->
+            <div class="relative bg-white rounded-lg shadow flex flex-col h-[80vh]">
                 <div class="flex items-start justify-between p-4 border-b rounded-t">
                     <h3 class="text-xl font-semibold text-gray-900">
                         Comments
@@ -204,7 +244,7 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div id="comments-modal-content" class="p-6 space-y-6 max-h-96 overflow-y-auto">
+                <div id="comments-modal-content" class="flex-1 min-h-0">
                     <!-- Comments will be loaded here -->
                 </div>
             </div>
