@@ -34,11 +34,11 @@ INSTALLED_APPS = [
     
     'customuser',
     'group',
-    'memorial',
     'notifications',
     'contributions',
     'feeds',
     
+    'core',
 
 ]
 

@@ -11,6 +11,7 @@
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.0.0/flowbite.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 
 <body class="bg-gray-50">
@@ -64,7 +65,7 @@
                             {% else %}
                             <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
                                 <span class="text-white font-medium text-sm">{{
-                                    user.profile.full_name.0|default:user.email.0|upper }}</span>
+                                    user.profile.full_name.|default:user.email.|upper }}</span>
                             </div>
                             {% endif %}
                         </div>
@@ -76,28 +77,11 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-                        <button data-modal-target="create-post-modal" data-modal-toggle="create-post-modal"
-                            class="flex items-center space-x-2 text-gray-500 hover:text-blue-600 transition-colors">
-                            <i class="far fa-edit"></i>
-                            <span>Post</span>
-                        </button>
-
-                        <button
-                            class="flex items-center space-x-2 text-gray-500 hover:text-green-600 transition-colors">
-                            <i class="far fa-image"></i>
-                            <span>Photo</span>
-                        </button>
-
-                        <button
-                            class="flex items-center space-x-2 text-gray-500 hover:text-purple-600 transition-colors">
-                            <i class="far fa-calendar"></i>
-                            <span>Event</span>
-                        </button>
+                    <!----------------- Create Poll Button ------------------>
+                    <div class="mt-4">
+                        {% include 'feeds/partials/post_create_button.html' %}
                     </div>
-                </div>
                 {% endif %}
-
                 <!--------------- Posts Container --------------->
 
                 <div id="posts-container">
@@ -120,10 +104,10 @@
 
             <!---------------- Right Sidebar ------------------>
 
-            <div class="lg:col-span-4 mt-6 lg:mt-0">
+            <div class="lg:col-span-4 mt-6 lg:mt-0 lg:sticky lg:top-24 self-start">
 
                 <!------------------ Group Info Card ---------------------->
-                
+
                 <div class="bg-white rounded-lg shadow p-6 mb-6">
                     <div class="text-center">
                         <div class="h-16 w-16 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -185,7 +169,6 @@
                                 </div>
                                 {% endif %}
 
-
                             </div>
                             <div class="flex-1">
                                 <p class="text-sm text-gray-600">
@@ -227,6 +210,9 @@
 
     {% include 'feeds/partials/create_post_modal.html' %}
 
+    <!-- Placeholder for HTMX-loaded modals -->
+    <div id="modal-placeholder"></div>
+
     <!-------------- Comments Modal ------------>
 
     <div id="comments-modal" tabindex="-1" aria-hidden="true"
@@ -251,6 +237,79 @@
         </div>
     </div>
 
+    <script>
+        // Re-initialize Flowbite components after HTMX swaps content
+        document.body.addEventListener('htmx:afterSwap', function (event) {
+            if (window.initFlowbite) {
+                window.initFlowbite();
+            }
+        });
+
+        // Handle pre-selecting post type in modal
+        document.addEventListener('click', function (e) {
+            const toggleButton = e.target.closest('[data-modal-toggle="create-post-modal"]');
+            if (toggleButton && toggleButton.dataset.postType) {
+                const postType = toggleButton.dataset.postType;
+                const modal = document.getElementById('create-post-modal');
+                if (modal) {
+                    const postTypeSelect = modal.querySelector('select[name="post_type"]');
+                    if (postTypeSelect) {
+                        postTypeSelect.value = postType;
+                    }
+                }
+            }
+        });
+
+        function toggleReplyForm(commentId) {
+            const form = document.getElementById('reply-form-' + commentId);
+            if (form) {
+                form.classList.toggle('hidden');
+                if (!form.classList.contains('hidden')) {
+                    form.querySelector('textarea').focus();
+                }
+            }
+        }
+
+        function sharePost(button) {
+            const postUrl = button.dataset.postUrl;
+            const postTitle = button.dataset.postTitle;
+            const shareText = button.querySelector('.share-text');
+            const successText = button.querySelector('.share-success-text');
+
+            if (navigator.share) {
+                navigator.share({
+                    title: postTitle,
+                    text: `Check out this post on Chema!`,
+                    url: postUrl,
+                })
+                    .then(() => console.log('Successful share'))
+                    .catch((error) => console.log('Error sharing', error));
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                navigator.clipboard.writeText(postUrl).then(function () {
+                    // Show success message
+                    if (shareText && successText) {
+                        shareText.classList.add('hidden');
+                        successText.classList.remove('hidden');
+
+                        // Revert back after a few seconds
+                        setTimeout(() => {
+                            shareText.classList.remove('hidden');
+                            successText.classList.add('hidden');
+                        }, 2000);
+                    }
+                }, function (err) {
+                    console.error('Could not copy text: ', err);
+                    alert('Failed to copy link.');
+                });
+            }
+        }
+
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            event.detail.headers['X-CSRFToken'] = token;
+        });
+    </script>
 </body>
 
 </html>

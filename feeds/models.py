@@ -100,8 +100,8 @@ class Post(models.Model):
     is_urgent = models.BooleanField(default=False)
     privacy_level = models.CharField(max_length=20, choices=PRIVACY_LEVELS, default='public')
     
-    # Memorial specific
-    memorial_related = models.ForeignKey('memorial.Memorial', on_delete=models.CASCADE, null=True, blank=True, related_name='feed_posts')
+    
+    memorial_related = models.ForeignKey('feeds.Memorial', on_delete=models.CASCADE, null=True, blank=True, related_name='feed_posts')
     
     # Moderation
     is_approved = models.BooleanField(default=True)
@@ -141,8 +141,7 @@ class Post(models.Model):
             return False
         return (
             user == self.author or 
-            self.feed.group.is_admin(user) or
-            (hasattr(self, 'memorial_related') and self.memorial_related and self.memorial_related.is_admin(user))
+            self.feed.group.is_admin(user)
         )
     
     def can_delete(self, user):
@@ -314,7 +313,6 @@ class Poll(models.Model):
     """Polls attached to posts"""
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    post = models.OneToOneField(Post, on_delete=models.CASCADE, related_name='poll')
     
     question = models.CharField(max_length=500)
     is_multiple_choice = models.BooleanField(default=False)
@@ -337,7 +335,7 @@ class Poll(models.Model):
 class PollOption(models.Model):
     """Poll options"""
     
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id   = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='options')
     
     text = models.CharField(max_length=200)
@@ -395,43 +393,99 @@ from django.dispatch import receiver
 @receiver(post_save, sender=PostLike)
 def increment_post_likes(sender, instance, created, **kwargs):
     if created:
-        instance.post.likes_count = instance.post.likes.count()
-        instance.post.save(update_fields=['likes_count'])
+        Post.objects.filter(pk=instance.post.pk).update(likes_count=models.F('likes_count') + 1)
 
 @receiver(post_delete, sender=PostLike)
 def decrement_post_likes(sender, instance, **kwargs):
-    instance.post.likes_count = instance.post.likes.count()
-    instance.post.save(update_fields=['likes_count'])
+    Post.objects.filter(pk=instance.post.pk).update(likes_count=models.F('likes_count') - 1)
 
 @receiver(post_save, sender=Comment)
 def increment_comment_count(sender, instance, created, **kwargs):
     if created:
-        instance.post.comments_count = instance.post.comments.count()
-        instance.post.save(update_fields=['comments_count'])
+        Post.objects.filter(pk=instance.post.pk).update(comments_count=models.F('comments_count') + 1)
 
 @receiver(post_delete, sender=Comment)
 def decrement_comment_count(sender, instance, **kwargs):
-    instance.post.comments_count = instance.post.comments.count()
-    instance.post.save(update_fields=['comments_count'])
+    Post.objects.filter(pk=instance.post.pk).update(comments_count=models.F('comments_count') - 1)
 
 @receiver(post_save, sender=PostShare)
 def increment_share_count(sender, instance, created, **kwargs):
     if created:
-        instance.post.shares_count = instance.post.shares.count()
-        instance.post.save(update_fields=['shares_count'])
+        Post.objects.filter(pk=instance.post.pk).update(shares_count=models.F('shares_count') + 1)
 
 @receiver(post_delete, sender=PostShare)
 def decrement_share_count(sender, instance, **kwargs):
-    instance.post.shares_count = instance.post.shares.count()
-    instance.post.save(update_fields=['shares_count'])
+    Post.objects.filter(pk=instance.post.pk).update(shares_count=models.F('shares_count') - 1)
 
 @receiver(post_save, sender=PollVote)
 def increment_poll_option_votes(sender, instance, created, **kwargs):
     if created:
-        instance.option.votes_count = instance.option.votes.count()
-        instance.option.save(update_fields=['votes_count'])
+        PollOption.objects.filter(pk=instance.option.pk).update(votes_count=models.F('votes_count') + 1)
 
 @receiver(post_delete, sender=PollVote)
 def decrement_poll_option_votes(sender, instance, **kwargs):
-    instance.option.votes_count = instance.option.votes.count()
-    instance.option.save(update_fields=['votes_count'])
+    PollOption.objects.filter(pk=instance.option.pk).update(votes_count=models.F('votes_count') - 1)
+
+
+class Memorial(models.Model):
+    """Memorial page for the deceased - central hub for remembrance"""
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
+    # Deceased Information
+    full_name = models.CharField(max_length=200)
+    date_of_birth = models.DateField()
+    date_of_death = models.DateField()
+    age_at_death = models.PositiveIntegerField(blank=True, null=True)
+    
+    # Memorial Details
+    photo = models.ImageField(upload_to='memorials/', blank=True, null=True)
+    biography = models.TextField(help_text="Tell their story, achievements, and impact")
+    location_of_death = models.CharField(max_length=200, blank=True)
+    burial_location = models.CharField(max_length=200, blank=True)
+    
+    # Cultural/Religious Info
+    cultural_background = models.CharField(max_length=100, blank=True)
+    religious_affiliation = models.CharField(max_length=100, blank=True)
+    traditional_names = models.CharField(max_length=200, blank=True, help_text="Traditional/clan names")
+    
+    # Funeral Details
+    funeral_date = models.DateTimeField(blank=True, null=True)
+    funeral_venue = models.CharField(max_length=300, blank=True)
+    funeral_details = models.TextField(blank=True, help_text="Service details, dress code, etc.")
+    
+    # Platform Management
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='created_memorials')
+    family_admins = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='administered_memorials', blank=True)
+    associated_group = models.ForeignKey('group.Group', on_delete=models.CASCADE, related_name='memorial')
+    
+    # Settings
+    is_public = models.BooleanField(default=False, help_text="Can non-group members view?")
+    allow_condolences = models.BooleanField(default=True)
+    allow_memories = models.BooleanField(default=True)
+    allow_photos = models.BooleanField(default=True)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Memorial for {self.full_name}"
+
+    def save(self, *args, **kwargs):
+        if self.date_of_birth and self.date_of_death:
+            self.age_at_death = (self.date_of_death - self.date_of_birth).days // 365
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('memorial_detail', kwargs={'pk': self.pk})
+
+    @property
+    def days_since_passing(self):
+        return (timezone.now().date() - self.date_of_death).days
+
+    def is_admin(self, user):
+        return user == self.created_by or user in self.family_admins.all()

@@ -173,23 +173,25 @@
         <!------------- Media Attachments ------------>
 
         {% if post.media.exists %}
-        <div class="mb-4">
+        <div class="mb-4 flex justify-center">
             {% if post.media.count == 1 %}
             {% for media in post.media.all %}
             {% if media.media_type == 'image' %}
-            <img src="{{ media.file.url }}" alt="{{ media.alt_text }}" class="w-full rounded-lg">
+            <img src="{{ media.file.url }}" alt="{{ media.alt_text }}" class="rounded-lg"
+                style="max-width:450px;width:100%;display:block;margin:auto;">
             {% elif media.media_type == 'video' %}
-            <video controls class="w-full rounded-lg">
+            <video controls class="rounded-lg" style="max-width:450px;width:100%;display:block;margin:auto;">
                 <source src="{{ media.file.url }}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
             {% endif %}
             {% endfor %}
             {% else %}
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-2 gap-2 justify-center" style="max-width:450px;margin:auto;">
                 {% for media in post.media.all %}
                 {% if media.media_type == 'image' %}
-                <img src="{{ media.file.url }}" alt="{{ media.alt_text }}" class="w-full h-32 object-cover rounded-lg">
+                <img src="{{ media.file.url }}" alt="{{ media.alt_text }}" class="w-full h-32 object-cover rounded-lg"
+                    style="max-width:220px;display:block;margin:auto;">
                 {% endif %}
                 {% endfor %}
             </div>
@@ -247,10 +249,13 @@
 
             <!--------------- Share Button ---------->
 
-            <button
+            <button onclick="sharePost(this)"
+                data-post-url="{{ request.scheme }}://{{ request.get_host }}{{ post.feed.group.get_absolute_url }}#post-{{ post.id }}"
+                data-post-title="{{ post.title|default:'A post from '|add:post.feed.group.name }}"
                 class="flex items-center space-x-2 px-4 py-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
                 <i class="far fa-share"></i>
-                <span>Share</span>
+                <span class="share-text">Share</span>
+                <span class="share-success-text hidden text-green-600">Copied!</span>
             </button>
 
         </div>
@@ -288,11 +293,8 @@
                 {% endfor %}
 
                 {% if post.comments_count > 2 %}
-                <button hx-get="{% url 'feeds:load_comments' post.id %}" 
-                    hx-target="#comments-modal-content"
-                    hx-swap="innerHTML" 
-                    data-modal-target="comments-modal" 
-                    data-modal-toggle="comments-modal"
+                <button hx-get="{% url 'feeds:load_comments' post.id %}" hx-target="#comments-modal-content"
+                    hx-swap="innerHTML" data-modal-target="comments-modal" data-modal-toggle="comments-modal"
                     class="text-sm text-blue-600 hover:underline">
                     View all {{ post.comments_count }} comments
                 </button>

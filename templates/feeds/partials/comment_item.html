@@ -1,4 +1,4 @@
- <div id="comment-{{ comment.id }}" class="flex items-start space-x-4 p-4 border-b border-blue-500 last:border-b-0">
+<div id="comment-{{ comment.id }}" class="flex items-start space-x-4 p-4 border-b border-blue-500 last:border-b-0">
 
     <!------------------- Author Avatar ----------------->
 
@@ -35,11 +35,11 @@
                     </div>
                 </div>
 
-                <!---------- Comment Actions Dropdown -------------->
+                <!----------- Comment Actions Dropdown -------------->
 
                 {% load comment_extras %}
                 {% if comment|can_edit_comment:user %}
-                <div class="relative ml-2">
+                <div class="relative ml-3">
                     <button class="text-gray-500 hover:text-gray-700 text-sm p-1 rounded-full"
                         data-dropdown-toggle="comment-{{ comment.id }}-dropdown">
                         <i class="fas fa-ellipsis-h"></i>
@@ -48,14 +48,18 @@
                         class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-32">
                         <ul class="py-1 text-sm text-gray-700">
                             <li>
-                                <a href="#" class="block px-3 py-2 hover:bg-gray-100">
+                                <button hx-get="{% url 'feeds:get_edit_comment_form' comment.id %}"
+                                    hx-target="#comment-{{ comment.id }}" 
+                                    hx-swap="outerHTML"
+                                    class="block w-full text-left px-3 py-2 hover:bg-gray-100">
                                     <i class="fas fa-edit mr-2"></i>Edit
-                                </a>
+                                </button>
                             </li>
                             <li>
                                 <button hx-delete="{% url 'feeds:delete_comment' comment.id %}"
                                     hx-confirm="Are you sure you want to delete this comment?"
-                                    hx-target="#comment-{{ comment.id }}" hx-swap="outerHTML"
+                                    hx-target="#comment-{{ comment.id }}" 
+                                    hx-swap="outerHTML"
                                     class="block w-full text-left px-3 py-2 hover:bg-gray-100 text-red-600">
                                     <i class="fas fa-trash mr-2"></i>Delete
                                 </button>
@@ -155,7 +159,7 @@
                                 <h6 class="font-medium text-gray-900 text-xs">
                                     {{ reply.author.profile.full_name|default:reply.author.email }}
                                 </h6>
-                                <p class="text-gray-700 text-sm mt-1">{{ reply.content }}</p>
+                                <p class="text-gray-700 text-sm mt-1 italic">{{ reply.content }}</p>
                             </div>
                             {% if reply|can_edit_comment:user %}
                             <button hx-delete="{% url 'feeds:delete_comment' reply.id %}" hx-confirm="Are you sure?"
@@ -178,15 +182,3 @@
     </div>
 
 </div>
-
-<script>
-    function toggleReplyForm(commentId) {
-        const form = document.getElementById('reply-form-' + commentId);
-        if (form.classList.contains('hidden')) {
-            form.classList.remove('hidden');
-            form.querySelector('textarea').focus();
-        } else {
-            form.classList.add('hidden');
-        }
-    }
-</script>

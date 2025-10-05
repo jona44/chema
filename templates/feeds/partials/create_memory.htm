@@ -1,0 +1,199 @@
+<!-- templates/feeds/modals/create_memory.html -->
+
+<div class="modal-content bg-white rounded-lg shadow-xl max-w-2xl mx-auto">
+    <div class="modal-header p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>
+            Share a Memory
+        </h3>
+        <button type="button" class="modal-close text-gray-400 hover:text-gray-600" onclick="closeModal()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+
+    <form id="memory-form" 
+          hx-post="{% url 'feeds:create_memory_post' group.slug %}" 
+          hx-target="#feed-posts" 
+          hx-swap="afterbegin"
+          hx-encoding="multipart/form-data">
+        
+        <div class="modal-body p-6 space-y-4">
+            <!-- Memorial Info Banner -->
+            <div class="bg-indigo-50 border-l-4 border-indigo-400 rounded p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-indigo-700">
+                            Share a cherished memory or story about <strong>{{ memorial.deceased_name }}</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Title (Optional) -->
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                    Memory Title (optional)
+                </label>
+                <input type="text" 
+                       id="title" 
+                       name="title" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                       placeholder="e.g., 'Summer vacation 2019' or 'Her famous lasagna recipe'">
+            </div>
+
+            <!-- Memory Content -->
+            <div>
+                <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
+                    Your Memory <span class="text-red-500">*</span>
+                </label>
+                <textarea id="content" 
+                          name="content" 
+                          rows="6" 
+                          required
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                          placeholder="Share your favorite memory or story..."></textarea>
+                <p class="mt-1 text-xs text-gray-500">Take your time. Memories are precious.</p>
+            </div>
+
+            <!-- Optional Photo Upload -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Add Photos (optional)
+                </label>
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                    <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8"></path>
+                    </svg>
+                    <div class="mt-2">
+                        <label for="media_files" class="cursor-pointer text-indigo-600 hover:text-indigo-500 text-sm">
+                            Upload photos from this memory
+                        </label>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
+                </div>
+                <input type="file" 
+                       id="media_files" 
+                       name="media_files" 
+                       multiple 
+                       accept="image/*"
+                       class="hidden"
+                       onchange="handleMemoryFileSelection(this)">
+                
+                <!-- Preview Area -->
+                <div id="memory-file-preview" class="hidden mt-3 space-y-2">
+                    <!-- Files will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Memory Date (When it happened) -->
+            <div>
+                <label for="memory_date" class="block text-sm font-medium text-gray-700 mb-2">
+                    When did this happen? (optional)
+                </label>
+                <input type="date" 
+                       id="memory_date" 
+                       name="memory_date" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+            </div>
+
+            <!-- Options -->
+            <div class="space-y-3">
+                <!-- Privacy Level -->
+                <div>
+                    <label for="privacy_level" class="block text-sm font-medium text-gray-700 mb-2">Privacy</label>
+                    <select id="privacy_level" 
+                            name="privacy_level" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="public">Public to Memorial</option>
+                        <option value="members_only">Members Only</option>
+                        <option value="close_friends">Close Friends</option>
+                    </select>
+                </div>
+
+                <!-- Anonymous Option -->
+                <div class="flex items-center">
+                    <input type="checkbox" id="is_anonymous" name="is_anonymous" class="mr-3 h-4 w-4 text-indigo-600">
+                    <label for="is_anonymous" class="text-sm text-gray-700">
+                        Share anonymously
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end space-x-3">
+            <button type="button" 
+                    onclick="closeModal()" 
+                    class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                Cancel
+            </button>
+            <button type="submit" 
+                    class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 flex items-center"
+                    id="submit-btn">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+                Share Memory
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+function handleMemoryFileSelection(input) {
+    const files = Array.from(input.files);
+    const previewArea = document.getElementById('memory-file-preview');
+    
+    if (files.length > 0) {
+        previewArea.classList.remove('hidden');
+        previewArea.innerHTML = '';
+        
+        files.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'flex items-center space-x-3 p-2 bg-gray-50 rounded';
+            
+            const img = document.createElement('img');
+            img.className = 'w-12 h-12 object-cover rounded';
+            img.src = URL.createObjectURL(file);
+            fileItem.appendChild(img);
+            
+            const fileInfo = document.createElement('div');
+            fileInfo.className = 'flex-1 text-sm text-gray-700';
+            fileInfo.textContent = file.name;
+            fileItem.appendChild(fileInfo);
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'text-red-500 hover:text-red-700';
+            removeBtn.innerHTML = `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>`;
+            removeBtn.onclick = () => {
+                const dt = new DataTransfer();
+                Array.from(input.files).forEach((f, i) => {
+                    if (i !== index) dt.items.add(f);
+                });
+                input.files = dt.files;
+                handleMemoryFileSelection(input);
+            };
+            fileItem.appendChild(removeBtn);
+            
+            previewArea.appendChild(fileItem);
+        });
+    } else {
+        previewArea.classList.add('hidden');
+    }
+}
+
+function closeModal() {
+    document.getElementById('modal-overlay').remove();
+}
+</script>

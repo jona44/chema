@@ -20,7 +20,7 @@ class ContributionCampaign(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     group = models.OneToOneField('group.Group', on_delete=models.CASCADE, related_name='contribution_campaign')
-    memorial = models.ForeignKey('memorial.Memorial', on_delete=models.SET_NULL, null=True, blank=True, related_name='contribution_campaign')
+    memorial = models.ForeignKey('feeds.Memorial', on_delete=models.SET_NULL, null=True, blank=True, related_name='contribution_campaign')
     
     # Campaign Details
     title = models.CharField(max_length=200, default="Funeral Expenses Support")
@@ -245,22 +245,16 @@ from django.dispatch import receiver
 
 @receiver(post_save, sender=Contribution)
 def update_campaign_total_on_save(sender, instance, **kwargs):
-    if instance.status == 'completed':
-        # Recalculate campaign total
-        total = instance.campaign.contributions.filter(status='completed').aggregate(
-            total=models.Sum('amount')
-        )['total'] or Decimal('0.00')
-        
-        instance.campaign.current_amount = total
-        instance.campaign.save(update_fields=['current_amount'])
+    """Update campaign total when a contribution is created and completed."""
+    if kwargs.get('created', False) and instance.status == 'completed':
+        instance.campaign.__class__.objects.filter(pk=instance.campaign.pk).update(
+            current_amount=models.F('current_amount') + instance.amount
+        )
 
 @receiver(post_delete, sender=Contribution)
 def update_campaign_total_on_delete(sender, instance, **kwargs):
+    """Update campaign total when a completed contribution is deleted."""
     if instance.status == 'completed':
-        # Recalculate campaign total
-        total = instance.campaign.contributions.filter(status='completed').aggregate(
-            total=models.Sum('amount')
-        )['total'] or Decimal('0.00')
-        
-        instance.campaign.current_amount = total
-        instance.campaign.save(update_fields=['current_amount'])
+        instance.campaign.__class__.objects.filter(pk=instance.campaign.pk).update(
+            current_amount=models.F('current_amount') - instance.amount
+        )

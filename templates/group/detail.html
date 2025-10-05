@@ -53,6 +53,7 @@
                                     class="bg-fuchsia-500 text-300 text-white px-4 py-2 rounded-lg hover:bg-fuchsia-700">
                                         Group Feeds
                                 </a>
+                                <a href="{% url 'create_group' %}" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">Create Group</a>
                         
                     </div>
                 </div>
@@ -67,10 +68,7 @@
                                         class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                                         Manage Group
                                     </a>
-                                    <a href="{% url 'create_memorial' group_slug=group.slug %}"
-                                        class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-400">
-                                        Create Memorial
-                                    </a>
+                                    
                                     <a href="{% url 'group_manage' slug=group.slug %}"
                                         class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-500">
                                         Manage Group
@@ -283,17 +281,17 @@
                     <button class="flex-1 bg-blue-100 text-blue-700 px-3 py-2 rounded-lg hover:bg-blue-200 text-sm font-medium">
                         Share
                     </button>
+                    <a href="{% url 'browse_groups' %}" 
+                                class="flex-1 bg-green-100 text-green-700 px-3 py-2 rounded-lg hover:bg-green-200 text-sm font-medium">
+                        Browse Groups
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-{% for memorial in group.memorials.all %}
-    <a href="{{ memorial.get_absolute_url }}">{{ memorial.full_name }}</a>
-{% empty %}
-    <p>No memorials yet.</p>
-{% endfor %}
+
 
 
 <script>

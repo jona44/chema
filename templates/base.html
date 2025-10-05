@@ -1,45 +1,65 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}User Account{% endblock %}</title>
     <script src="{% static 'htmx/htmx.min.js' %}" defer></script>
     <!-- Tailwind CSS CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 
-<!-- Flowbite CDN -->
-<script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
+    <!-- Flowbite CDN -->
+    <script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         /* Custom styles for messages */
         .alert {
             padding: 1rem;
             margin-bottom: 1rem;
-            border-radius: 0.375rem; /* Tailwind's rounded-md */
+            border-radius: 0.375rem;
+            /* Tailwind's rounded-md */
             position: relative;
         }
+
         .alert-success {
-            background-color: #d1fae5; /* green-100 */
-            color: #065f46; /* green-800 */
-            border: 1px solid #a7f3d0; /* green-200 */
+            background-color: #d1fae5;
+            /* green-100 */
+            color: #065f46;
+            /* green-800 */
+            border: 1px solid #a7f3d0;
+            /* green-200 */
         }
+
         .alert-info {
-            background-color: #e0f2fe; /* blue-100 */
-            color: #1e40af; /* blue-800 */
-            border: 1px solid #bfdbfe; /* blue-200 */
+            background-color: #e0f2fe;
+            /* blue-100 */
+            color: #1e40af;
+            /* blue-800 */
+            border: 1px solid #bfdbfe;
+            /* blue-200 */
         }
+
         .alert-warning {
-            background-color: #fffbeb; /* yellow-100 */
-            color: #92400e; /* yellow-800 */
-            border: 1px solid #fde68a; /* yellow-200 */
+            background-color: #fffbeb;
+            /* yellow-100 */
+            color: #92400e;
+            /* yellow-800 */
+            border: 1px solid #fde68a;
+            /* yellow-200 */
         }
-        .alert-error { /* Django's 'error' tag maps to 'danger' in Bootstrap, using red for Tailwind */
-            background-color: #fee2e2; /* red-100 */
-            color: #991b1b; /* red-800 */
-            border: 1px solid #fecaca; /* red-200 */
+
+        .alert-error {
+            /* Django's 'error' tag maps to 'danger' in Bootstrap, using red for Tailwind */
+            background-color: #fee2e2;
+            /* red-100 */
+            color: #991b1b;
+            /* red-800 */
+            border: 1px solid #fecaca;
+            /* red-200 */
         }
+
         .alert-close-button {
             position: absolute;
             top: 0.75rem;
@@ -52,62 +72,71 @@
             cursor: pointer;
         }
     </style>
+    <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
+
 <body class="bg-gray-300 min-h-screen">
-<nav class="bg-white shadow-sm border-b">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-            <div class="flex items-center">
-                <h1 class="text-xl font-bold text-gray-900">Chema</h1>
-            </div>
-            <div class="flex items-center space-x-4">
-                {% if user.is_authenticated %}
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-gray-900">Chema</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {% if user.is_authenticated %}
                     <span class="text-sm text-gray-600">
                         Welcome, {{ user.profile.first_name|default:user.email }}!
                     </span>
                     <div class="relative">
                         {% if user.profile.profile_picture %}
-                            <img src="{{ user.profile.profile_picture.url }}" 
-                                alt="Profile" 
-                                class="w-8 h-8 rounded-full object-cover">
+                        <img src="{{ user.profile.profile_picture.url }}" alt="Profile"
+                            class="w-8 h-8 rounded-full object-cover">
                         {% else %}
-                            <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                                <span class="text-white text-sm font-medium">
-                                    {{ user.email|first|upper }}
-                                </span>
-                            </div>
+                        <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-medium">
+                                {{ user.email|first|upper }}
+                            </span>
+                        </div>
                         {% endif %}
                     </div>
                     <a href="{% url 'my_groups' %}" class="text-sm text-gray-600 hover:text-gray-900">My Groups</a>
                     <a href="{% url 'profile' %}" class="text-sm text-gray-600 hover:text-gray-900">Profile</a>
                     <a href="{% url 'logout' %}" class="text-sm text-gray-600 hover:text-gray-900">Logout</a>
-                {% else %}
+                    {% else %}
                     <a href="{% url 'login' %}" class="text-sm text-gray-600 hover:text-gray-900">Login</a>
                     <a href="{% url 'register' %}" class="text-sm text-gray-600 hover:text-gray-900">Register</a>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
 
     <div class="max-w-7xl mx-auto px-4 py-8">
         <!-- Messages -->
         {% if messages %}
-            <div class="mb-6">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} flex items-center justify-between" role="alert">
-                        <span>{{ message }}</span>
-                        <button type="button" class="alert-close-button" onclick="this.parentElement.style.display='none';">&times;</button>
-                    </div>
-                {% endfor %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} flex items-center justify-between" role="alert">
+                <span>{{ message }}</span>
+                <button type="button" class="alert-close-button"
+                    onclick="this.parentElement.style.display='none';">&times;</button>
             </div>
+            {% endfor %}
+        </div>
         {% endif %}
 
         {% block content %}
         {% endblock %}
     </div>
-    
+
 </body>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+<script>
+    document.body.addEventListener('htmx:configRequest', (event) => {
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        event.detail.headers['X-CSRFToken'] = token;
+    });
+</script>
+
 </html>

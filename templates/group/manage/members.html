@@ -14,7 +14,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-4">
-                    <a href="{% url 'get_started' %}" class="text-xl font-bold text-gray-900">Your App</a>
+                    
                     <span class="text-gray-400">/</span>
                     <a href="{% url 'group_detail' slug=group.slug %}" class="text-gray-600 hover:text-gray-900">{{ group.name }}</a>
                     <span class="text-gray-400">/</span>
@@ -38,7 +38,7 @@
                 <p class="text-gray-600 mt-1">{{ memberships.paginator.count }} total members</p>
             </div>
             <a href="{% url 'group_manage_invitations' slug=group.slug %}" 
-              class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                 Send Invitations
             </a>
         </div>

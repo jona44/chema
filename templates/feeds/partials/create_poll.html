@@ -1,0 +1,309 @@
+<!-- templates/feeds/modals/create_poll.html -->
+
+<div class="modal-content bg-white rounded-lg shadow-xl max-w-2xl mx-auto">
+    <div class="modal-header p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+            </svg>
+            Create a Poll
+        </h3>
+        <button type="button" class="modal-close text-gray-400 hover:text-gray-600" onclick="closeModal()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+
+    <form id="poll-form" 
+          hx-post="{% url 'feeds:create_poll_post' group.slug %}" 
+          hx-target="#feed-posts" 
+          hx-swap="afterbegin">
+        
+        <div class="modal-body p-6 space-y-4">
+            <!-- Poll Question -->
+            <div>
+                <label for="question" class="block text-sm font-medium text-gray-700 mb-2">
+                    Poll Question <span class="text-red-500">*</span>
+                </label>
+                <input type="text" 
+                       id="question" 
+                       name="question" 
+                       required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                       placeholder="What would you like to ask?">
+            </div>
+
+            <!-- Poll Description (Optional) -->
+            <div>
+                <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
+                    Description (optional)
+                </label>
+                <textarea id="content" 
+                          name="content" 
+                          rows="2" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                          placeholder="Add context or details about your poll..."></textarea>
+            </div>
+
+            <!-- Poll Options -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Poll Options <span class="text-red-500">*</span>
+                    <span class="text-xs text-gray-500 font-normal">(2-10 options)</span>
+                </label>
+                
+                <div id="poll-options-container" class="space-y-2">
+                    <!-- Option 1 -->
+                    <div class="flex items-center space-x-2" data-option-index="0">
+                        <span class="flex-shrink-0 w-6 h-6 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-medium">1</span>
+                        <input type="text" 
+                               name="options[]" 
+                               required
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                               placeholder="Option 1">
+                    </div>
+                    
+                    <!-- Option 2 -->
+                    <div class="flex items-center space-x-2" data-option-index="1">
+                        <span class="flex-shrink-0 w-6 h-6 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-medium">2</span>
+                        <input type="text" 
+                               name="options[]" 
+                               required
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                               placeholder="Option 2">
+                    </div>
+                </div>
+
+                <!-- Add/Remove Option Buttons -->
+                <div class="flex space-x-2 mt-3">
+                    <button type="button" 
+                            onclick="addPollOption()"
+                            id="add-option-btn"
+                            class="flex items-center px-3 py-2 text-sm text-teal-600 hover:text-teal-700 hover:bg-teal-50 rounded-md">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Add Option
+                    </button>
+                    <button type="button" 
+                            onclick="removePollOption()"
+                            id="remove-option-btn"
+                            class="flex items-center px-3 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md hidden">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                        </svg>
+                        Remove Option
+                    </button>
+                </div>
+            </div>
+
+            <!-- Poll Settings -->
+            <div class="border-t border-gray-200 pt-4 space-y-3">
+                <p class="text-sm font-medium text-gray-700">Poll Settings</p>
+                
+                <!-- Multiple Choice -->
+                <div class="flex items-center">
+                    <input type="checkbox" 
+                           id="is_multiple_choice" 
+                           name="is_multiple_choice" 
+                           class="mr-3 h-4 w-4 text-teal-600">
+                    <label for="is_multiple_choice" class="text-sm text-gray-700 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Allow multiple selections
+                    </label>
+                </div>
+
+                <!-- Allow Other Option -->
+                <div class="flex items-center">
+                    <input type="checkbox" 
+                           id="allow_other_option" 
+                           name="allow_other_option" 
+                           class="mr-3 h-4 w-4 text-teal-600">
+                    <label for="allow_other_option" class="text-sm text-gray-700 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Add "Other" option (voters can type their own answer)
+                    </label>
+                </div>
+
+                <!-- Poll Duration -->
+                <div>
+                    <label for="poll_duration" class="block text-sm font-medium text-gray-700 mb-2">
+                        Poll Duration
+                    </label>
+                    <select id="poll_duration" 
+                            name="poll_duration" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="">No expiration</option>
+                        <option value="1">1 day</option>
+                        <option value="3">3 days</option>
+                        <option value="7" selected>1 week</option>
+                        <option value="14">2 weeks</option>
+                        <option value="30">1 month</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Privacy & Options -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Privacy Level -->
+                <div>
+                    <label for="privacy_level" class="block text-sm font-medium text-gray-700 mb-2">Privacy</label>
+                    <select id="privacy_level" 
+                            name="privacy_level" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <option value="public">Public to Group</option>
+                        <option value="members_only">Members Only</option>
+                    </select>
+                </div>
+
+                <!-- Urgent -->
+                <div class="flex items-center pt-6">
+                    <input type="checkbox" id="is_urgent" name="is_urgent" class="mr-3 h-4 w-4 text-red-600">
+                    <label for="is_urgent" class="text-sm text-gray-700 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        Urgent
+                    </label>
+                </div>
+            </div>
+
+            <!-- Preview -->
+            <div class="bg-teal-50 rounded p-3">
+                <p class="text-xs text-teal-700 flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    Members will be able to see results as people vote. You can change your vote anytime before the poll expires.
+                </p>
+            </div>
+        </div>
+
+        <div class="modal-footer px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end space-x-3">
+            <button type="button" 
+                    onclick="closeModal()" 
+                    class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                Cancel
+            </button>
+            <button type="submit" 
+                    class="px-6 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50 flex items-center"
+                    id="submit-btn">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                Create Poll
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+let optionCount = 2;
+const maxOptions = 10;
+
+function addPollOption() {
+    if (optionCount >= maxOptions) {
+        alert('Maximum 10 options allowed');
+        return;
+    }
+    
+    optionCount++;
+    const container = document.getElementById('poll-options-container');
+    
+    const optionDiv = document.createElement('div');
+    optionDiv.className = 'flex items-center space-x-2';
+    optionDiv.setAttribute('data-option-index', optionCount - 1);
+    optionDiv.innerHTML = `
+        <span class="flex-shrink-0 w-6 h-6 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-medium">${optionCount}</span>
+        <input type="text" 
+               name="options[]" 
+               class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+               placeholder="Option ${optionCount}">
+    `;
+    
+    container.appendChild(optionDiv);
+    
+    // Update button visibility
+    updateOptionButtons();
+    
+    // Focus on new input
+    optionDiv.querySelector('input').focus();
+}
+
+function removePollOption() {
+    if (optionCount <= 2) {
+        return;
+    }
+    
+    const container = document.getElementById('poll-options-container');
+    const lastOption = container.lastElementChild;
+    container.removeChild(lastOption);
+    optionCount--;
+    
+    // Update button visibility
+    updateOptionButtons();
+}
+
+function updateOptionButtons() {
+    const addBtn = document.getElementById('add-option-btn');
+    const removeBtn = document.getElementById('remove-option-btn');
+    
+    if (optionCount >= maxOptions) {
+        addBtn.classList.add('hidden');
+    } else {
+        addBtn.classList.remove('hidden');
+    }
+    
+    if (optionCount > 2) {
+        removeBtn.classList.remove('hidden');
+    } else {
+        removeBtn.classList.add('hidden');
+    }
+    
+    // Update numbers
+    const options = document.querySelectorAll('#poll-options-container > div');
+    options.forEach((opt, index) => {
+        const number = opt.querySelector('span');
+        const input = opt.querySelector('input');
+        number.textContent = index + 1;
+        input.placeholder = `Option ${index + 1}`;
+    });
+}
+
+function closeModal() {
+    document.getElementById('modal-overlay').remove();
+}
+
+// Form validation
+document.getElementById('poll-form').addEventListener('submit', function(e) {
+    const question = document.getElementById('question').value.trim();
+    const options = Array.from(document.querySelectorAll('input[name="options[]"]'))
+        .map(input => input.value.trim())
+        .filter(val => val.length > 0);
+    
+    if (!question) {
+        e.preventDefault();
+        alert('Poll question is required');
+        return false;
+    }
+    
+    if (options.length < 2) {
+        e.preventDefault();
+        alert('Please provide at least 2 options');
+        return false;
+    }
+    
+    // Check for duplicate options
+    const uniqueOptions = new Set(options);
+    if (uniqueOptions.size !== options.length) {
+        e.preventDefault();
+        alert('Duplicate options are not allowed');
+        return false;
+    }
+});
+</script>

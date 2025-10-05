@@ -1,0 +1,288 @@
+<!-- templates/feeds/modals/create_funeral_update.html -->
+
+<div class="modal-content bg-white rounded-lg shadow-xl max-w-2xl mx-auto">
+    <div class="modal-header p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Post Funeral/Service Update
+        </h3>
+        <button type="button" class="modal-close text-gray-400 hover:text-gray-600" onclick="closeModal()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+
+    <form id="funeral-update-form" 
+        hx-post="{% url 'feeds:create_funeral_update' group.slug %}" 
+        hx-target="#feed-posts" 
+        hx-swap="afterbegin">
+        
+        <div class="modal-body p-6 space-y-4">
+            <!-- Admin Notice Banner -->
+            <div class="bg-amber-50 border-l-4 border-amber-400 rounded p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-amber-700">
+                            <strong>Administrator Post:</strong> Share funeral, memorial service, or other important updates for <strong>{{ memorial.deceased_name }}</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Update Type Quick Select -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Update Type
+                </label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" 
+                            onclick="setUpdateType('Funeral Service')"
+                            class="px-4 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 text-left">
+                        🕊️ Funeral Service
+                    </button>
+                    <button type="button" 
+                            onclick="setUpdateType('Memorial Service')"
+                            class="px-4 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 text-left">
+                        🌹 Memorial Service
+                    </button>
+                    <button type="button" 
+                            onclick="setUpdateType('Celebration of Life')"
+                            class="px-4 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 text-left">
+                        ✨ Celebration of Life
+                    </button>
+                    <button type="button" 
+                            onclick="setUpdateType('Viewing/Visitation')"
+                            class="px-4 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 text-left">
+                        👁️ Viewing/Visitation
+                    </button>
+                </div>
+            </div>
+
+            <!-- Title -->
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                    Update Title <span class="text-red-500">*</span>
+                </label>
+                <input type="text" 
+                    id="title" 
+                    name="title" 
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                    placeholder="e.g., Funeral Service Information">
+            </div>
+
+            <!-- Service Details -->
+            <div>
+                <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
+                    Service Details <span class="text-red-500">*</span>
+                </label>
+                <textarea id="content" 
+                        name="content" 
+                        rows="6" 
+                        required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                        placeholder="Include details about the service, dress code, family requests, etc."></textarea>
+            </div>
+
+            <!-- Date and Time Section -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Service Start Date/Time -->
+                <div>
+                    <label for="service_date" class="block text-sm font-medium text-gray-700 mb-2">
+                        Service Date & Time
+                    </label>
+                    <input type="datetime-local" 
+                        id="service_date" 
+                        name="service_date" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent">
+                </div>
+
+                <!-- Service End Date/Time -->
+                <div>
+                    <label for="service_end_date" class="block text-sm font-medium text-gray-700 mb-2">
+                        End Time (optional)
+                    </label>
+                    <input type="datetime-local" 
+                        id="service_end_date" 
+                        name="service_end_date" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent">
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div>
+                <label for="location" class="block text-sm font-medium text-gray-700 mb-2">
+                    Location
+                </label>
+                <div class="relative">
+                    <input type="text" 
+                        id="location" 
+                        name="location" 
+                        class="w-full px-3 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                        placeholder="Venue name and address">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p class="mt-1 text-xs text-gray-500">Full address including city and postal code</p>
+            </div>
+
+            <!-- Additional Information Template -->
+            <div>
+                <details class="text-sm">
+                    <summary class="cursor-pointer font-medium text-gray-700">Common Information to Include</summary>
+                    <div class="mt-2 space-y-1 text-gray-600 text-xs">
+                        <p>✓ Dress code (formal, casual, specific colors)</p>
+                        <p>✓ Parking information</p>
+                        <p>✓ Accessibility details</p>
+                        <p>✓ Reception details (if applicable)</p>
+                        <p>✓ Flower or donation preferences</p>
+                        <p>✓ Live stream link (if available)</p>
+                        <p>✓ Contact person for questions</p>
+                        <p>✓ Any special requests from the family</p>
+                    </div>
+                </details>
+            </div>
+
+            <!-- Post Options -->
+            <div class="space-y-3 pt-4 border-t border-gray-200">
+                <p class="text-sm font-medium text-gray-700">Post Options</p>
+                
+                <!-- Pin to Top -->
+                <div class="flex items-center">
+                    <input type="checkbox" id="is_pinned" name="is_pinned" checked class="mr-3 h-4 w-4 text-gray-600">
+                    <label for="is_pinned" class="text-sm text-gray-700 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
+                        </svg>
+                        Pin to top of memorial
+                    </label>
+                </div>
+
+                <!-- Mark as Urgent -->
+                <div class="flex items-center">
+                    <input type="checkbox" id="is_urgent" name="is_urgent" class="mr-3 h-4 w-4 text-red-600">
+                    <label for="is_urgent" class="text-sm text-gray-700 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        Mark as urgent (for last-minute changes)
+                    </label>
+                </div>
+            </div>
+
+            <!-- Notification Preview -->
+            <div class="bg-blue-50 rounded p-3">
+                <p class="text-xs text-blue-700 flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
+                    </svg>
+                    All memorial members will receive a notification about this update
+                </p>
+            </div>
+        </div>
+
+        <div class="modal-footer px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end space-x-3">
+            <button type="button" 
+                    onclick="closeModal()" 
+                    class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                Cancel
+            </button>
+            <button type="submit" 
+                    class="px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50 flex items-center"
+                    id="submit-btn">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
+                </svg>
+                Post Update
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+function setUpdateType(type) {
+    const titleInput = document.getElementById('title');
+    const contentInput = document.getElementById('content');
+    
+    titleInput.value = type;
+    
+    // Set default content based on type
+    const templates = {
+        'Funeral Service': 'We invite you to join us in celebrating the life of {{ memorial.deceased_name }}.\n\nService Details:\n- Date: [Date]\n- Time: [Time]\n- Location: [Location]\n\nThe family welcomes all friends and loved ones.',
+        'Memorial Service': 'Please join us for a memorial service in honor of {{ memorial.deceased_name }}.\n\nService Information:\n- Date: [Date]\n- Time: [Time]\n- Venue: [Location]\n\nLight refreshments will be served following the service.',
+        'Celebration of Life': 'Join us as we celebrate the remarkable life of {{ memorial.deceased_name }}.\n\nEvent Details:\n- Date: [Date]\n- Time: [Time]\n- Location: [Location]\n\nPlease share your favorite memories and stories.',
+        'Viewing/Visitation': 'Family and friends are invited to pay their respects.\n\nVisitation Hours:\n- Date: [Date]\n- Time: [Time]\n- Location: [Location]\n\nThe family will be present to receive guests.'
+    };
+    
+    if (contentInput.value.trim() === '') {
+        contentInput.value = templates[type] || '';
+    }
+    
+    contentInput.focus();
+}
+
+function closeModal() {
+    document.getElementById('modal-overlay').remove();
+}
+
+// Set minimum date to today
+document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    const dateString = now.toISOString().slice(0, 16);
+    const serviceDateInput = document.getElementById('service_date');
+    const serviceEndDateInput = document.getElementById('service_end_date');
+    
+    if (serviceDateInput) {
+        serviceDateInput.min = dateString;
+    }
+    if (serviceEndDateInput) {
+        serviceEndDateInput.min = dateString;
+    }
+});
+
+// Ensure end date is after start date
+document.getElementById('service_date').addEventListener('change', function() {
+    const startDate = this.value;
+    const endDateInput = document.getElementById('service_end_date');
+    
+    if (startDate) {
+        endDateInput.min = startDate;
+        if (endDateInput.value && endDateInput.value < startDate) {
+            endDateInput.value = '';
+        }
+    }
+});
+
+// Form validation
+document.getElementById('funeral-update-form').addEventListener('submit', function(e) {
+    const title = document.getElementById('title').value.trim();
+    const content = document.getElementById('content').value.trim();
+    
+    if (!title || !content) {
+        e.preventDefault();
+        alert('Title and service details are required.');
+        return false;
+    }
+    
+    const serviceDate = document.getElementById('service_date').value;
+    const serviceEndDate = document.getElementById('service_end_date').value;
+    
+    if (serviceDate && serviceEndDate && new Date(serviceEndDate) <= new Date(serviceDate)) {
+        e.preventDefault();
+        alert('End time must be after start time.');
+        return false;
+    }
+});
+</script>

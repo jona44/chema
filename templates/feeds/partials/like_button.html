@@ -1,0 +1,10 @@
+{% load feed_tags %}
+
+<button hx-post="{% url 'feeds:toggle_post_like' post.id %}" hx-target="#like-button-{{ post.id }}" hx-swap="outerHTML"
+    class="flex items-center space-x-2 px-4 py-2 {% if post|has_liked_post:user %}text-blue-600 bg-blue-50{% else %}text-gray-500 hover:text-blue-600 hover:bg-blue-50{% endif %} rounded-lg transition-colors">
+    <i class="{% if post|has_liked_post:user %}fas{% else %}far{% endif %} fa-thumbs-up"></i>
+    <span>Like</span>
+    {% if post.likes_count > 0 %}
+    <span class="text-sm">({{ post.likes_count }})</span>
+    {% endif %}
+</button>

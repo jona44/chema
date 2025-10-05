@@ -7,13 +7,11 @@ from django.db.models import Q, Count
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
+from feeds.models import Feed
 from group.forms import GroupCreationForm, GroupInvitationForm, GroupJoinForm, GroupSearchForm, GroupEditForm
 from .models import Group, GroupMembership, GroupInvitation, Category
 from datetime import timezone
 from django.utils import timezone
-
-
-
 
 
 
@@ -404,4 +402,19 @@ def change_member_role_view(request, slug, membership_id):
             messages.error(request, "Invalid role specified.")
     
     return redirect('group_manage_members', slug=slug)
+
+
+@login_required
+def get_event_modal(request, group_slug):
+    """Render event creation modal"""
+    group = get_object_or_404(Group, slug=group_slug)
+    feed = get_object_or_404(Feed, group=group)
+    
+    if not feed.allow_posts or not feed.allow_events or not group.is_member(request.user):
+        return JsonResponse({'error': 'Not allowed'}, status=403)
+    
+    return render(request, 'feeds/modals/create_event.html', {
+        'group': group,
+        'feed': feed,
+    })
 

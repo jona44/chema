@@ -1,0 +1,189 @@
+<!-- templates/feeds/modals/create_tribute.html -->
+
+<div class="modal-content bg-white rounded-lg shadow-xl max-w-2xl mx-auto">
+    <div class="modal-header p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+            </svg>
+            Write a Tribute
+        </h3>
+        <button type="button" class="modal-close text-gray-400 hover:text-gray-600" onclick="closeModal()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+
+    <form id="tribute-form" 
+          hx-post="{% url 'feeds:create_tribute_post' group.slug %}" 
+          hx-target="#feed-posts" 
+          hx-swap="afterbegin">
+        
+        <div class="modal-body p-6 space-y-4">
+            <!-- Memorial Info Banner -->
+            <div class="bg-pink-50 border-l-4 border-pink-400 rounded p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-pink-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-pink-700">
+                            Honor the life of <strong>{{ memorial.deceased_name }}</strong> with a heartfelt tribute, poem, or letter
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tribute Type -->
+            <div>
+                <label for="tribute_type" class="block text-sm font-medium text-gray-700 mb-2">
+                    Type of Tribute
+                </label>
+                <select id="tribute_type" 
+                        name="tribute_type" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500">
+                    <option value="poem">Poem</option>
+                    <option value="letter">Letter</option>
+                    <option value="song">Song Lyrics</option>
+                    <option value="prayer">Prayer</option>
+                    <option value="eulogy">Eulogy</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <!-- Title -->
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                    Title <span class="text-red-500">*</span>
+                </label>
+                <input type="text" 
+                       id="title" 
+                       name="title" 
+                       required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                       placeholder="Give your tribute a title...">
+                <p class="mt-1 text-xs text-gray-500">e.g., "A Mother's Love" or "In Loving Memory"</p>
+            </div>
+
+            <!-- Tribute Content -->
+            <div>
+                <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
+                    Your Tribute <span class="text-red-500">*</span>
+                </label>
+                <textarea id="content" 
+                          name="content" 
+                          rows="10" 
+                          required
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent font-serif"
+                          placeholder="Write your tribute, poem, or letter here..."></textarea>
+                <div class="mt-2 flex justify-between text-xs text-gray-500">
+                    <span>💡 Tip: Press Tab for indentation</span>
+                    <span id="tribute-char-count">0 characters</span>
+                </div>
+            </div>
+
+            <!-- Formatting Help -->
+            <div class="bg-gray-50 rounded p-3">
+                <details class="text-sm">
+                    <summary class="cursor-pointer font-medium text-gray-700">Formatting Tips</summary>
+                    <div class="mt-2 space-y-1 text-gray-600">
+                        <p>• For poems: Press Enter twice between stanzas</p>
+                        <p>• For letters: Start with "Dear..." or name</p>
+                        <p>• Use line breaks to separate thoughts</p>
+                        <p>• Take your time - there's no rush</p>
+                    </div>
+                </details>
+            </div>
+
+            <!-- Options -->
+            <div class="space-y-3">
+                <!-- Privacy Level -->
+                <div>
+                    <label for="privacy_level" class="block text-sm font-medium text-gray-700 mb-2">Who can see this?</label>
+                    <select id="privacy_level" 
+                            name="privacy_level" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        <option value="public">Public to Memorial</option>
+                        <option value="members_only">Members Only</option>
+                        <option value="close_friends">Close Friends</option>
+                    </select>
+                </div>
+
+                <!-- Anonymous Option -->
+                <div class="flex items-center">
+                    <input type="checkbox" id="is_anonymous" name="is_anonymous" class="mr-3 h-4 w-4 text-pink-600">
+                    <label for="is_anonymous" class="text-sm text-gray-700">
+                        Share anonymously
+                    </label>
+                </div>
+            </div>
+
+            <!-- Suggested Tributes -->
+            <div>
+                <details class="text-sm">
+                    <summary class="cursor-pointer font-medium text-gray-700">Need inspiration? View example tributes</summary>
+                    <div class="mt-3 space-y-3">
+                        <div class="p-3 bg-white border border-gray-200 rounded">
+                            <p class="font-medium text-gray-900 mb-1">Short Poem Example:</p>
+                            <p class="text-gray-600 italic text-sm">
+                                "In the garden of memory,<br>
+                                In the palace of dreams,<br>
+                                That is where you will be,<br>
+                                Until the end of time."
+                            </p>
+                        </div>
+                        <div class="p-3 bg-white border border-gray-200 rounded">
+                            <p class="font-medium text-gray-900 mb-1">Letter Opening Example:</p>
+                            <p class="text-gray-600 text-sm">
+                                "Dear [Name], Words cannot express how much you meant to us. Your kindness, wisdom, and love touched so many lives..."
+                            </p>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div class="modal-footer px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end space-x-3">
+            <button type="button" 
+                    onclick="closeModal()" 
+                    class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-pink-500">
+                Cancel
+            </button>
+            <button type="submit" 
+                    class="px-6 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 disabled:opacity-50 flex items-center"
+                    id="submit-btn">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                </svg>
+                Post Tribute
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+function closeModal() {
+    document.getElementById('modal-overlay').remove();
+}
+
+// Character count
+document.getElementById('content').addEventListener('input', function() {
+    const count = this.value.length;
+    document.getElementById('tribute-char-count').textContent = `${count} characters`;
+});
+
+// Form validation
+document.getElementById('tribute-form').addEventListener('submit', function(e) {
+    const title = document.getElementById('title').value.trim();
+    const content = document.getElementById('content').value.trim();
+    
+    if (!title || !content) {
+        e.preventDefault();
+        alert('Both title and content are required for a tribute.');
+        return false;
+    }
+});
+</script>
