@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from . import memorial_views
+from . import memorial_feed_views
 from . import poll_views
 
 app_name = 'feeds'
@@ -31,16 +31,14 @@ urlpatterns = [
     # path('<slug:group_slug>/modals/text-post/', views.get_text_post_modal, name='text_post_modal'),
 
     # Memorial-specific post creation views
-    path('<slug:group_slug>/posts/create/memory/', memorial_views.create_memory_post_view, name='create_memory_post'),
-    path('<slug:group_slug>/posts/create/condolence/', memorial_views.create_condolence_post_view, name='create_condolence_post'),
-    path('<slug:group_slug>/posts/create/tribute/', memorial_views.create_tribute_post_view, name='create_tribute_post'),
-    path('<slug:group_slug>/posts/create/funeral-update/', memorial_views.create_funeral_update_view, name='create_funeral_update'),
-
-    # Memorial modal rendering views
-    path('<slug:group_slug>/modals/memory/', memorial_views.get_memory_modal, name='memory_modal'),
-    path('<slug:group_slug>/modals/condolence/', memorial_views.get_condolence_modal, name='condolence_modal'),
-    path('<slug:group_slug>/modals/tribute/', memorial_views.get_tribute_modal, name='tribute_modal'),
-    path('<slug:group_slug>/modals/funeral-update/', memorial_views.get_funeral_update_modal, name='funeral_update_modal'),
+    path('<slug:group_slug>/posts/create/memory/', memorial_feed_views.create_memory_post_view, name='create_memory_post'),
+    path('<slug:group_slug>/posts/create/condolence/', memorial_feed_views.create_condolence_post_view, name='create_condolence_post'),
+    path('<slug:group_slug>/posts/create/tribute/', memorial_feed_views.create_tribute_post_view, name='create_tribute_post'),
+    path('<slug:group_slug>/posts/create/funeral-update/', memorial_feed_views.create_funeral_update_view, name='create_funeral_update'),
+    path('<slug:group_slug>/modals/memory/', memorial_feed_views.get_memory_modal, name='memory_modal'),
+    path('<slug:group_slug>/modals/condolence/', memorial_feed_views.get_condolence_modal, name='condolence_modal'),
+    path('<slug:group_slug>/modals/tribute/', memorial_feed_views.get_tribute_modal, name='tribute_modal'),
+    path('<slug:group_slug>/modals/funeral-update/', memorial_feed_views.get_funeral_update_modal, name='funeral_update_modal'),
 
     # Poll interaction
     path('posts/<uuid:post_id>/poll/vote/', poll_views.vote_poll_view, name='vote_poll'),

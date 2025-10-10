@@ -16,16 +16,14 @@
 
 <body class="bg-gray-50">
 
-    <!-------------------- Navigation --------------->
-
+    <!-- Navigation -->
     <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <a href="/" class="text-xl font-bold text-blue-600">GroupApp</a>
                     <span class="ml-4 text-gray-500">/</span>
-                    <a href="{{ group.get_absolute_url }}" class="ml-4 text-gray-700 hover:text-gray-900">{{ group.name
-                        }}</a>
+                    <a href="{{ group.get_absolute_url }}" class="ml-4 text-gray-700 hover:text-gray-900">{{ group.name }}</a>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="{% url 'profile' %}" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900">
@@ -47,14 +45,14 @@
         </div>
     </nav>
 
+    <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="lg:grid lg:grid-cols-12 lg:gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!----------- Main Content ---------------->
-
+            <!-- Left Column - Posts Feed (8 columns on large screens) -->
             <div class="lg:col-span-8">
 
-                <!-- Create Post Card -->
+                <!-- Create Post Box -->
                 {% if can_post %}
                 <div class="bg-white rounded-lg shadow mb-6 p-4">
                     <div class="flex items-start space-x-3">
@@ -64,8 +62,7 @@
                                 class="h-10 w-10 rounded-full object-cover">
                             {% else %}
                             <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
-                                <span class="text-white font-medium text-sm">{{
-                                    user.profile.full_name.|default:user.email.|upper }}</span>
+                                <span class="text-white font-medium text-sm">{{ user.profile.full_name|default:user.email|first|upper }}</span>
                             </div>
                             {% endif %}
                         </div>
@@ -77,19 +74,18 @@
                         </div>
                     </div>
 
-                    <!----------------- Create Poll Button ------------------>
                     <div class="mt-4">
                         {% include 'feeds/partials/post_create_button.html' %}
                     </div>
+                </div>
                 {% endif %}
-                <!--------------- Posts Container --------------->
 
+                <!-- Posts List -->
                 <div id="posts-container">
                     {% include 'feeds/partials/post_list.html' %}
                 </div>
 
-                <!----------------- Load More Button -------------->
-
+                <!-- Load More Button -->
                 {% if posts.has_next %}
                 <div class="text-center mt-6">
                     <button hx-get="{% url 'feeds:load_more_posts' group.slug %}?page={{ posts.next_page_number }}"
@@ -102,150 +98,183 @@
 
             </div>
 
-            <!---------------- Right Sidebar ------------------>
+            <!-- Right Column - Sidebar (4 columns on large screens) -->
+            <aside class="lg:col-span-4">
+                <div class="lg:sticky lg:top-20 space-y-6">
 
-            <div class="lg:col-span-4 mt-6 lg:mt-0 lg:sticky lg:top-24 self-start">
-
-                <!------------------ Group Info Card ---------------------->
-
-                <div class="bg-white rounded-lg shadow p-6 mb-6">
-                    <div class="text-center">
-                        <div class="h-16 w-16 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
-                            <span class="text-white text-2xl font-bold">{{ group.name.0|upper }}</span>
-                        </div>
-                        <h3 class="text-lg font-semibold text-gray-900">{{ group.name }}</h3>
-                        <p class="text-gray-600 text-sm mt-1">{{ group.group_type|capfirst }} Group</p>
-                    </div>
-
-                    <div class="mt-4 pt-4 border-t border-gray-200">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-gray-600 text-sm">
-                                <i class="fas fa-users mr-2"></i>Members
-                            </span>
-                            <span class="font-semibold">{{ group.members.count }}</span>
-                        </div>
-
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-gray-600 text-sm">
-                                <i class="fas fa-globe mr-2"></i>Privacy
-                            </span>
-                            <span class="font-semibold">{{ group.privacy_level|capfirst }}</span>
-                        </div>
-
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600 text-sm">
-                                <i class="fas fa-calendar mr-2"></i>Created
-                            </span>
-                            <span class="font-semibold">{{ group.created_at|date:"M Y" }}</span>
-                        </div>
-                    </div>
-
-                    {% if group.description %}
-                    <div class="mt-4 pt-4 border-t border-gray-200">
-                        <p class="text-gray-700 text-sm">{{ group.description|truncatewords:20 }}</p>
-                    </div>
-                    {% endif %}
-                </div>
-
-                <!---------------------- Recent Activity--------------- -->
-
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h4>
-
-                    {% if recent_activities %}
-                    <div class="space-y-3">
-                        {% for activity in recent_activities %}
-                        <div class="flex items-start space-x-3">
-                            <div class="flex-shrink-0">
-                                {% if activity.user.profile.profile_picture %}
-                                <img src="{{ activity.user.profile.profile_picture.url }}"
-                                    alt="{{ activity.user.profile.full_name }}"
-                                    class="h-8 w-8 rounded-full object-cover">
-                                {% else %}
-                                <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
-                                    <span class="text-gray-600 text-xs font-medium">
-                                        {{ activity.user.profile.full_name.0|default:activity.user.email.0|upper }}
-                                    </span>
-                                </div>
-                                {% endif %}
-
+                    <!-- Group Info Card -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="text-center">
+                            <div class="h-16 w-16 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <span class="text-white text-2xl font-bold">{{ group.name.0|upper }}</span>
                             </div>
-                            <div class="flex-1">
-                                <p class="text-sm text-gray-600">
-                                    <span class="font-medium">
-                                        {{ activity.user.profile.full_name|default:activity.user.email }}
-                                    </span>
-                                    {{ activity.get_activity_type_display|lower }}
-                                    {% if activity.post %}
-                                    <a href="#post-{{ activity.post.id }}" class="text-blue-600 hover:underline">
-                                        a post
-                                    </a>
-                                    {% endif %}
-                                </p>
-                                <p class="text-xs text-gray-500">{{ activity.created_at|timesince }} ago</p>
-                            </div> {% if activity.user.profile.profile_picture %}
-                            <img src="{{ activity.user.profile.profile_picture.url }}"
-                                alt="{{ activity.user.profile.full_name }}" class="h-8 w-8 rounded-full object-cover">
-                            {% else %}
-                            <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
-                                <span class="text-gray-600 text-xs font-medium">
-                                    {{ activity.user.email.0|upper }}
+                            <h3 class="text-lg font-semibold text-gray-900">{{ group.name }}</h3>
+                            <p class="text-gray-600 text-sm mt-1">{{ group.group_type|capfirst }} Group</p>
+                            <p class="text-gray-600 text-sm mt-1">{{ group.category.name|default:'General'|capfirst }} Group</p>
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-600 text-sm">
+                                    <i class="fas fa-users mr-2"></i>Members
                                 </span>
+                                <span class="font-semibold">{{ group.num_members|default:group.member_count }}</span>
                             </div>
-                            {% endif %}
 
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-600 text-sm">
+                                    <i class="fas fa-globe mr-2"></i>Privacy
+                                </span>
+                                <span class="font-semibold">{{ group.privacy|capfirst }}</span>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 text-sm">
+                                    <i class="fas fa-calendar mr-2"></i>Created
+                                </span>
+                                <span class="font-semibold">{{ group.created_at|date:"M Y" }}</span>
+                            </div>
                         </div>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <p class="text-gray-500 text-sm">No recent activity</p>
-                    {% endif %}
-                </div>
 
-            </div>
+                        {% if group.description %}
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <p class="text-gray-700 text-sm">{{ group.description|truncatewords:20 }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Recent Activity Card -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h4>
+
+                        {% if recent_activities %}
+                        <div class="space-y-3">
+                            {% for activity in recent_activities %}
+                            <div class="flex items-start space-x-3">
+                                <div class="flex-shrink-0">
+                                    {% if activity.user.profile.profile_picture %}
+                                    <img src="{{ activity.user.profile.profile_picture.url }}"
+                                        alt="{{ activity.user.profile.full_name }}"
+                                        class="h-8 w-8 rounded-full object-cover">
+                                    {% else %}
+                                    <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+                                        <span class="text-gray-600 text-xs font-medium">
+                                            {{ activity.user.profile.full_name.0|default:activity.user.email.0|upper }}
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-gray-600">
+                                        <span class="font-medium">
+                                            {{ activity.user.profile.full_name|default:activity.user.email }}
+                                        </span>
+                                        {{ activity.get_activity_type_display|lower }}
+                                        {% if activity.post %}
+                                        <a href="#post-{{ activity.post.id }}" class="text-blue-600 hover:underline">
+                                            a post
+                                        </a>
+                                        {% endif %}
+                                    </p>
+                                    <p class="text-xs text-gray-500">{{ activity.created_at|timesince }} ago</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-gray-500 text-sm">No recent activity</p>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </aside>
+
         </div>
     </div>
 
-    <!------------------ Create Post Modal -------------------->
+    <!-- Modals -->
+    <div id="modal-placeholder">
+        {% include 'feeds/partials/create_post_modal.html' %}
+    </div>
 
-    {% include 'feeds/partials/create_post_modal.html' %}
-
-    <!-- Placeholder for HTMX-loaded modals -->
-    <div id="modal-placeholder"></div>
-
-    <!-------------- Comments Modal ------------>
-
+    <!-- Comments Modal -->
     <div id="comments-modal" tabindex="-1" aria-hidden="true"
         class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative w-full max-w-2xl max-h-full">
-            <!-- Modal content with fixed height -->
             <div class="relative bg-white rounded-lg shadow flex flex-col h-[80vh]">
                 <div class="flex items-start justify-between p-4 border-b rounded-t">
-                    <h3 class="text-xl font-semibold text-gray-900">
-                        Comments
-                    </h3>
+                    <h3 class="text-xl font-semibold text-gray-900">Comments</h3>
                     <button type="button"
                         class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
                         data-modal-hide="comments-modal">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div id="comments-modal-content" class="flex-1 min-h-0">
-                    <!-- Comments will be loaded here -->
-                </div>
+                <div id="comments-modal-content" class="flex-1 min-h-0"></div>
             </div>
         </div>
     </div>
 
+    {#----------------------------------------------------------#}
+    {#                     Media Lightbox                       #}
+    {#----------------------------------------------------------#}
+    
+    <div id="media-lightbox" class="hidden fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center">
+        <button onclick="closeLightbox()"
+            class="absolute top-4 right-4 text-white hover:text-gray-300 z-50 bg-black bg-opacity-50 rounded-full p-2">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+
+        <button id="lightbox-prev" onclick="navigateLightbox(-1)"
+            class="absolute left-4 text-white hover:text-gray-300 z-50 bg-black bg-opacity-50 rounded-full p-3 hidden">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
+
+        <button id="lightbox-next" onclick="navigateLightbox(1)"
+            class="absolute right-4 text-white hover:text-gray-300 z-50 bg-black bg-opacity-50 rounded-full p-3 hidden">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </button>
+
+        <div class="relative max-w-7xl max-h-screen w-full h-full flex items-center justify-center p-4"
+            onclick="closeLightbox()">
+            <img id="lightbox-image" src="" alt="" class="hidden max-w-full max-h-full object-contain"
+                onclick="event.stopPropagation()">
+            <video id="lightbox-video" controls class="hidden max-w-full max-h-full" onclick="event.stopPropagation()">
+                <source src="" type="video/mp4">
+            </video>
+        </div>
+
+        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-center">
+            <p id="lightbox-caption" class="text-sm mb-2"></p>
+            <p id="lightbox-counter" class="text-xs text-gray-300"></p>
+        </div>
+
+        <a id="lightbox-download" href="" download
+            class="absolute top-4 left-4 text-white hover:text-gray-300 z-50 bg-black bg-opacity-50 rounded-full p-2"
+            title="Download">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Scripts -->
     <script>
-        // Re-initialize Flowbite components after HTMX swaps content
+        // Re-initialize Flowbite after HTMX swaps
         document.body.addEventListener('htmx:afterSwap', function (event) {
             if (window.initFlowbite) {
                 window.initFlowbite();
             }
         });
 
-        // Handle pre-selecting post type in modal
+        // Pre-select post type in modal
         document.addEventListener('click', function (e) {
             const toggleButton = e.target.closest('[data-modal-toggle="create-post-modal"]');
             if (toggleButton && toggleButton.dataset.postType) {
@@ -282,17 +311,13 @@
                     text: `Check out this post on Chema!`,
                     url: postUrl,
                 })
-                    .then(() => console.log('Successful share'))
-                    .catch((error) => console.log('Error sharing', error));
+                .then(() => console.log('Successful share'))
+                .catch((error) => console.log('Error sharing', error));
             } else {
-                // Fallback for browsers that don't support Web Share API
                 navigator.clipboard.writeText(postUrl).then(function () {
-                    // Show success message
                     if (shareText && successText) {
                         shareText.classList.add('hidden');
                         successText.classList.remove('hidden');
-
-                        // Revert back after a few seconds
                         setTimeout(() => {
                             shareText.classList.remove('hidden');
                             successText.classList.add('hidden');
@@ -305,11 +330,124 @@
             }
         }
 
+        // CSRF token for HTMX
         document.body.addEventListener('htmx:configRequest', (event) => {
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             event.detail.headers['X-CSRFToken'] = token;
         });
+
+        // Lightbox JavaScript (from previous artifact)
+        let currentPostMedia = [];
+        let currentMediaIndex = 0;
+        let currentPostId = null;
+
+        function openLightbox(postId, startIndex) {
+            collectPostMedia(postId);
+            if (currentPostMedia.length === 0) return;
+            
+            currentMediaIndex = startIndex;
+            currentPostId = postId;
+            
+            const lightbox = document.getElementById('media-lightbox');
+            const prevBtn = document.getElementById('lightbox-prev');
+            const nextBtn = document.getElementById('lightbox-next');
+            
+            if (currentPostMedia.length > 1) {
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+            } else {
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            }
+            
+            loadMediaAtIndex(currentMediaIndex);
+            lightbox.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function collectPostMedia(postId) {
+            currentPostMedia = [];
+            const postContainer = document.querySelector(`[data-post-id="${postId}"]`);
+            if (!postContainer) return;
+            
+            const mediaElements = postContainer.querySelectorAll('[data-media-url]');
+            mediaElements.forEach(element => {
+                currentPostMedia.push({
+                    url: element.dataset.mediaUrl,
+                    altText: element.dataset.mediaAlt || '',
+                    type: element.dataset.mediaType || 'image',
+                    caption: element.dataset.mediaCaption || ''
+                });
+            });
+        }
+
+        function loadMediaAtIndex(index) {
+            if (index < 0 || index >= currentPostMedia.length) return;
+            
+            const media = currentPostMedia[index];
+            const image = document.getElementById('lightbox-image');
+            const video = document.getElementById('lightbox-video');
+            const caption = document.getElementById('lightbox-caption');
+            const counter = document.getElementById('lightbox-counter');
+            const download = document.getElementById('lightbox-download');
+            
+            video.pause();
+            video.currentTime = 0;
+            
+            if (media.type === 'image') {
+                image.src = media.url;
+                image.alt = media.altText;
+                image.classList.remove('hidden');
+                video.classList.add('hidden');
+            } else if (media.type === 'video') {
+                video.querySelector('source').src = media.url;
+                video.load();
+                video.classList.remove('hidden');
+                image.classList.add('hidden');
+            }
+            
+            caption.textContent = media.caption || media.altText || '';
+            counter.textContent = currentPostMedia.length > 1 ? `${index + 1} / ${currentPostMedia.length}` : '';
+            download.href = media.url;
+            download.download = media.url.split('/').pop();
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('media-lightbox');
+            const video = document.getElementById('lightbox-video');
+            const image = document.getElementById('lightbox-image');
+            
+            video.pause();
+            video.currentTime = 0;
+            image.src = '';
+            video.querySelector('source').src = '';
+            
+            lightbox.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            
+            currentPostMedia = [];
+            currentMediaIndex = 0;
+            currentPostId = null;
+        }
+
+        function navigateLightbox(direction) {
+            if (currentPostMedia.length === 0) return;
+            currentMediaIndex = (currentMediaIndex + direction + currentPostMedia.length) % currentPostMedia.length;
+            loadMediaAtIndex(currentMediaIndex);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const lightbox = document.getElementById('media-lightbox');
+            if (!lightbox.classList.contains('hidden')) {
+                e.preventDefault();
+                if (e.key === 'Escape') closeLightbox();
+                else if (e.key === 'ArrowLeft') navigateLightbox(-1);
+                else if (e.key === 'ArrowRight') navigateLightbox(1);
+            }
+        });
     </script>
+
 </body>
 
 </html>

@@ -1,15 +1,17 @@
 # feeds/forms.py
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Post, PostMedia, Poll, PollOption, Comment
+
 from memorial.models import Memorial
+from .models import Post, PostMedia, Poll, PollOption, Comment
+
 
 
 class PostForm(forms.ModelForm):
     """Universal form for creating posts in any group type"""
     
     media_files = forms.FileField(
-        widget=forms.ClearableFileInput(attrs={'multiple': True}),
+        widget=forms.FileInput(),
         required=False,
         help_text="Upload images, videos, or documents"
     )
@@ -225,7 +227,7 @@ class MediaUploadForm(forms.Form):
     """Form for uploading media to posts"""
     
     files = forms.FileField(
-        widget=forms.ClearableFileInput(attrs={'multiple': True}),
+        widget=forms.FileInput(),
         help_text="Upload images, videos, or documents (max 10MB each)"
     ) # type: ignore
     
@@ -488,3 +490,11 @@ class BulkPostActionForm(forms.Form):
             raise ValidationError("Maximum 50 posts can be processed at once.")
         
         return post_ids
+    
+
+
+# memorials/forms.py
+
+
+
+

@@ -17,7 +17,7 @@
 
     <form id="memory-form" 
           hx-post="{% url 'feeds:create_memory_post' group.slug %}" 
-          hx-target="#feed-posts" 
+          hx-target="#modal-placeholder" 
           hx-swap="afterbegin"
           hx-encoding="multipart/form-data">
         

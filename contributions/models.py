@@ -20,7 +20,7 @@ class ContributionCampaign(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     group = models.OneToOneField('group.Group', on_delete=models.CASCADE, related_name='contribution_campaign')
-    memorial = models.ForeignKey('feeds.Memorial', on_delete=models.SET_NULL, null=True, blank=True, related_name='contribution_campaign')
+    memorial = models.ForeignKey('memorial.Memorial', on_delete=models.SET_NULL, null=True, blank=True, related_name='contribution_campaign')
     
     # Campaign Details
     title = models.CharField(max_length=200, default="Funeral Expenses Support")

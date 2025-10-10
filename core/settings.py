@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'notifications',
     'contributions',
     'feeds',
+    'memorial',
+    'django.contrib.humanize',
+    
     
     'core',
 

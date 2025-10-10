@@ -167,6 +167,7 @@ class GroupMembership(models.Model):
     approved_at = models.DateTimeField(null=True, blank=True)
     approved_by = models.ForeignKey( settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,blank=True,                 related_name='approved_memberships')
     is_active   = models.BooleanField(default=True)
+    is_deceased = models.BooleanField(default=False)
     can_post    = models.BooleanField(default=True)
     can_comment = models.BooleanField(default=True)
     join_message = models.TextField(blank=True, help_text="Message when requesting to join")

@@ -27,7 +27,15 @@ urlpatterns = [
     path('<slug:slug>/reject/<uuid:membership_id>/', views.reject_member_view, name='reject_member'),
     path('<slug:slug>/remove/<uuid:membership_id>/', views.remove_member_view, name='remove_member'),
     path('<slug:slug>/change-role/<uuid:membership_id>/', views.change_member_role_view, name='change_member_role'),
+    # path('<slug:slug>/create-memorial/select-member/', manage_views.select_deceased_member_for_memorial_view, name='select_member_for_memorial'),
     
     # AJAX endpoints
     path('api/search-suggestions/', views.group_search_suggestions, name='group_search_suggestions'),
+    path("groups/<slug:slug>/members/deceased/<int:pk>/",views.mark_deceased_view, name="mark-deceased"),
+    
+    
+   
+
+
+    
 ]

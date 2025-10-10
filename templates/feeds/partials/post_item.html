@@ -171,34 +171,9 @@
         {% endif %}
 
         <!------------- Media Attachments ------------>
-
-        {% if post.media.exists %}
-        <div class="mb-4 flex justify-center">
-            {% if post.media.count == 1 %}
-            {% for media in post.media.all %}
-            {% if media.media_type == 'image' %}
-            <img src="{{ media.file.url }}" alt="{{ media.alt_text }}" class="rounded-lg"
-                style="max-width:450px;width:100%;display:block;margin:auto;">
-            {% elif media.media_type == 'video' %}
-            <video controls class="rounded-lg" style="max-width:450px;width:100%;display:block;margin:auto;">
-                <source src="{{ media.file.url }}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-            {% endif %}
-            {% endfor %}
-            {% else %}
-            <div class="grid grid-cols-2 gap-2 justify-center" style="max-width:450px;margin:auto;">
-                {% for media in post.media.all %}
-                {% if media.media_type == 'image' %}
-                <img src="{{ media.file.url }}" alt="{{ media.alt_text }}" class="w-full h-32 object-cover rounded-lg"
-                    style="max-width:220px;display:block;margin:auto;">
-                {% endif %}
-                {% endfor %}
+            <div id="like-button-{{ post.id }}">
+                {% include 'feeds/partials/lightbox_media_post.html' with post=post user=user %}
             </div>
-            {% endif %}
-        </div>
-        {% endif %}
-    </div>
 
     <!---------------- Post Stats ----------------->
 
@@ -304,4 +279,5 @@
     </div>
     {% endif %}
 
+</div>
 </div>
