@@ -23,10 +23,10 @@ def create_poll_post_view(request, group_slug):
     feed = get_object_or_404(Feed, group=group)
     
     # Check permissions
-    if not feed.allow_posts or not feed.allow_polls or not group.is_member(request.user):
-        response = JsonResponse({'error': 'Not allowed to create polls'}, status=403)
-        response['HX-Reswap'] = 'none'
-        return response
+    # if not feed.allow_posts or not feed.allow_polls or not group.is_member(request.user):
+    #     response = JsonResponse({'error': 'Not allowed to create polls'}, status=403)
+    #     response['HX-Reswap'] = 'none'
+    #     return response
     
     # Get form data
     question = request.POST.get('question', '').strip()

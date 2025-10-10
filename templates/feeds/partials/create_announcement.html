@@ -1,35 +1,34 @@
 <!-- templates/feeds/modals/create_announcement.html -->
 
-<div class="modal-content bg-white rounded-lg shadow-xl max-w-2xl mx-auto">
-    <div class="modal-header p-6 border-b border-gray-200">
+<div class="relative bg-white rounded-lg shadow">
+    <div class="flex items-start justify-between p-4 border-b rounded-t">
         <h3 class="text-lg font-semibold text-gray-900 flex items-center">
             <svg class="w-5 h-5 mr-2 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                <path fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clip-rule="evenodd"></path>
             </svg>
             Create Announcement
         </h3>
-        <button type="button" class="modal-close text-gray-400 hover:text-gray-600" onclick="closeModal()">
+        <button type="button" data-modal-hide="htmx-modal"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
         </button>
     </div>
 
-    <form id="announcement-form" 
-        hx-post="{% url 'feeds:create_announcement' group.slug %}" 
-        hx-target="#feed-posts" 
-        hx-swap="afterbegin">
-        
+    <form id="announcement-form" hx-post="{% url 'feeds:create_announcement' group.slug %}" hx-target="#posts-container"
+        hx-swap="afterbegin"
+        hx-on::after-request="if(event.detail.successful && window.htmxModalInstance) { window.htmxModalInstance.hide(); }">
+
         <div class="modal-body p-6 space-y-4">
             <!-- Title (Required for announcements) -->
             <div>
                 <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
                     Announcement Title <span class="text-red-500">*</span>
                 </label>
-                <input type="text" 
-                    id="title" 
-                    name="title" 
-                    required
+                <input type="text" id="title" name="title" required
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                     placeholder="Enter announcement title...">
             </div>
@@ -39,12 +38,9 @@
                 <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
                     Announcement Content <span class="text-red-500">*</span>
                 </label>
-                <textarea id="content" 
-                        name="content" 
-                        rows="5" 
-                        required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                        placeholder="Write your announcement..."></textarea>
+                <textarea id="content" name="content" rows="5" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    placeholder="Write your announcement..."></textarea>
             </div>
 
             <!-- Options Grid -->
@@ -52,9 +48,8 @@
                 <!-- Privacy Level -->
                 <div>
                     <label for="privacy_level" class="block text-sm font-medium text-gray-700 mb-2">Visibility</label>
-                    <select id="privacy_level" 
-                            name="privacy_level" 
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    <select id="privacy_level" name="privacy_level"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
                         <option value="public">Public to Group</option>
                         <option value="members_only">Members Only</option>
                     </select>
@@ -71,7 +66,9 @@
                     <input type="checkbox" id="is_pinned" name="is_pinned" class="mr-3 h-4 w-4 text-yellow-600">
                     <label for="is_pinned" class="text-sm text-gray-700 flex items-center">
                         <svg class="w-4 h-4 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM15 9a1 1 0 100-2 1 1 0 000 2z"></path>
+                            <path
+                                d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM15 9a1 1 0 100-2 1 1 0 000 2z">
+                            </path>
                         </svg>
                         Pin to top of feed
                     </label>
@@ -82,7 +79,9 @@
                     <input type="checkbox" id="is_urgent" name="is_urgent" class="mr-3 h-4 w-4 text-red-600">
                     <label for="is_urgent" class="text-sm text-gray-700 flex items-center">
                         <svg class="w-4 h-4 mr-2 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            <path fill-rule="evenodd"
+                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                clip-rule="evenodd"></path>
                         </svg>
                         Mark as urgent
                     </label>
@@ -94,29 +93,33 @@
                 <div class="flex">
                     <div class="flex-shrink-0">
                         <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            <path fill-rule="evenodd"
+                                d="18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                clip-rule="evenodd"></path>
                         </svg>
                     </div>
                     <div class="ml-3">
                         <p class="text-sm text-yellow-700">
-                            <strong>Note:</strong> Announcements are only available to group administrators and will be highlighted in the feed to ensure maximum visibility.
+                            <strong>Note:</strong> Announcements are only available to group administrators and will be
+                            highlighted in the feed to ensure maximum visibility.
                         </p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="modal-footer px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end space-x-3">
-            <button type="button" 
-                    onclick="closeModal()" 
-                    class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+        <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b">
+            <button type="button" data-modal-hide="htmx-modal"
+                class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-yellow-500">
                 Cancel
             </button>
-            <button type="submit" 
-                    class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50 flex items-center"
-                    id="submit-btn">
+            <button type="submit"
+                class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-50 flex items-center"
+                id="submit-btn">
                 <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    <path fill-rule="evenodd"
+                        d="18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                        clip-rule="evenodd"></path>
                 </svg>
                 Post Announcement
             </button>
@@ -124,20 +127,16 @@
     </form>
 </div>
 
-<script>
-function closeModal() {
-    document.getElementById('modal-overlay').remove();
-}
+<script hx-boost="false">
+    // Form validation
+    document.getElementById('announcement-form').addEventListener('submit', function (e) {
+        const title = document.getElementById('title').value.trim();
+        const content = document.getElementById('content').value.trim();
 
-// Form validation
-document.getElementById('announcement-form').addEventListener('submit', function(e) {
-    const title = document.getElementById('title').value.trim();
-    const content = document.getElementById('content').value.trim();
-    
-    if (!title || !content) {
-        e.preventDefault();
-        alert('Both title and content are required for announcements.');
-        return false;
-    }
-});
+        if (!title || !content) {
+            e.preventDefault();
+            alert('Both title and content are required for announcements.');
+            return false;
+        }
+    });
 </script>

@@ -41,6 +41,7 @@ urlpatterns = [
     path('<slug:group_slug>/modals/funeral-update/', memorial_feed_views.get_funeral_update_modal, name='funeral_update_modal'),
 
     # Poll interaction
+    path('<slug:group_slug>/posts/create/poll/', poll_views.create_poll_post_view, name='create_poll_post'),
     path('posts/<uuid:post_id>/poll/vote/', poll_views.vote_poll_view, name='vote_poll'),
     path('posts/<uuid:post_id>/poll/remove-vote/', poll_views.remove_poll_vote_view, name='remove_poll_vote'),
     path('polls/<uuid:poll_id>/results/', poll_views.get_poll_results_view, name='poll_results'),

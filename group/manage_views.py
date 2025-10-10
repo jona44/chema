@@ -10,6 +10,7 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from contributions.models import Contribution
 from group.forms import GroupCreationForm, GroupInvitationForm, GroupJoinForm, GroupSearchForm, GroupEditForm
+from memorial.models import Memorial
 from .models import Group, GroupMembership, GroupInvitation, Category
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -267,7 +268,8 @@ def group_detail_view(request, slug):
         'user_membership': user_membership,
         'can_join': can_join,
         'join_message': join_message,
-        'is_admin': group.is_admin(request.user)
+        'is_admin': group.is_admin(request.user),
+        'memorials_count': Memorial.objects.filter(associated_group=group).count(),
     }
 
     # Fetch recent members for all viewers

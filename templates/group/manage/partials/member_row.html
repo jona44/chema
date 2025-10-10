@@ -1,7 +1,16 @@
-<!-- groups/templates/groups/manage/partials/member_row.html -->
+{% comment %}
+This partial template renders a single table row for a group member.
+It is used for HTMX swaps to update a member's status without reloading the page.
+
+Required context:
+- membership: The GroupMembership object.
+- group: The Group object.
+- is_creator: Boolean, true if the request.user is the group creator.
+{% endcomment %}
+
 <tr id="member-row-{{ membership.user.id }}" 
     class="member-row {% if membership.status == 'deceased' %}bg-red-50{% else %}hover:bg-gray-50{% endif %}"
-    data-name="{{ membership.user.profile.full_name|default:membership.user.email|lower }}" 
+    data-name="{{ membership.user.profile.full_name|default:''|lower }}" 
     data-email="{{ membership.user.email|lower }}"
     data-role="{{ membership.role }}" 
     data-status="{{ membership.status }}">
@@ -10,8 +19,8 @@
             <div class="relative">
                 {% if membership.user.profile.profile_picture %}
                 <img src="{{ membership.user.profile.profile_picture.url }}" 
-                     alt="{{ membership.user.profile.full_name }}"
-                     class="w-10 h-10 rounded-full object-cover mr-4 {% if membership.status == 'deceased' %}grayscale opacity-60{% endif %}">
+                    alt="{{ membership.user.profile.full_name }}"
+                    class="w-10 h-10 rounded-full object-cover mr-4 {% if membership.status == 'deceased' %}grayscale opacity-60{% endif %}">
                 {% else %}
                 <div class="w-10 h-10 {% if membership.status == 'deceased' %}bg-red-300{% else %}bg-gray-300{% endif %} rounded-full flex items-center justify-center mr-4">
                     <span class="text-white font-medium">{{ membership.user.email|first|upper }}</span>
@@ -84,7 +93,17 @@
     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
         <div class="flex items-center space-x-2">
             {% if membership.status == 'deceased' %}
-            <span class="text-red-600 text-xs italic">No actions available</span>
+            {% if not membership.user.profile.memorials.filter %}
+            <a href="{% url 'memorial:create_memorial' slug=group.slug membership_id=membership.id %}"
+                class="text-blue-600 hover:text-blue-900 text-sm">
+                Create Memorial
+            </a>
+            {% else %}
+            <a href="{% url 'memorial:memorial_detail' pk=membership.user.profile.memorials.first.pk %}"
+                class="text-blue-600 hover:text-blue-900 text-sm">
+                View Memorial
+            </a>
+            {% endif %}
             {% elif membership.status == 'pending' %}
             <form method="post" action="{% url 'approve_member' slug=group.slug membership_id=membership.id %}"
                 class="inline">

@@ -19,8 +19,10 @@
             </button>
         </div>
 
-        <form id="event-form" hx-post="{% url 'feeds:create_event' group.slug %}" hx-target="#posts-container"
-            hx-swap="afterbegin">
+        <form id="event-form" 
+                hx-post="{% url 'feeds:create_event' group.slug %}" 
+                hx-target="#posts-container"
+                hx-swap="afterbegin">
 
             <div class="modal-body p-6 space-y-4">
                 <!-- Event Title -->

@@ -8,7 +8,7 @@
     <title>{{ group.name }} - Group Feed</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.0.0/flowbite.min.js"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.0.0/flowbite.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="{{ csrf_token }}">
@@ -23,7 +23,8 @@
                 <div class="flex items-center">
                     <a href="/" class="text-xl font-bold text-blue-600">GroupApp</a>
                     <span class="ml-4 text-gray-500">/</span>
-                    <a href="{{ group.get_absolute_url }}" class="ml-4 text-gray-700 hover:text-gray-900">{{ group.name }}</a>
+                    <a href="{{ group.get_absolute_url }}" class="ml-4 text-gray-700 hover:text-gray-900">{{ group.name
+                        }}</a>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="{% url 'profile' %}" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900">
@@ -62,7 +63,8 @@
                                 class="h-10 w-10 rounded-full object-cover">
                             {% else %}
                             <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
-                                <span class="text-white font-medium text-sm">{{ user.profile.full_name|default:user.email|first|upper }}</span>
+                                <span class="text-white font-medium text-sm">{{
+                                    user.profile.full_name|default:user.email|first|upper }}</span>
                             </div>
                             {% endif %}
                         </div>
@@ -105,12 +107,14 @@
                     <!-- Group Info Card -->
                     <div class="bg-white rounded-lg shadow p-6">
                         <div class="text-center">
-                            <div class="h-16 w-16 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <div
+                                class="h-16 w-16 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
                                 <span class="text-white text-2xl font-bold">{{ group.name.0|upper }}</span>
                             </div>
                             <h3 class="text-lg font-semibold text-gray-900">{{ group.name }}</h3>
                             <p class="text-gray-600 text-sm mt-1">{{ group.group_type|capfirst }} Group</p>
-                            <p class="text-gray-600 text-sm mt-1">{{ group.category.name|default:'General'|capfirst }} Group</p>
+                            <p class="text-gray-600 text-sm mt-1">{{ group.category.name|default:'General'|capfirst }}
+                                Group</p>
                         </div>
 
                         <div class="mt-4 pt-4 border-t border-gray-200">
@@ -193,8 +197,21 @@
     </div>
 
     <!-- Modals -->
-    <div id="modal-placeholder">
-        {% include 'feeds/partials/create_post_modal.html' %}
+    {# Static modal for the main post creation button #}
+    {% include 'feeds/partials/create_post_modal.html' %}
+
+    {# Placeholder for modals loaded via HTMX #}
+    <div id="htmx-modal" tabindex="-1" aria-hidden="true"
+        class="fixed top-0 left-0 right-0 z-[60] hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative w-full max-w-2xl max-h-full">
+            <!-- Modal content is loaded here -->
+            <div id="htmx-modal-content" class="relative bg-white rounded-lg shadow">
+                <!-- This content will be replaced by HTMX -->
+                <div class="p-8 text-center">
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Comments Modal -->
@@ -216,9 +233,9 @@
     </div>
 
     {#----------------------------------------------------------#}
-    {#                     Media Lightbox                       #}
+    {# Media Lightbox #}
     {#----------------------------------------------------------#}
-    
+
     <div id="media-lightbox" class="hidden fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center">
         <button onclick="closeLightbox()"
             class="absolute top-4 right-4 text-white hover:text-gray-300 z-50 bg-black bg-opacity-50 rounded-full p-2">
@@ -267,9 +284,45 @@
 
     <!-- Scripts -->
     <script>
+        // Store a global reference to the active HTMX modal instance
+        window.htmxModalInstance = null;
+
         // Re-initialize Flowbite after HTMX swaps
         document.body.addEventListener('htmx:afterSwap', function (event) {
             if (window.initFlowbite) {
+                // Check if the swap was into our htmx-modal-content
+                if (event.detail.target.id === 'htmx-modal-content') {
+                    const modalEl = document.getElementById('htmx-modal');
+                    if (modalEl) {
+                        // Define a unique ID for each modal instance to avoid conflicts
+                        const instanceId = `htmx-modal-${Date.now()}`;
+                        modalEl.setAttribute('data-modal-id', instanceId);
+
+                        const modalOptions = {
+                            placement: 'center',
+                            backdrop: 'dynamic',
+                            backdropClasses: 'bg-gray-900 bg-opacity-50 fixed inset-0 z-50',
+                            closable: true,
+                            onHide: () => {
+                                // Clean up when modal is hidden, but restore a placeholder
+                                // to prevent htmx:targetError on subsequent clicks.
+                                const modalContent = document.getElementById('htmx-modal-content');
+                                if (modalContent) {
+                                    modalContent.innerHTML = `<div class="p-8 text-center"><p>Loading...</p></div>`;
+                                }
+
+                                // Flowbite's hide() method sometimes leaves the backdrop.
+                                // This ensures the backdrop is removed.
+                                document.querySelector(`[data-modal-backdrop="${instanceId}"]`)?.remove();
+                            }
+                        };
+                        const modal = new Modal(modalEl, modalOptions, { id: instanceId, onHide: modalOptions.onHide });
+                        window.htmxModalInstance = modal;
+                        modal.show();
+                    }
+                }
+
+                // General re-initialization for other components
                 window.initFlowbite();
             }
         });
@@ -311,8 +364,8 @@
                     text: `Check out this post on Chema!`,
                     url: postUrl,
                 })
-                .then(() => console.log('Successful share'))
-                .catch((error) => console.log('Error sharing', error));
+                    .then(() => console.log('Successful share'))
+                    .catch((error) => console.log('Error sharing', error));
             } else {
                 navigator.clipboard.writeText(postUrl).then(function () {
                     if (shareText && successText) {
@@ -344,14 +397,14 @@
         function openLightbox(postId, startIndex) {
             collectPostMedia(postId);
             if (currentPostMedia.length === 0) return;
-            
+
             currentMediaIndex = startIndex;
             currentPostId = postId;
-            
+
             const lightbox = document.getElementById('media-lightbox');
             const prevBtn = document.getElementById('lightbox-prev');
             const nextBtn = document.getElementById('lightbox-next');
-            
+
             if (currentPostMedia.length > 1) {
                 prevBtn.classList.remove('hidden');
                 nextBtn.classList.remove('hidden');
@@ -359,7 +412,7 @@
                 prevBtn.classList.add('hidden');
                 nextBtn.classList.add('hidden');
             }
-            
+
             loadMediaAtIndex(currentMediaIndex);
             lightbox.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -369,7 +422,7 @@
             currentPostMedia = [];
             const postContainer = document.querySelector(`[data-post-id="${postId}"]`);
             if (!postContainer) return;
-            
+
             const mediaElements = postContainer.querySelectorAll('[data-media-url]');
             mediaElements.forEach(element => {
                 currentPostMedia.push({
@@ -383,17 +436,17 @@
 
         function loadMediaAtIndex(index) {
             if (index < 0 || index >= currentPostMedia.length) return;
-            
+
             const media = currentPostMedia[index];
             const image = document.getElementById('lightbox-image');
             const video = document.getElementById('lightbox-video');
             const caption = document.getElementById('lightbox-caption');
             const counter = document.getElementById('lightbox-counter');
             const download = document.getElementById('lightbox-download');
-            
+
             video.pause();
             video.currentTime = 0;
-            
+
             if (media.type === 'image') {
                 image.src = media.url;
                 image.alt = media.altText;
@@ -405,7 +458,7 @@
                 video.classList.remove('hidden');
                 image.classList.add('hidden');
             }
-            
+
             caption.textContent = media.caption || media.altText || '';
             counter.textContent = currentPostMedia.length > 1 ? `${index + 1} / ${currentPostMedia.length}` : '';
             download.href = media.url;
@@ -416,15 +469,15 @@
             const lightbox = document.getElementById('media-lightbox');
             const video = document.getElementById('lightbox-video');
             const image = document.getElementById('lightbox-image');
-            
+
             video.pause();
             video.currentTime = 0;
             image.src = '';
             video.querySelector('source').src = '';
-            
+
             lightbox.classList.add('hidden');
             document.body.style.overflow = 'auto';
-            
+
             currentPostMedia = [];
             currentMediaIndex = 0;
             currentPostId = null;
@@ -437,7 +490,7 @@
         }
 
         // Keyboard navigation
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             const lightbox = document.getElementById('media-lightbox');
             if (!lightbox.classList.contains('hidden')) {
                 e.preventDefault();

@@ -191,17 +191,20 @@
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Chema Hub</h3>
                 <div class="space-y-3">
-                    <a href="{% url 'group_memorials' slug=group.slug %}"
-                        class="flex items-center text-gray-600 hover:text-blue-600">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
-                            </path>
-                        </svg>
-                        <span>Memorials</span>
-                    </a>
+                    <a href="{% url 'memorial:group_memorials' slug=group.slug %}" 
+                        class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                            Memorials
+                            {% if memorials_count %}
+                            <span class="ml-auto bg-red-100 text-red-600 px-2 py-1 rounded-full text-xs">
+                                {{ memorials_count }}
+                            </span>
+                            {% endif %}
+                        </a>
 
-                    <a href="{% url 'select_member_for_memorial' slug=group.slug %}"
+                    <a href=""
                         class="flex items-center text-gray-600 hover:text-blue-600">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -220,6 +223,7 @@
                             </path>
                         </svg>
                         <span>Contribution Campaign</span>
+                    </a>
                     </a> {% endif %}
                     {% endif %}
                     <a href="{% url 'group_notifications' group_slug=group.slug %}"

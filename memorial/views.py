@@ -58,7 +58,7 @@ def create_memorial_view(request, slug, membership_id):
                     request, 
                     f"Memorial for {membership.user.profile.full_name} has been created successfully."
                 )
-                return redirect('memorial_detail', pk=memorial.pk)
+                return redirect('memorial:memorial_detail', pk=memorial.pk)
     else:
         # Pre-populate form with deceased member's information
         initial_data = {
@@ -74,7 +74,7 @@ def create_memorial_view(request, slug, membership_id):
         'deceased_name': membership.user.profile.full_name,
     }
     
-    return render(request, 'memorials/create_memorial.html', context)
+    return render(request, 'memorial/create_memorial.html', context)
 
 
 @login_required
@@ -105,7 +105,7 @@ def memorial_detail_view(request, pk):
         'can_view': memorial.is_public or is_member,
     }
     
-    return render(request, 'memorials/memorial_detail.html', context)
+    return render(request, 'memorial/memorial_detail.html', context)
 
 
 @login_required
@@ -123,7 +123,7 @@ def edit_memorial_view(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, "Memorial updated successfully.")
-            return redirect('memorial_detail', pk=pk)
+            return redirect('memorial:memorial_detail', pk=pk)
     else:
         form = MemorialForm(instance=memorial)
     
@@ -134,7 +134,7 @@ def edit_memorial_view(request, pk):
         'is_editing': True,
     }
     
-    return render(request, 'memorials/create_memorial.html', context)
+    return render(request, 'memorial/create_memorial.html', context)
 
 
 @login_required
@@ -212,7 +212,7 @@ def manage_family_admins_view(request, pk):
         'available_members': available_members,
     }
     
-    return render(request, 'memorials/manage_admins.html', context)
+    return render(request, 'memorial/manage_admins.html', context)
 
 
 @login_required
@@ -246,4 +246,4 @@ def group_memorials_list_view(request, slug):
         'is_admin': group.is_admin(request.user) if is_member else False,
     }
     
-    return render(request, 'memorials/group_memorials.html', context)
+    return render(request, 'memorial/group_memorials.html', context)

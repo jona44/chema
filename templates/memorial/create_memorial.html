@@ -13,7 +13,7 @@
             <span class="mx-2 text-gray-400">/</span>
         </li>
         <li class="flex items-center">
-            <a href="{% url 'group_members' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">Members</a>
+            <a href="{% url 'group_manage_members' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">Members</a>
             <span class="mx-2 text-gray-400">/</span>
         </li>
         <li class="text-gray-600">{% if is_editing %}Edit{% else %}Create{% endif %} Memorial</li>
@@ -183,8 +183,8 @@
 
         <!-- Form Actions -->
         <div class="flex justify-end space-x-4 pt-6 border-t">
-            <a href="{% url 'group_members' slug=group.slug %}" 
-               class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+            <a href="{% url 'group_manage_members' slug=group.slug %}" 
+                class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
                 Cancel
             </a>
             <button type="submit" 

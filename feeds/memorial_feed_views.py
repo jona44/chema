@@ -21,11 +21,9 @@ def create_memory_post_view(request, group_slug):
     group = get_object_or_404(Group, slug=group_slug)
     feed = get_object_or_404(Feed, group=group)
     
-    # Check if group has a memorial
-    try:
-        memorial = Memorial.objects.get(associated_group=group)
-
-    except Memorial.DoesNotExist:
+    # Safely get the most recent memorial if multiple exist
+    memorial = Memorial.objects.filter(associated_group=group).order_by('-created_at').first()
+    if not memorial:
         response = JsonResponse({'error': 'This group does not have a memorial'}, status=400)
         response['HX-Reswap'] = 'none'
         return response
@@ -106,10 +104,9 @@ def create_condolence_post_view(request, group_slug):
     group = get_object_or_404(Group, slug=group_slug)
     feed = get_object_or_404(Feed, group=group)
     
-    # Check if group has a memorial
-    try:
-        memorial = Memorial.objects.get(group=group)
-    except Memorial.DoesNotExist:
+    # Safely get the most recent memorial if multiple exist
+    memorial = Memorial.objects.filter(associated_group=group).order_by('-created_at').first()
+    if not memorial:
         response = JsonResponse({'error': 'This group does not have a memorial'}, status=400)
         response['HX-Reswap'] = 'none'
         return response
@@ -172,10 +169,9 @@ def create_tribute_post_view(request, group_slug):
     group = get_object_or_404(Group, slug=group_slug)
     feed = get_object_or_404(Feed, group=group)
     
-    # Check if group has a memorial
-    try:
-        memorial = Memorial.objects.get(group=group)
-    except Memorial.DoesNotExist:
+    # Safely get the most recent memorial if multiple exist
+    memorial = Memorial.objects.filter(associated_group=group).order_by('-created_at').first()
+    if not memorial:
         response = JsonResponse({'error': 'This group does not have a memorial'}, status=400)
         response['HX-Reswap'] = 'none'
         return response
@@ -239,10 +235,9 @@ def create_funeral_update_view(request, group_slug):
     group = get_object_or_404(Group, slug=group_slug)
     feed = get_object_or_404(Feed, group=group)
     
-    # Check if group has a memorial
-    try:
-        memorial = Memorial.objects.get(group=group)
-    except Memorial.DoesNotExist:
+    # Safely get the most recent memorial if multiple exist
+    memorial = Memorial.objects.filter(associated_group=group).order_by('-created_at').first()
+    if not memorial:
         response = JsonResponse({'error': 'This group does not have a memorial'}, status=400)
         response['HX-Reswap'] = 'none'
         return response
@@ -326,19 +321,22 @@ def get_memory_modal(request, group_slug):
     group = get_object_or_404(Group, slug=group_slug)
     feed = get_object_or_404(Feed, group=group)
     
-    try:
-        memorial = Memorial.objects.get(group=group)
-    except Memorial.DoesNotExist:
+    # ✅ Get the most recent memorial if multiple exist
+    memorial = Memorial.objects.filter(associated_group=group).order_by('-created_at').first()
+    if not memorial:
         return JsonResponse({'error': 'No memorial found'}, status=404)
     
+    # ✅ Check permissions
     if not feed.allow_posts or not group.is_member(request.user):
         return JsonResponse({'error': 'Not allowed'}, status=403)
     
-    return render(request, 'feeds/modals/create_memory.html', {
+    # ✅ Render the modal template
+    return render(request, 'feeds/partials/create_memory.html', {
         'group': group,
         'feed': feed,
         'memorial': memorial,
     })
+
 
 
 @login_required
@@ -347,15 +345,15 @@ def get_condolence_modal(request, group_slug):
     group = get_object_or_404(Group, slug=group_slug)
     feed = get_object_or_404(Feed, group=group)
     
-    try:
-        memorial = Memorial.objects.get(group=group)
-    except Memorial.DoesNotExist:
+    # Use filter().first() to safely get the most recent memorial
+    memorial = Memorial.objects.filter(associated_group=group).order_by('-created_at').first()
+    if not memorial:
         return JsonResponse({'error': 'No memorial found'}, status=404)
     
     if not feed.allow_posts or not group.is_member(request.user):
         return JsonResponse({'error': 'Not allowed'}, status=403)
     
-    return render(request, 'feeds/modals/create_condolence.html', {
+    return render(request, 'feeds/partials/create_condolence.html', {
         'group': group,
         'feed': feed,
         'memorial': memorial,
@@ -368,15 +366,15 @@ def get_tribute_modal(request, group_slug):
     group = get_object_or_404(Group, slug=group_slug)
     feed = get_object_or_404(Feed, group=group)
     
-    try:
-        memorial = Memorial.objects.get(group=group)
-    except Memorial.DoesNotExist:
+    # Use filter().first() to safely get the most recent memorial
+    memorial = Memorial.objects.filter(associated_group=group).order_by('-created_at').first()
+    if not memorial:
         return JsonResponse({'error': 'No memorial found'}, status=404)
     
     if not feed.allow_posts or not group.is_member(request.user):
         return JsonResponse({'error': 'Not allowed'}, status=403)
     
-    return render(request, 'feeds/modals/create_tribute.html', {
+    return render(request, 'feeds/partials/create_tribute.html', {
         'group': group,
         'feed': feed,
         'memorial': memorial,
@@ -389,21 +387,18 @@ def get_funeral_update_modal(request, group_slug):
     group = get_object_or_404(Group, slug=group_slug)
     feed = get_object_or_404(Feed, group=group)
     
-    try:
-        memorial = Memorial.objects.get(associated_group=group)
-    except Memorial.DoesNotExist:
+    # Use filter().first() to safely get the most recent memorial
+    memorial = Memorial.objects.filter(associated_group=group).order_by('-created_at').first()
+    if not memorial:
         return JsonResponse({'error': 'No memorial found'}, status=404)
     
     if not memorial.is_admin(request.user) and not group.is_admin(request.user):
         return JsonResponse({'error': 'Not allowed'}, status=403)
-    
-    return render(request, 'feeds/modals/create_funeral_update.html', {
+
+    return render(request, 'feeds/partials/create_funeral_update.html', {
         'group': group,
         'feed': feed,
         'memorial': memorial,
     })
 
     
-
-
-

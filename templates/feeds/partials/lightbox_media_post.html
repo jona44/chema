@@ -24,7 +24,7 @@
 
     {% else %}
     <!-- Multiple Media Grid -->
-    <div class="grid grid-cols-2 gap-2 justify-center" style="max-width:450px;margin:auto;">
+    <div class="grid grid-cols-3 gap-1 justify-center" style="max-width:450px;margin:auto;">
         {% for media in post.media.all %}
         <div class="relative group" data-media-url="{{ media.file.url }}" data-media-alt="{{ media.alt_text }}"
             data-media-type="{{ media.media_type }}" data-media-caption="{{ media.caption }}">

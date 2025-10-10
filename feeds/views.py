@@ -685,22 +685,3 @@ def get_event_modal(request, group_slug):
         'group': group,
         'feed': feed,
     })
-
-
-
-@login_required
-def get_memory_modal(request, group_slug):
-    """Render memory creation modal"""
-    group = get_object_or_404(Group, slug=group_slug)
-    
-    # A memory post requires a memorial to be associated with the group
-    if not hasattr(group, 'memorial'):
-        # Or handle this more gracefully, e.g., return an error message in the modal
-        return HttpResponse("This group is not a memorial group.", status=400)
-
-    memorial = group.memorial # type: ignore
-
-    return render(request, 'feeds/partials/create_memory.htm', {
-        'group': group,
-        'memorial': memorial,
-    })

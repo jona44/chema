@@ -1,0 +1,216 @@
+<!-- memorials/templates/memorials/memorial_detail.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Memorial - {{ memorial.deceased.full_name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav class="text-sm breadcrumbs mb-6">
+    <ol class="list-none p-0 inline-flex">
+        <li class="flex items-center">
+            <a href="{% url 'group_detail' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">{{ group.name }}</a>
+            <span class="mx-2 text-gray-400">/</span>
+        </li>
+        <li class="flex items-center">
+            <a href="{% url 'memorial:group_memorials' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">Memorials</a>
+            <span class="mx-2 text-gray-400">/</span>
+        </li>
+        <li class="text-gray-600">{{ memorial.deceased.full_name }}</li>
+    </ol>
+</nav>
+
+<!-- Memorial Header -->
+<div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl shadow-sm p-8 mb-8">
+    <div class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
+        <!-- Photo -->
+        <div class="flex-shrink-0">
+            {% if memorial.photo %}
+            <img src="{{ memorial.photo.url }}" 
+                 alt="{{ memorial.deceased.full_name }}"
+                 class="w-48 h-48 rounded-lg object-cover shadow-lg border-4 border-white">
+            {% else %}
+            <div class="w-48 h-48 rounded-lg bg-gray-300 flex items-center justify-center shadow-lg border-4 border-white">
+                <span class="text-6xl text-white font-bold">{{ memorial.deceased.full_name|first|upper }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Info -->
+        <div class="flex-1 text-center md:text-left">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">{{ memorial.deceased.full_name }}</h1>
+            
+            {% if memorial.deceased.date_of_birth or memorial.deceased.date_of_death %}
+            <p class="text-xl text-gray-600 mb-4">
+                {% if memorial.deceased.date_of_birth %}{{ memorial.deceased.date_of_birth|date:"F d, Y" }}{% endif %}
+                {% if memorial.deceased.date_of_birth and memorial.deceased.date_of_death %} - {% endif %}
+                {% if memorial.deceased.date_of_death %}{{ memorial.deceased.date_of_death|date:"F d, Y" }}{% endif %}
+            </p>
+            {% endif %}
+
+            <div class="flex flex-wrap justify-center md:justify-start gap-2 mb-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                    <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                    </svg>
+                    In Loving Memory
+                </span>
+                {% if memorial.is_public %}
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                    </svg>
+                    Public
+                </span>
+                {% endif %}
+            </div>
+
+            {% if is_admin %}
+            <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                <a href="{% url 'memorial:edit_memorial' pk=memorial.pk %}" 
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    Edit Memorial
+                </a>
+                <a href="{% url 'memorial:manage_family_admins' pk=memorial.pk %}" 
+                    class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Manage Admins
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="grid md:grid-cols-3 gap-8">
+    <!-- Main Content -->
+    <div class="md:col-span-2 space-y-6">
+        <!-- Biography -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+                Life Story
+            </h2>
+            <div class="prose max-w-none text-gray-700 leading-relaxed">
+                {{ memorial.biography|linebreaks }}
+            </div>
+        </div>
+
+        <!-- Funeral Details -->
+        {% if memorial.funeral_date or memorial.funeral_venue or memorial.funeral_details %}
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Funeral Information
+            </h2>
+            <div class="space-y-4">
+                {% if memorial.funeral_date %}
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-gray-400 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Date & Time</p>
+                        <p class="text-gray-900">{{ memorial.funeral_date|date:"l, F d, Y \a\t g:i A" }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if memorial.funeral_venue %}
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-gray-400 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Venue</p>
+                        <p class="text-gray-900">{{ memorial.funeral_venue }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if memorial.funeral_details %}
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-gray-400 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-500 mb-1">Additional Details</p>
+                        <p class="text-gray-700">{{ memorial.funeral_details|linebreaks }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="space-y-6">
+        <!-- Location Details -->
+        {% if memorial.location_of_death or memorial.burial_location %}
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Location Details</h3>
+            <div class="space-y-3">
+                {% if memorial.location_of_death %}
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Place of Death</p>
+                    <p class="text-gray-900">{{ memorial.location_of_death }}</p>
+                </div>
+                {% endif %}
+
+                {% if memorial.burial_location %}
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Resting Place</p>
+                    <p class="text-gray-900">{{ memorial.burial_location }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Memorial Info -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Memorial Information</h3>
+            <div class="space-y-3 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Created by</span>
+                    <span class="text-gray-900 font-medium">{{ memorial.created_by.profile.full_name }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Created on</span>
+                    <span class="text-gray-900">{{ memorial.created_at|date:"M d, Y" }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Group</span>
+                    <a href="{% url 'group_detail' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">
+                        {{ group.name }}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Actions -->
+        {% if is_admin %}
+        <div class="bg-red-50 rounded-xl p-4 border border-red-200">
+            <h3 class="text-sm font-bold text-red-900 mb-3">Admin Actions</h3>
+            <a href="{% url 'memorial:delete_memorial' pk=memorial.pk %}" 
+                class="block w-full text-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm">
+                Delete Memorial
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
