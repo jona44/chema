@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Create Contribution Campaign — {{ group.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb / Header -->
+    <nav class="text-sm mb-4" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1">
+            <li><a href="{% url 'group_detail' slug=group.slug %}" class="text-gray-600 hover:text-gray-900">Group</a>
+            </li>
+            <li>&middot;</li>
+            <li class="text-gray-800 font-semibold">{{ group.name }}</li>
+            <li>&middot;</li>
+            <li class="text-gray-500">Create Campaign</li>
+        </ol>
+    </nav>
+
+    <header class="mb-6">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Create Contribution Campaign</h1>
+        <p class="mt-1 text-sm text-gray-600">Create a new Chema (contribution) campaign for <span
+                class="font-medium">{{ group.name }}</span>.</p>
+    </header>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="space-y-2 mb-6">
+        {% for message in messages %}
+        <div class="rounded-md p-3 text-sm
+                    {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-100
+                    {% elif message.tags == 'success' %}bg-green-50 text-green-800 border border-green-100
+                    {% else %}bg-blue-50 text-blue-800 border border-blue-100{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Form column -->
+        <div class="lg:col-span-2">
+            <div class="bg-white shadow-sm rounded-lg border border-gray-100 p-6">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                    <div class="mb-4 rounded-md bg-red-50 border border-red-100 p-3 text-sm text-red-800">
+                        {% for err in form.non_field_errors %}
+                        <div>{{ err }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Title -->
+                    <div class="mb-4">
+                        <label for="{{ form.title.id_for_label }}"
+                            class="block text-sm font-medium text-gray-700">Title</label>
+                        {% if form.title.errors %}
+                        <div class="mt-1 text-sm text-red-600 list-disc list-inside">{{ form.title.errors.as_ul|safe }}
+                        </div>
+                        {% endif %}
+                        {{ form.title }}
+                        <p class="mt-1 text-xs text-gray-500">A short, clear name for the campaign (e.g. "Support for
+                            the Ndlovu Family").</p>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <label for="{{ form.description.id_for_label }}"
+                            class="block text-sm font-medium text-gray-700">Description</label>
+                        {% if form.description.errors %}
+                        <div class="mt-1 text-sm text-red-600 list-disc list-inside">{{
+                            form.description.errors.as_ul|safe }}</div>
+                        {% endif %}
+                        {{ form.description }}
+                        <p class="mt-1 text-xs text-gray-500">Explain how contributions will be used and who will manage
+                            funds.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Target amount -->
+                        <div>
+                            <label for="{{ form.target_amount.id_for_label }}"
+                                class="block text-sm font-medium text-gray-700">Target amount</label>
+                            {% if form.target_amount.errors %}
+                            <div class="mt-1 text-sm text-red-600 list-disc list-inside">{{
+                                form.target_amount.errors.as_ul|safe }}</div>
+                            {% endif %}
+                            <div class="mt-1 flex rounded-md shadow-sm">
+                                {{ form.target_amount }}
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500">Minimum R10.00. Use whole numbers without thousands
+                                separators.</p>
+                        </div>
+
+                        <!-- Currency -->
+                        <div>
+                            <label for="{{ form.currency.id_for_label }}"
+                                class="block text-sm font-medium text-gray-700">Currency</label>
+                            {% if form.currency.errors %}
+                            <div class="mt-1 text-sm text-red-600 list-disc list-inside">{{
+                                form.currency.errors.as_ul|safe }}</div>
+                            {% endif %}
+                            {{ form.currency }}
+                            <p class="mt-1 text-xs text-gray-500">ISO currency code (ZAR, USD, etc.). Default: ZAR.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                        <!-- Deadline -->
+                        <div>
+                            <label for="{{ form.deadline.id_for_label }}"
+                                class="block text-sm font-medium text-gray-700">Deadline (optional)</label>
+                            {% if form.deadline.errors %}
+                            <div class="mt-1 text-sm text-red-600 list-disc list-inside">{{
+                                form.deadline.errors.as_ul|safe }}</div>
+                            {% endif %}
+                            {{ form.deadline }}
+                            <p class="mt-1 text-xs text-gray-500">Leave blank for no deadline.</p>
+                        </div>
+
+                        <!-- Funeral date -->
+                        <div>
+                            <label for="{{ form.funeral_date.id_for_label }}"
+                                class="block text-sm font-medium text-gray-700">Funeral date (optional)</label>
+                            {% if form.funeral_date.errors %}
+                            <div class="mt-1 text-sm text-red-600 list-disc list-inside">{{
+                                form.funeral_date.errors.as_ul|safe }}</div>
+                            {% endif %}
+                            {{ form.funeral_date }}
+                            <p class="mt-1 text-xs text-gray-500">Provide date/time of service if known.</p>
+                        </div>
+                    </div>
+
+                    <!-- Expense breakdown (JSON) -->
+                    <div class="mt-4">
+                        <label for="{{ form.expense_breakdown.id_for_label }}"
+                            class="block text-sm font-medium text-gray-700">Expense breakdown (JSON)</label>
+                        {% if form.expense_breakdown.errors %}
+                        <div class="mt-1 text-sm text-red-600 list-disc list-inside">{{
+                            form.expense_breakdown.errors.as_ul|safe }}</div>
+                        {% endif %}
+                        {{ form.expense_breakdown }}
+                        <p id="expense-help" class="mt-1 text-xs text-gray-500">Optional JSON object, e.g.
+                            <code>{"coffin": 3000, "transport": 500}</code>. Use numbers only, no currency symbols.
+                        </p>
+                        <div class="mt-2 flex items-center gap-3">
+                            <button type="button" id="formatExpenseBtn"
+                                class="inline-flex items-center px-3 py-1.5 border rounded-md text-sm bg-white hover:bg-gray-50">Format
+                                JSON</button>
+                            <button type="button" id="clearExpenseBtn"
+                                class="inline-flex items-center px-3 py-1.5 border rounded-md text-sm bg-white hover:bg-gray-50">Clear</button>
+                            <p id="expense-error" class="text-sm text-red-600 hidden"></p>
+                        </div>
+                    </div>
+
+                    <!----------- Public updates --------------->
+
+                    <div class="mt-4 flex items-start">
+                        <div class="flex items-center h-5">
+                            {{ form.public_updates }}
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="{{ form.public_updates.id_for_label }}" class="font-medium text-gray-700">Allow
+                                public updates</label>
+                            <p class="text-gray-500">If checked, contributors and group members can see campaign updates
+                                and expense reports.</p>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="mt-6 flex items-center gap-3">
+                        <button type="submit"
+                            class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700">Create
+                            Campaign</button>
+                        <a href="{% url 'group_detail' slug=group.slug %}"
+                            class="text-sm text-gray-600 hover:underline">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar info column -->
+        <aside class="space-y-4">
+            <div class="bg-white border border-gray-100 rounded-lg p-4 shadow-sm">
+                <h3 class="text-sm font-semibold text-gray-800">About this group</h3>
+                <p class="mt-2 text-sm text-gray-600">{{ group.description|default:"No description available." }}</p>
+                <dl class="mt-3 text-sm text-gray-600 space-y-1">
+                    <div><span class="font-medium text-gray-800">Members:</span> {{ group.member_count|default:"—" }}
+                    </div>
+                    <div><span class="font-medium text-gray-800">Privacy:</span> {{
+                        group.get_privacy_display|default:"—" }}</div>
+                </dl>
+            </div>
+
+            {% with memorial=group.memorial.first %}
+            {% if memorial %}
+            <div class="bg-yellow-50 border-l-4 border-yellow-300 p-4 rounded-md">
+                <h4 class="text-sm font-semibold text-yellow-900">Linked memorial</h4>
+                <p class="mt-1 text-sm text-yellow-800">This campaign will be linked to the memorial: <strong>{{
+                        memorial }}</strong>.</p>
+                <a href="{% url 'memorial:memorial_detail' pk=memorial.pk %}"
+                    class="text-sm underline text-yellow-800">View memorial</a>
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <div class="bg-white border border-gray-100 rounded-lg p-4 shadow-sm">
+                <h4 class="text-sm font-semibold text-gray-800">Tips for choosing a target</h4>
+                <ul class="mt-2 text-sm text-gray-600 space-y-2 list-disc list-inside">
+                    <li>Be realistic — base the target on expected expenses.</li>
+                    <li>Provide an expense breakdown so contributors trust the process.</li>
+                    <li>Set public updates on to keep transparency.</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<!-- Small JS: JSON formatter & validation (keeps template standalone) -->
+<script>
+    (function () {
+        const expenseField = document.querySelector('#{{ form.expense_breakdown.id_for_label }}');
+        const formatBtn = document.getElementById('formatExpenseBtn');
+        const clearBtn = document.getElementById('clearExpenseBtn');
+        const errLabel = document.getElementById('expense-error');
+
+        if (!expenseField) return;
+
+        function showError(msg) {
+            errLabel.textContent = msg;
+            errLabel.classList.remove('hidden');
+        }
+        function clearError() {
+            errLabel.textContent = '';
+            errLabel.classList.add('hidden');
+        }
+
+        formatBtn && formatBtn.addEventListener('click', function () {
+            clearError();
+            try {
+                const val = expenseField.value.trim();
+                if (!val) { expenseField.value = ''; return; }
+                const parsed = JSON.parse(val);
+                // Ensure top-level is an object
+                if (Object.prototype.toString.call(parsed) !== '[object Object]') {
+                    showError('Expense breakdown must be a JSON object (e.g. {"coffin":3000}).');
+                    return;
+                }
+                expenseField.value = JSON.stringify(parsed, null, 2);
+            } catch (e) {
+                showError('Invalid JSON: ' + e.message);
+            }
+        });
+
+        clearBtn && clearBtn.addEventListener('click', function () {
+            expenseField.value = '';
+            clearError();
+        });
+
+    })();
+</script>
+
+{% endblock %}

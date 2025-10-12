@@ -159,7 +159,7 @@ def delete_memorial_view(request, pk):
         'group': group,
     }
     
-    return render(request, 'memorials/delete_memorial.html', context)
+    return render(request, 'memorial/delete_memorial.html', context)
 
 
 @login_required

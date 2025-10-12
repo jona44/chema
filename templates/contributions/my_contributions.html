@@ -1,0 +1,253 @@
+<!-- templates/contributions/my_contributions.html -->
+{% extends 'base.html' %}
+
+{% block title %}My Contributions{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">My Contributions</h1>
+            <p class="text-gray-600">Track all your contributions and their impact</p>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-blue-100 rounded-lg p-3">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Total Contributed</p>
+                        <p class="text-2xl font-bold text-gray-900">R {{ total_contributed|floatformat:2 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-green-100 rounded-lg p-3">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Campaigns Supported</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ contributions.count }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-purple-100 rounded-lg p-3">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Lives Impacted</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ contributions.count }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contributions List -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">Contribution History</h2>
+            </div>
+
+            {% if contributions %}
+            <div class="divide-y divide-gray-200">
+                {% for contribution in contributions %}
+                <div class="p-6 hover:bg-gray-50 transition-colors">
+                    <div class="flex items-start justify-between">
+                        
+                        <!-- Left Side - Campaign Info -->
+                        <div class="flex-1">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    {% if contribution.campaign.group.memorial %}
+                                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    {% else %}
+                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
+                                        </svg>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-gray-900">
+                                                <a href="{% url 'contributions:campaign_detail' contribution.campaign.group.slug %}" 
+                                                   class="hover:text-blue-600">
+                                                    {{ contribution.campaign.title }}
+                                                </a>
+                                            </h3>
+                                            <p class="text-sm text-gray-600 mt-1">
+                                                {{ contribution.campaign.group.name }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Contribution Details -->
+                                    <div class="mt-3 flex flex-wrap items-center gap-4 text-sm">
+                                        <div class="flex items-center text-gray-600">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                            {{ contribution.created_at|date:"M j, Y" }}
+                                        </div>
+                                        
+                                        <div class="flex items-center text-gray-600">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                            </svg>
+                                            {{ contribution.get_payment_method_display }}
+                                        </div>
+                                        
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                     {% if contribution.status == 'completed' %}bg-green-100 text-green-800
+                                                     {% elif contribution.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                                     {% elif contribution.status == 'failed' %}bg-red-100 text-red-800
+                                                     {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {{ contribution.get_status_display }}
+                                        </span>
+                                        
+                                        {% if contribution.is_anonymous %}
+                                        <span class="inline-flex items-center text-gray-500">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"></path>
+                                                <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z"></path>
+                                            </svg>
+                                            Anonymous
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if contribution.message %}
+                                    <div class="mt-3 text-sm text-gray-600 italic">
+                                        "{{ contribution.message|truncatewords:20 }}"
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- Campaign Progress -->
+                                    <div class="mt-4 bg-gray-50 rounded-lg p-3">
+                                        <div class="flex justify-between text-xs text-gray-600 mb-1">
+                                            <span>Campaign Progress</span>
+                                            <span>{{ contribution.campaign.progress_percentage|floatformat:0 }}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-300 rounded-full h-1.5">
+                                            <div class="bg-blue-600 h-1.5 rounded-full" 
+                                                 style="width: {{ contribution.campaign.progress_percentage }}%">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Side - Amount -->
+                        <div class="ml-6 flex-shrink-0 text-right">
+                            <div class="text-2xl font-bold text-gray-900">
+                                {{ contribution.currency }} {{ contribution.amount|floatformat:2 }}
+                            </div>
+                            <div class="mt-2 space-y-2">
+                                <a href="{% url 'contributions:campaign_detail' contribution.campaign.group.slug %}" 
+                                   class="block text-sm text-blue-600 hover:text-blue-700">
+                                    View Campaign →
+                                </a>
+                                {% if contribution.status == 'completed' %}
+                                <button onclick="downloadReceipt('{{ contribution.id }}')"
+                                        class="block text-sm text-gray-600 hover:text-gray-700">
+                                    Download Receipt
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% else %}
+            <!-- Empty State -->
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No contributions yet</h3>
+                <p class="mt-1 text-sm text-gray-500">Start making a difference by contributing to a campaign</p>
+                <div class="mt-6">
+                    <a href="/" 
+                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        Find Campaigns
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Impact Statement -->
+        {% if contributions %}
+        <div class="mt-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-lg p-8 text-white text-center">
+            <h3 class="text-2xl font-bold mb-2">🙏 Thank You for Your Generosity</h3>
+            <p class="text-blue-100 mb-4">
+                Your {{ contributions.count }} contribution{{ contributions.count|pluralize }} 
+                {% if total_contributed > 0 %}
+                    totaling R {{ total_contributed|floatformat:2 }}
+                {% endif %}
+                {% if contributions.count == 1 %}has{% else %}have{% endif %} made a real difference in supporting families during difficult times.
+            </p>
+            <div class="flex justify-center items-center space-x-8 mt-6">
+                <div>
+                    <div class="text-3xl font-bold">{{ contributions.count }}</div>
+                    <div class="text-sm text-blue-200">Campaigns</div>
+                </div>
+                <div class="w-px h-12 bg-blue-400"></div>
+                <div>
+                    <div class="text-3xl font-bold">R {{ total_contributed|floatformat:0 }}</div>
+                    <div class="text-sm text-blue-200">Total Given</div>
+                </div>
+                <div class="w-px h-12 bg-blue-400"></div>
+                <div>
+                    <div class="text-3xl font-bold">❤️</div>
+                    <div class="text-sm text-blue-200">Lives Touched</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+function downloadReceipt(contributionId) {
+    // TODO: Implement receipt download
+    alert('Receipt download will be implemented soon!');
+    // window.location.href = `/contributions/receipt/${contributionId}/download/`;
+}
+</script>
+
+{% endblock %}
