@@ -2,6 +2,8 @@
 from django import forms
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
+
+from customuser.models import Profile
 from .models import Group, Category, GroupMembership
 
 
@@ -232,3 +234,12 @@ class GroupJoinForm(forms.Form):
         }),
         help_text="This message will be sent to group admins if approval is required."
     )
+
+
+class MarkDeceasedForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ["date_of_death"]
+        widgets = {
+            "date_of_death": forms.DateInput(attrs={"type": "date", "class": "input input-bordered w-full"})
+        }

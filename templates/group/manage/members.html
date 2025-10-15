@@ -1,216 +1,202 @@
 <!-- groups/templates/groups/manage/members.html -->
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Members - {{ group.name }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-4">
-                    <a href="{% url 'get_started' %}" class="text-xl font-bold text-gray-900">Your App</a>
-                    <span class="text-gray-400">/</span>
-                    <a href="{% url 'group_detail' slug=group.slug %}" class="text-gray-600 hover:text-gray-900">{{ group.name }}</a>
-                    <span class="text-gray-400">/</span>
-                    <a href="{% url 'group_manage' slug=group.slug %}" class="text-gray-600 hover:text-gray-900">Manage</a>
-                    <span class="text-gray-400">/</span>
-                    <span class="text-blue-600 font-medium">Members</span>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="{% url 'group_manage' slug=group.slug %}" class="text-sm text-gray-600 hover:text-gray-900">Dashboard</a>
-                    <a href="{% url 'group_detail' slug=group.slug %}" class="text-sm text-gray-600 hover:text-gray-900">View Group</a>
-                </div>
-            </div>
+
+{% block title %}Manage Members - {{ group.name }} - {{ block.super }}{% endblock %}
+
+{% block content %}    
+
+<!-- Breadcrumb -->
+<nav class="text-sm breadcrumbs mb-6">
+    <ol class="list-none p-0 inline-flex">
+        <li class="flex items-center">
+            <a href="{% url 'group_detail' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">{{ group.name }}</a>
+            <span class="mx-2 text-gray-400">/</span>
+        </li>
+        <li class="flex items-center">
+            <a href="{% url 'group_manage' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">Manage</a>
+            <span class="mx-2 text-gray-400">/</span>
+        </li>
+        <li class="text-gray-600">Members</li>
+    </ol>
+</nav>
+<div id="modal"></div>
+
+<!-- Header -->
+<div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">Manage Members</h1>
+    <p class="text-gray-600 mt-1">View, edit roles, and manage members of {{ group.name }}.</p>
+</div>
+
+<!-- Filters -->
+<div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+    <form id="member-filters" class="grid md:grid-cols-5 gap-4 items-end">
+        <div class="md:col-span-2">
+            <label for="search" class="block text-sm font-medium text-gray-700">Search by name or email</label>
+            <input type="text" name="search" id="search-input" value="{{ search_query }}"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                placeholder="e.g. John Doe">
         </div>
-    </nav>
-
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Manage Members</h1>
-                <p class="text-gray-600 mt-1">{{ memberships.paginator.count }} total members</p>
-            </div>
-            <a href="{% url 'group_manage_invitations' slug=group.slug %}" 
-              class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                Send Invitations
-            </a>
+        <div>
+            <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+            <select name="role" id="role-filter"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                <option value="">All Roles</option>
+                <option value="member" {% if role_filter == 'member' %}selected{% endif %}>Member</option>
+                <option value="moderator" {% if role_filter == 'moderator' %}selected{% endif %}>Moderator</option>
+                <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Admin</option>
+            </select>
         </div>
-
-        <!-- Search and Filter -->
-        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
-            <form method="get" class="flex flex-wrap gap-4">
-                <div class="flex-1 min-w-64">
-                    <input type="text" 
-                          name="search" 
-                          value="{{ search_query }}"
-                          placeholder="Search members by name or email..."
-                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <select name="role" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">All Roles</option>
-                        <option value="member" {% if role_filter == 'member' %}selected{% endif %}>Member</option>
-                        <option value="moderator" {% if role_filter == 'moderator' %}selected{% endif %}>Moderator</option>
-                        <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Admin</option>
-                    </select>
-                </div>
-                <div>
-                    <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">All Status</option>
-                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
-                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
-                    </select>
-                </div>
-                <button type="submit" 
-                        class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700">
-                    Filter
-                </button>
-                {% if search_query or role_filter or status_filter != 'active' %}
-                    <a href="{% url 'group_manage_members' slug=group.slug %}" 
-                      class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200">
-                        Clear
-                    </a>
-                {% endif %}
-            </form>
+        <div>
+            <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+            <select name="status" id="status-filter"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                <option value="">All Statuses</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="deceased" {% if status_filter == 'deceased' %}selected{% endif %}>Deceased</option>
+            </select>
         </div>
+        <div>
+            <button type="submit"
+                class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Filter</button>
+        </div>
+    </form>
+</div>
 
-        <!-- Members List -->
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-            {% if memberships %}
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Member
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Role
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Joined
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            {% for membership in memberships %}
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        {% if membership.user.profile.profile_picture %}
-                                            <img src="{{ membership.user.profile.profile_picture.url }}" 
-                                                alt="{{ membership.user.profile.full_name }}" 
-                                                class="w-10 h-10 rounded-full object-cover mr-4">
-                                        {% else %}
-                                            <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-4">
-                                                <span class="text-white font-medium">{{ membership.user.email|first|upper }}</span>
-                                            </div>
-                                        {% endif %}
-                                        <div>
-                                            <div class="text-sm font-medium text-gray-900">
-                                                {{ membership.user.profile.full_name|default:membership.user.email }}
-                                                {% if membership.user == group.creator %}
-                                                    <span class="ml-2 bg-purple-100 text-purple-600 text-xs px-2 py-1 rounded-full">Creator</span>
-                                                {% endif %}
-                                            </div>
-                                            <div class="text-sm text-gray-500">{{ membership.user.email }}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {% if membership.user == group.creator %}
-                                        <span class="bg-purple-100 text-purple-600 text-sm px-2 py-1 rounded-full">Creator</span>
-                                    {% else %}
-                                        <form method="post" action="{% url 'change_member_role' slug=group.slug membership_id=membership.id %}" class="inline">
-                                            {% csrf_token %}
-                                            <select name="role" 
-                                                    onchange="this.form.submit()" 
-                                                    class="text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                                                    {% if not is_creator and membership.role == 'admin' %}disabled{% endif %}>
-                                                <option value="member" {% if membership.role == 'member' %}selected{% endif %}>Member</option>
-                                                <option value="moderator" {% if membership.role == 'moderator' %}selected{% endif %}>Moderator</option>
-                                                {% if is_creator %}
-                                                    <option value="admin" {% if membership.role == 'admin' %}selected{% endif %}>Admin</option>
-                                                {% endif %}
-                                            </select>
-                                        </form>
-                                    {% endif %}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {% if membership.status == 'active' %}
-                                        <span class="bg-green-100 text-green-600 text-sm px-2 py-1 rounded-full">Active</span>
-                                    {% elif membership.status == 'pending' %}
-                                        <span class="bg-yellow-100 text-yellow-600 text-sm px-2 py-1 rounded-full">Pending</span>
-                                    {% endif %}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <div>{{ membership.joined_at|date:"M d, Y" }}</div>
-                                    <div class="text-xs text-gray-400">{{ membership.joined_at|timesince }} ago</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    {% if membership.status == 'pending' %}
-                                        <div class="flex items-center space-x-2">
-                                            <form method="post" action="{% url 'approve_member' slug=group.slug membership_id=membership.id %}" class="inline">
-                                                {% csrf_token %}
-                                                <button type="submit" 
-                                                        class="text-green-600 hover:text-green-900">
-                                                    Approve
-                                                </button>
-                                            </form>
-                                            <form method="post" action="{% url 'reject_member' slug=group.slug membership_id=membership.id %}" class="inline">
-                                                {% csrf_token %}
-                                                <button type="submit" 
-                                                        class="text-red-600 hover:text-red-900">
-                                                    Reject
-                                                </button>
-                                            </form>
-                                        </div>
-                                    {% elif membership.user != group.creator %}
-                                        <form method="post" action="{% url 'remove_member' slug=group.slug membership_id=membership.id %}" 
-                                              class="inline"
-                                              onsubmit="return confirm('Are you sure you want to remove this member?')">
-                                            {% csrf_token %}
-                                            <button type="submit" 
-                                                    class="text-red-600 hover:text-red-900">
-                                                Remove
-                                            </button>
-                                        </form>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+<!-- Members Table -->
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="members-table-body" class="bg-white divide-y divide-gray-200">
+                {% for membership in memberships %}
+                {% include "group/manage/partials/member_row.html" %}  <!-- Fixed path -->
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-12 px-6">
+                        <h3 class="text-lg font-medium text-gray-900">No members found</h3>
+                        <p class="text-gray-500 mt-1">Try adjusting your search filters.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
-                <!-- Pagination -->
-                {% if memberships.has_other_pages %}
-                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                    <div class="flex-1 flex justify-between sm:hidden">
-                        {% if memberships.has_previous %}
-                            <a href="?page={{ memberships.previous_page_number }}" 
-                              class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                Previous
-                            </a>
-                        {% endif %}
-                        {% if memberships.has_next %}
-                            <a href="?page={{ memberships.next_page_number }}" 
-                              class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                Next
-                            </a>
-                        {% endif %}
-                      {% endif %}
-                {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search-input');
+        const roleFilter = document.getElementById('role-filter');
+        const statusFilter = document.getElementById('status-filter');
+        const filterForm = document.getElementById('member-filters');
+
+        function filterMembers() {
+            const memberRows = document.querySelectorAll('#members-table-body .member-row');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const roleTerm = roleFilter.value;
+            const statusTerm = statusFilter.value;
+
+            let visibleCount = 0;
+
+            memberRows.forEach(row => {
+                const name = row.dataset.name || '';
+                const email = row.dataset.email || '';
+                const role = row.dataset.role || '';
+                const status = row.dataset.status || '';
+
+                const searchMatch = (
+                    !searchTerm ||
+                    name.includes(searchTerm) ||
+                    email.includes(searchTerm)
+                );
+
+                const roleMatch = (
+                    !roleTerm || 
+                    role === roleTerm
+                );
+
+                const statusMatch = (
+                    !statusTerm ||
+                    status === statusTerm
+                );
+
+                if (searchMatch && roleMatch && statusMatch) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            updateEmptyState(visibleCount, memberRows.length);
+        }
+
+        function updateEmptyState(visibleCount, totalRows) {
+            const tbody = document.getElementById('members-table-body');
+            let emptyRow = tbody.querySelector('.empty-state-row');
+
+            if (visibleCount === 0 && totalRows > 0) {
+                if (!emptyRow) {
+                    emptyRow = document.createElement('tr');
+                    emptyRow.className = 'empty-state-row';
+                    emptyRow.innerHTML = `
+                        <td colspan="5" class="text-center py-12 px-6">
+                            <h3 class="text-lg font-medium text-gray-900">No members found</h3>
+                            <p class="text-gray-500 mt-1">Try adjusting your search filters.</p>
+                        </td>
+                    `;
+                    tbody.appendChild(emptyRow);
+                }
+                emptyRow.style.display = '';
+            } else if (emptyRow) {
+                emptyRow.style.display = 'none';
+            }
+        }
+
+        filterForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            filterMembers();
+        });
+
+        searchInput.addEventListener('input', filterMembers);
+        roleFilter.addEventListener('change', filterMembers);
+        statusFilter.addEventListener('change', filterMembers);
+
+        // Initial filter on page load
+        filterMembers();
+    });
+
+    // Handle HTMX updates - close modal and re-filter
+    document.body.addEventListener('htmx:afterSwap', function (event) {
+        // Check if the swap was for a member row
+        if (event.detail.target && event.detail.target.id && event.detail.target.id.startsWith('member-row-')) {
+            // Close the modal
+            const modal = document.querySelector("#modal");
+            if (modal) {
+                modal.innerHTML = '';
+            }
+            
+            // Re-run the filter to include the updated row
+            filterMembers();
+        }
+    });
+</script>
+{% endblock %}

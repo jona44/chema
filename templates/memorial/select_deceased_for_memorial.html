@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Member for Memorial - {{ group.name }}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav class="text-sm breadcrumbs mb-6">
+    <ol class="list-none p-0 inline-flex">
+        <li class="flex items-center">
+            <a href="{% url 'group_detail' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">{{ group.name
+                }}</a>
+            <span class="mx-2 text-gray-400">/</span>
+        </li>
+        <li class="text-gray-600">Create Memorial</li>
+    </ol>
+</nav>
+
+<!-- Header -->
+<div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+    <div class="flex items-center space-x-4">
+        <div class="flex-shrink-0">
+            <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+        </div>
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">
+                Select a Member to Create a Memorial
+            </h1>
+            <p class="text-gray-600 mt-1">
+                Choose a deceased member from the list below to honor their memory.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm p-6">
+    {% if deceased_memberships %}
+    <ul class="divide-y divide-gray-200">
+        {% for membership in deceased_memberships %}
+        <li class="py-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <img class="h-10 w-10 rounded-full object-cover grayscale"
+                    src="{{ membership.user.profile.profile_picture.url }}" alt="">
+                <div class="ml-3">
+                    <p class="text-sm font-medium text-gray-900">{{ membership.user.profile.full_name }}</p>
+                    <p class="text-sm text-gray-500">{{ membership.user.email }}</p>
+                </div>
+            </div>
+            <a href="{% url 'create_memorial' slug=group.slug membership_id=membership.id %}"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                Create Memorial
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="text-center py-12 text-gray-500">
+        <p>There are no deceased members in this group who don't already have a memorial.</p>
+        <p class="mt-2 text-sm">You can mark a member as deceased from the <a
+                href="{% url 'group_manage_members' slug=group.slug %}" class="text-blue-600 hover:underline">member
+                management page</a>.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

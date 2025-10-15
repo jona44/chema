@@ -41,7 +41,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     # Email verification field
     is_email_verified = models.BooleanField(default=False)
 
-    USERNAME_FIELD = "email"
+    USERNAME_FIELD  = "email"
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
@@ -62,9 +62,19 @@ class Profile(models.Model):
     date_of_birth = models.DateField(null=True, blank=True)
     contact_number  = models.CharField(max_length=20, blank=True)
     profile_picture = models.ImageField(upload_to="profile_pictures/", blank=True)
+    
+    # Cultural/Religious Info
+    cultural_background   = models.CharField(max_length=100, blank=True)
+    religious_affiliation = models.CharField(max_length=100, blank=True)
+    traditional_names = models.CharField(max_length=200, blank=True, help_text="Traditional/clan names")
+    spiritual_beliefs = models.CharField(max_length=200, blank=True, help_text="Spiritual beliefs or practices")
     bio             = models.TextField(blank=True)
+
     is_complete     = models.BooleanField(default=False)
+    is_deceased     = models.BooleanField(default=False)
+
     # Additional useful fields
+    date_of_death = models.DateField(null=True, blank=True)
     created_at     = models.DateTimeField(auto_now_add=True)
     updated_at     = models.DateTimeField(auto_now=True)
 

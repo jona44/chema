@@ -10,7 +10,9 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from contributions.models import Contribution
 from group.forms import GroupCreationForm, GroupInvitationForm, GroupJoinForm, GroupSearchForm, GroupEditForm
+from memorial.models import Memorial
 from .models import Group, GroupMembership, GroupInvitation, Category
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -162,40 +164,32 @@ def group_invitations_view(request, slug):
 @login_required
 def group_members_view(request, slug):
     """Manage group members"""
-    group = get_object_or_404(Group, slug=slug, is_active=True)
+    group = get_object_or_404(Group, slug=slug)
     
     if not group.is_admin(request.user):
         messages.error(request, "You don't have permission to manage members.")
         return redirect('group_detail', slug=slug)
     
-    # Filter and search members
+    # Get filter values to pass to the template
     search_query = request.GET.get('search', '')
     role_filter = request.GET.get('role', '')
-    status_filter = request.GET.get('status', 'active')
+    status_filter = request.GET.get('status', '')
     
-    memberships = group.memberships.filter(is_active=True).select_related('user__profile')# type: ignore
+    # Import Q for complex queries
+    from django.db.models import Q
     
-    if search_query:
-        memberships = memberships.filter(
-            Q(user__email__icontains=search_query) |
-            Q(user__profile__first_name__icontains=search_query) |
-            Q(user__profile__surname__icontains=search_query)
-        )
-    
-    if role_filter:
-        memberships = memberships.filter(role=role_filter)
-    
-    if status_filter:
-        memberships = memberships.filter(status=status_filter)
-    
-    # Pagination
-    paginator = Paginator(memberships.order_by('-joined_at'), 20)
-    page_number = request.GET.get('page')
-    page_memberships = paginator.get_page(page_number)
+    # Fetch ALL members including deceased ones
+    # The key is to include deceased members even though is_active=False
+    memberships = GroupMembership.objects.filter(
+        group=group
+    ).filter(
+        Q(is_active=True, status__in=['active', 'pending']) |  # Active and pending members
+        Q(is_active=False, status='deceased')  # Deceased members (inactive but should show)
+    ).select_related('user__profile').order_by('-joined_at')
     
     context = {
         'group': group,
-        'memberships': page_memberships,
+        'memberships': memberships,
         'search_query': search_query,
         'role_filter': role_filter,
         'status_filter': status_filter,
@@ -203,7 +197,6 @@ def group_members_view(request, slug):
     }
     
     return render(request, 'group/manage/members.html', context)
-
 
 @login_required
 def group_manage_view(request, slug):
@@ -275,7 +268,8 @@ def group_detail_view(request, slug):
         'user_membership': user_membership,
         'can_join': can_join,
         'join_message': join_message,
-        'is_admin': group.is_admin(request.user)
+        'is_admin': group.is_admin(request.user),
+        'memorials_count': Memorial.objects.filter(associated_group=group).count(),
     }
 
     # Fetch recent members for all viewers

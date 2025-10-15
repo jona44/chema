@@ -1,0 +1,28 @@
+<!-- Tailwind + HTMX modal -->
+<div id="deceased-modal" class="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+
+        <h2 class="text-xl font-semibold mb-4">Mark {{ profile.full_name }} as Deceased</h2>
+
+        <form hx-post="{% url 'mark-deceased' slug=group.slug pk=profile.id %}"
+            hx-target="#member-row-{{ profile.user.id }}" 
+            hx-trigger="submit" 
+            swap="outerHTML"
+            hx-on::after-swap="this.closest('#deceased-modal').remove()" 
+            class="space-y-4">
+
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <div class="flex justify-end space-x-2 mt-4">
+                <button type="button" class="px-4 py-2 rounded-lg border"
+                    onclick="this.closest('#deceased-modal').remove()">
+                    Cancel
+                </button>
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                    Confirm
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

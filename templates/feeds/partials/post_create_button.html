@@ -1,0 +1,140 @@
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-medium text-gray-900">Share with the group</h3>
+        <span class="text-xs text-gray-500">{{ group.name }}</span>
+    </div>
+
+    {# ---------------------------------------------------------------- #}
+    {# Memorial-Specific Post Options #}
+    {# ---------------------------------------------------------------- #}
+
+    {% if group.memorial %}
+    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 mb-4 border border-purple-200 ">
+        <h4 class="text-sm font-medium text-purple-900 mb-3 flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            Memorial Posts for {{ group.memorial.deceased_name }}
+        </h4>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 ">
+            <button type="button" hx-get="{% url 'feeds:memory_modal' group.slug %}" hx-target="#htmx-modal-content"
+                hx-swap="innerHTML"
+                class="flex flex-col items-center p-3 border border-purple-200 rounded-lg hover:border-indigo-400 hover:bg-indigo-50 transition-colors group">
+                <svg class="w-5 h-5 text-purple-400 group-hover:text-indigo-500 mb-1" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                    </path>
+                </svg>
+                <span class="text-xs font-medium text-gray-700 group-hover:text-indigo-700">Memorial</span>
+            </button>
+
+            <button type="button" hx-get="{% url 'feeds:condolence_modal' group.slug %}" hx-target="#htmx-modal-content"
+                hx-swap="innerHTML"
+                class="flex flex-col items-center p-3 border border-purple-200 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors group">
+                <svg class="w-5 h-5 text-purple-400 group-hover:text-purple-500 mb-1" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                    </path>
+                </svg>
+                <span class="text-xs font-medium text-gray-700 group-hover:text-purple-700">Condolence</span>
+            </button>
+
+            <button type="button" hx-get="{% url 'feeds:tribute_modal' group.slug %}" hx-target="#htmx-modal-content"
+                hx-swap="innerHTML"
+                class="flex flex-col items-center p-3 border border-purple-200 rounded-lg hover:border-pink-400 hover:bg-pink-50 transition-colors group">
+                <svg class="w-5 h-5 text-purple-400 group-hover:text-pink-500 mb-1" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z">
+                    </path>
+                </svg>
+                <span class="text-xs font-medium text-gray-700 group-hover:text-pink-700">Tribute</span>
+            </button>
+
+
+            <button type="button" hx-get="{% url 'feeds:funeral_update_modal' group.slug %}"
+                hx-target="#htmx-modal-content" hx-swap="innerHTML"
+                class="flex flex-col items-center p-3 border border-purple-200 rounded-lg hover:border-gray-400 hover:bg-orange-50 transition-colors group">
+                <svg class="w-5 h-5 text-purple-400 group-hover:text-orange-600 mb-1" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-xs font-medium text-black-700 group-hover:text-gray-700">Update</span>
+            </button>
+
+        </div>
+    </div>
+    {% endif %}
+
+    {# ---------------------------------------------------------------- #}
+    {# Standard Group Post Options #}
+    {# ---------------------------------------------------------------- #}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+        {% if feed.allow_media %}
+        <button type="button" hx-get="{% url 'feeds:media_post_modal' group.slug %}" hx-target="#htmx-modal-content"
+            hx-swap="innerHTML"
+            class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors group">
+            <svg class="w-6 h-6 text-gray-400 group-hover:text-purple-500 mb-2" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                </path>
+            </svg>
+            <span class="text-sm font-medium text-gray-700 group-hover:text-purple-700">Media</span>
+            <span class="text-xs text-gray-500 mt-1">Photos & Videos</span>
+        </button>
+        {% endif %}
+
+        {% if feed.allow_events %}
+        <button type="button" hx-get="{% url 'feeds:event_modal' group.slug %}" hx-target="#htmx-modal-content"
+            hx-swap="innerHTML"
+            class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors group">
+            <svg class="w-6 h-6 text-gray-400 group-hover:text-green-500 mb-2" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <span class="text-sm font-medium text-gray-700 group-hover:text-green-700">Event</span>
+            <span class="text-xs text-gray-500 mt-1">Schedule something</span>
+        </button>
+        {% endif %}
+
+        
+        <button type="button" hx-get="{% url 'feeds:create_poll_post' group.slug %}" hx-target="#htmx-modal-content"
+            hx-swap="innerHTML"
+            class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-teal-300 hover:bg-teal-50 transition-colors group">
+            <svg class="w-6 h-6 text-gray-400 group-hover:text-teal-500 mb-2" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                </path>
+            </svg>
+            <span class="text-sm font-medium text-gray-700 group-hover:text-teal-700">Poll</span>
+            <span class="text-xs text-gray-500 mt-1">Ask the group</span>
+        </button>
+        
+
+
+        <button type="button" hx-get="{% url 'feeds:announcement_modal' group.slug %}" hx-target="#htmx-modal-content"
+            hx-swap="innerHTML"
+            class="flex flex-col items-center p-2 border border-gray-200 rounded-lg hover:border-yellow-300 hover:bg-yellow-50 transition-colors group">
+            <svg class="w-6 h-6 text-gray-400 group-hover:text-yellow-500 mb-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-sm font-medium text-gray-700 group-hover:text-yellow-700">Announcement</span>
+            <span class="text-xs text-gray-500 mt-1">Important notice</span>
+        </button>
+
+    </div>
+</div>
+{# ---------------------------------------------------------------- #}
+{# The dropdown section has been removed entirely.                  #}
+{# ---------------------------------------------------------------- #}

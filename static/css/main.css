@@ -1,0 +1,57 @@
+ /* Custom styles for messages */
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.375rem;
+            /* Tailwind's rounded-md */
+            position: relative;
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            /* green-100 */
+            color: #065f46;
+            /* green-800 */
+            border: 1px solid #a7f3d0;
+            /* green-200 */
+        }
+
+        .alert-info {
+            background-color: #e0f2fe;
+            /* blue-100 */
+            color: #1e40af;
+            /* blue-800 */
+            border: 1px solid #bfdbfe;
+            /* blue-200 */
+        }
+
+        .alert-warning {
+            background-color: #fffbeb;
+            /* yellow-100 */
+            color: #92400e;
+            /* yellow-800 */
+            border: 1px solid #fde68a;
+            /* yellow-200 */
+        }
+
+        .alert-error {
+            /* Django's 'error' tag maps to 'danger' in Bootstrap, using red for Tailwind */
+            background-color: #fee2e2;
+            /* red-100 */
+            color: #991b1b;
+            /* red-800 */
+            border: 1px solid #fecaca;
+            /* red-200 */
+        }
+
+        .alert-close-button {
+            position: absolute;
+            top: 0.75rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            line-height: 1;
+            color: inherit;
+            cursor: pointer;
+        }

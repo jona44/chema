@@ -100,7 +100,7 @@ class Post(models.Model):
     is_urgent = models.BooleanField(default=False)
     privacy_level = models.CharField(max_length=20, choices=PRIVACY_LEVELS, default='public')
     
-    # Memorial specific
+    
     memorial_related = models.ForeignKey('memorial.Memorial', on_delete=models.CASCADE, null=True, blank=True, related_name='feed_posts')
     
     # Moderation
@@ -141,8 +141,7 @@ class Post(models.Model):
             return False
         return (
             user == self.author or 
-            self.feed.group.is_admin(user) or
-            (hasattr(self, 'memorial_related') and self.memorial_related and self.memorial_related.is_admin(user))
+            self.feed.group.is_admin(user)
         )
     
     def can_delete(self, user):
@@ -238,7 +237,7 @@ class Comment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        ordering = ['created_at']
+        ordering = ['-created_at']
         indexes = [
             models.Index(fields=['post', 'created_at']),
         ]
@@ -314,7 +313,6 @@ class Poll(models.Model):
     """Polls attached to posts"""
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    post = models.OneToOneField(Post, on_delete=models.CASCADE, related_name='poll')
     
     question = models.CharField(max_length=500)
     is_multiple_choice = models.BooleanField(default=False)
@@ -337,7 +335,7 @@ class Poll(models.Model):
 class PollOption(models.Model):
     """Poll options"""
     
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id   = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='options')
     
     text = models.CharField(max_length=200)
@@ -395,43 +393,37 @@ from django.dispatch import receiver
 @receiver(post_save, sender=PostLike)
 def increment_post_likes(sender, instance, created, **kwargs):
     if created:
-        instance.post.likes_count = instance.post.likes.count()
-        instance.post.save(update_fields=['likes_count'])
+        Post.objects.filter(pk=instance.post.pk).update(likes_count=models.F('likes_count') + 1)
 
 @receiver(post_delete, sender=PostLike)
 def decrement_post_likes(sender, instance, **kwargs):
-    instance.post.likes_count = instance.post.likes.count()
-    instance.post.save(update_fields=['likes_count'])
+    Post.objects.filter(pk=instance.post.pk).update(likes_count=models.F('likes_count') - 1)
 
 @receiver(post_save, sender=Comment)
 def increment_comment_count(sender, instance, created, **kwargs):
     if created:
-        instance.post.comments_count = instance.post.comments.count()
-        instance.post.save(update_fields=['comments_count'])
+        Post.objects.filter(pk=instance.post.pk).update(comments_count=models.F('comments_count') + 1)
 
 @receiver(post_delete, sender=Comment)
 def decrement_comment_count(sender, instance, **kwargs):
-    instance.post.comments_count = instance.post.comments.count()
-    instance.post.save(update_fields=['comments_count'])
+    Post.objects.filter(pk=instance.post.pk).update(comments_count=models.F('comments_count') - 1)
 
 @receiver(post_save, sender=PostShare)
 def increment_share_count(sender, instance, created, **kwargs):
     if created:
-        instance.post.shares_count = instance.post.shares.count()
-        instance.post.save(update_fields=['shares_count'])
+        Post.objects.filter(pk=instance.post.pk).update(shares_count=models.F('shares_count') + 1)
 
 @receiver(post_delete, sender=PostShare)
 def decrement_share_count(sender, instance, **kwargs):
-    instance.post.shares_count = instance.post.shares.count()
-    instance.post.save(update_fields=['shares_count'])
+    Post.objects.filter(pk=instance.post.pk).update(shares_count=models.F('shares_count') - 1)
 
 @receiver(post_save, sender=PollVote)
 def increment_poll_option_votes(sender, instance, created, **kwargs):
     if created:
-        instance.option.votes_count = instance.option.votes.count()
-        instance.option.save(update_fields=['votes_count'])
+        PollOption.objects.filter(pk=instance.option.pk).update(votes_count=models.F('votes_count') + 1)
 
 @receiver(post_delete, sender=PollVote)
 def decrement_poll_option_votes(sender, instance, **kwargs):
-    instance.option.votes_count = instance.option.votes.count()
-    instance.option.save(update_fields=['votes_count'])
+    PollOption.objects.filter(pk=instance.option.pk).update(votes_count=models.F('votes_count') - 1)
+
+

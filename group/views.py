@@ -7,13 +7,16 @@ from django.db.models import Q, Count
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
-from group.forms import GroupCreationForm, GroupInvitationForm, GroupJoinForm, GroupSearchForm, GroupEditForm
+from customuser.models import Profile
+from feeds.models import Feed
+from group.forms import GroupCreationForm, GroupInvitationForm, GroupJoinForm, GroupSearchForm, GroupEditForm, MarkDeceasedForm
 from .models import Group, GroupMembership, GroupInvitation, Category
 from datetime import timezone
 from django.utils import timezone
-
-
-
+from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
 
 
 
@@ -98,6 +101,7 @@ def join_group_view(request, slug):
     group = get_object_or_404(Group, slug=slug, is_active=True)
     invitation_id = request.GET.get('invitation')
 
+    # ---------- Handle Invitation Flow ----------
     if invitation_id:
         try:
             invitation = GroupInvitation.objects.get(id=invitation_id, group=group)
@@ -120,44 +124,56 @@ def join_group_view(request, slug):
             messages.error(request, "Invalid invitation link.")
             return redirect('group_detail', slug=slug)
 
+    # ---------- Permission Check ----------
     can_join, message = group.can_join(request.user)
     if not can_join:
         messages.error(request, message)
         return redirect('group_detail', slug=slug)
-    
+
+    # ---------- Prevent Duplicate Membership ----------
+    existing_membership = GroupMembership.objects.filter(group=group, user=request.user).first()
+    if existing_membership:
+        if existing_membership.status == 'active':
+            messages.info(request, f"You are already an active member of {group.name}.")
+        elif existing_membership.status == 'pending':
+            messages.info(request, f"Your request to join {group.name} is still pending approval.")
+        else:
+            messages.warning(request, f"You already have a membership record in {group.name}.")
+        return redirect('group_detail', slug=slug)
+
+    # ---------- Handle Join Form ----------
     if request.method == 'POST':
         form = GroupJoinForm(request.POST)
         if form.is_valid():
             join_message = form.cleaned_data.get('message', '')
-            
-            # Create membership
+
             status = 'pending' if group.requires_approval else 'active'
+
             membership = GroupMembership.objects.create(
                 group=group,
                 user=request.user,
                 status=status,
                 join_message=join_message,
-                approved_at=timezone.now() if status == 'active' else None, # type: ignore
-                approved_by=group.creator if status == 'active' else None
+                approved_at=timezone.now() if status == 'active' else None,  # type: ignore
+                approved_by=group.creator if status == 'active' else None,
             )
-            
+
             if status == 'active':
-                messages.success(request, f'Welcome to {group.name}!')
+                messages.success(request, f"Welcome to {group.name}!")
             else:
                 messages.info(
-                    request, 
-                    f'Your request to join {group.name} has been sent for approval.'
+                    request,
+                    f"Your request to join {group.name} has been sent for approval."
                 )
-            
+
             return redirect('group_detail', slug=slug)
     else:
         form = GroupJoinForm()
-    
+
     return render(request, 'group/join_group.html', {
         'group': group,
         'form': form,
     })
-
 
 @login_required
 def my_groups_view(request):
@@ -405,3 +421,63 @@ def change_member_role_view(request, slug, membership_id):
     
     return redirect('group_manage_members', slug=slug)
 
+
+
+# In your views.py (or wherever mark_deceased_view is located)
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
+from .models import  Group, GroupMembership # Assuming your models are here
+from .forms import MarkDeceasedForm # Your form
+
+@login_required
+def mark_deceased_view(request, slug, pk):
+    """Mark a member as deceased"""
+    group = get_object_or_404(Group, slug=slug)
+    profile = get_object_or_404(Profile, pk=pk)
+    
+    # Check if user has permission to manage this group
+    if not group.is_admin(request.user):
+        messages.error(request, "You don't have permission to manage members.")
+        return redirect('group_detail', slug=slug)
+    
+    # Get the membership for this user in this specific group
+    try:
+        membership = GroupMembership.objects.get(user=profile.user, group=group)
+    except GroupMembership.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == "POST":
+        form = MarkDeceasedForm(request.POST, instance=profile)
+        if form.is_valid():
+            profile = form.save(commit=False)
+            profile.is_deceased = True
+            profile.save()
+
+            # Update the membership status
+            membership.status = 'deceased'
+            membership.is_active = False
+            membership.can_post = False
+            membership.can_comment = False
+            membership.save()
+
+            # Re-render the table row partial
+            html = render_to_string(
+                "group/manage/partials/member_row.html",  # Fixed path
+                {
+                    "membership": membership, 
+                    "group": group, 
+                    "is_creator": group.creator == request.user
+                },
+                request=request,
+            )
+            return HttpResponse(html)
+    else:
+        form = MarkDeceasedForm(instance=profile)
+
+    return render(
+        request,
+        "group/mark_deceased_modal.html",  # Fixed path
+        {"form": form, "profile": profile, "group": group},
+    )

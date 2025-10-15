@@ -148,81 +148,85 @@ class CustomUserLoginForm(forms.Form):
         return email
 
 
+from django import forms
+from django.core.exceptions import ValidationError
+from .models import Profile
+import re
+
+
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = [
             'first_name', 'surname', 'date_of_birth', 
-            'contact_number', 'profile_picture', 'bio'
+            'contact_number', 'profile_picture', 'bio',
+            'cultural_background', 'religious_affiliation',
+            'traditional_names', 'spiritual_beliefs'
         ]
         widgets = {
             'first_name': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 '
-                'border '
-                'border-gray-300 '
-                'rounded-lg focus:ring-2 '
-                'focus:ring-blue-500 '
-                'focus:border-blue-500',
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
                 'placeholder': 'First Name'
             }),
             'surname': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 '
-                'border '
-                'border-gray-300 '
-                'rounded-lg '
-                'focus:ring-2 '
-                'focus:ring-blue-500 '
-                'focus:border-blue-500',
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
                 'placeholder': 'Last Name'
             }),
             'date_of_birth': forms.DateInput(attrs={
-                'class': 'w-full px-4 py-3 '
-                'border '
-                'border-gray-300 '
-                'rounded-lg '
-                'focus:ring-2 '
-                'focus:ring-blue-500 '
-                'focus:border-blue-500',
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
                 'type': 'date'
             }),
             'contact_number': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 '
-                'border '
-                'border-gray-300 '
-                'rounded-lg '
-                'focus:ring-2 '
-                'focus:ring-blue-500 '
-                'focus:border-blue-500',
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
                 'placeholder': '+27 XX XXX XXXX'
             }),
             'profile_picture': forms.FileInput(attrs={
-                'class': 'w-full px-4 py-3 '
-                'border '
-                'border-gray-300 '
-                'rounded-lg '
-                'focus:ring-2 '
-                'focus:ring-blue-500 '
-                'focus:border-blue-500',
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
                 'accept': 'image/*'
             }),
             'bio': forms.Textarea(attrs={
-                'class': 'w-full px-4 py-3 '
-                'border '
-                'border-gray-300 '
-                'rounded-lg '
-                'focus:ring-2 '
-                'focus:ring-blue-500 '
-                'focus:border-blue-500',
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
                 'rows': 4,
                 'placeholder': 'Tell us about yourself...'
             }),
+            'cultural_background': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                'placeholder': 'e.g., Zulu, Xhosa, Afrikaans, Indian, etc.'
+            }),
+            'religious_affiliation': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                'placeholder': 'e.g., Christian, Muslim, Hindu, Traditional, etc.'
+            }),
+            'traditional_names': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                'placeholder': 'Traditional or clan names'
+            }),
+            'spiritual_beliefs': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                'placeholder': 'Any spiritual beliefs or practices'
+            }),
+        }
+        labels = {
+            'first_name': 'First Name *',
+            'surname': 'Surname *',
+            'date_of_birth': 'Date of Birth',
+            'contact_number': 'Contact Number',
+            'profile_picture': 'Profile Picture',
+            'bio': 'Bio',
+            'cultural_background': 'Cultural Background',
+            'religious_affiliation': 'Religious Affiliation',
+            'traditional_names': 'Traditional/Clan Names',
+            'spiritual_beliefs': 'Spiritual Beliefs',
+        }
+        help_texts = {
+            'traditional_names': 'Your traditional or clan names (isibongo)',
+            'spiritual_beliefs': 'Any spiritual beliefs or practices you follow',
+            'cultural_background': 'Your cultural heritage or ethnic background',
         }
 
     def clean_contact_number(self):
         contact_number = self.cleaned_data.get('contact_number')
         if contact_number:
-            # Basic South African number validation
-            import re
             # Remove spaces and common separators
             cleaned = re.sub(r'[\s\-\(\)]', '', contact_number)
             
@@ -232,12 +236,25 @@ class ProfileUpdateForm(forms.ModelForm):
                     'Please enter a valid South African phone number (e.g., +27 XX XXX XXXX or 0XX XXX XXXX)'
                 )
         return contact_number
+    
+    def clean_date_of_birth(self):
+        date_of_birth = self.cleaned_data.get('date_of_birth')
+        if date_of_birth:
+            from datetime import date
+            today = date.today()
+            age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+            
+            if age < 0:
+                raise ValidationError('Date of birth cannot be in the future.')
+            if age > 150:
+                raise ValidationError('Please enter a valid date of birth.')
+        return date_of_birth
 
     def save(self, commit=True):
         profile = super().save(commit=False)
         if commit:
             profile.save()
-            profile.check_completion()  # Update completion status
+            profile.check_completion()
             profile.save()
         return profile
 

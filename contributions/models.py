@@ -29,7 +29,7 @@ class ContributionCampaign(models.Model):
     # Financial
     target_amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('10.00'))])
     current_amount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
-    currency = models.CharField(max_length=3, default='ZAR', help_text="Currency code (ZAR, USD, etc.)")
+    
     
     # Campaign Management
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='created_campaigns')
@@ -40,7 +40,6 @@ class ContributionCampaign(models.Model):
     funeral_date = models.DateTimeField(null=True, blank=True, help_text="Date of funeral service")
     
     # Transparency
-    expense_breakdown = models.JSONField(default=dict, blank=True, help_text="Breakdown of expected expenses")
     public_updates = models.BooleanField(default=True, help_text="Allow contributors to see updates")
     
     created_at = models.DateTimeField(auto_now_add=True)
@@ -245,22 +244,16 @@ from django.dispatch import receiver
 
 @receiver(post_save, sender=Contribution)
 def update_campaign_total_on_save(sender, instance, **kwargs):
-    if instance.status == 'completed':
-        # Recalculate campaign total
-        total = instance.campaign.contributions.filter(status='completed').aggregate(
-            total=models.Sum('amount')
-        )['total'] or Decimal('0.00')
-        
-        instance.campaign.current_amount = total
-        instance.campaign.save(update_fields=['current_amount'])
+    """Update campaign total when a contribution is created and completed."""
+    if kwargs.get('created', False) and instance.status == 'completed':
+        instance.campaign.__class__.objects.filter(pk=instance.campaign.pk).update(
+            current_amount=models.F('current_amount') + instance.amount
+        )
 
 @receiver(post_delete, sender=Contribution)
 def update_campaign_total_on_delete(sender, instance, **kwargs):
+    """Update campaign total when a completed contribution is deleted."""
     if instance.status == 'completed':
-        # Recalculate campaign total
-        total = instance.campaign.contributions.filter(status='completed').aggregate(
-            total=models.Sum('amount')
-        )['total'] or Decimal('0.00')
-        
-        instance.campaign.current_amount = total
-        instance.campaign.save(update_fields=['current_amount'])
+        instance.campaign.__class__.objects.filter(pk=instance.campaign.pk).update(
+            current_amount=models.F('current_amount') - instance.amount
+        )

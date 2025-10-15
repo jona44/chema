@@ -1,0 +1,327 @@
+<!-- templates/contributions/create_campaign.html -->
+{% extends 'base.html' %}
+
+{% block title %}Create Contribution Campaign{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="mb-8">
+            <a href="{% url 'group_detail' group.slug %}" 
+               class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Back to Group
+            </a>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Create Contribution Campaign</h1>
+            <p class="text-gray-600">Set up a fundraising campaign to collect Chema for {{ group.name }}</p>
+        </div>
+
+        <!-- Info Box -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <div class="ml-3 flex-1">
+                    <h3 class="text-sm font-medium text-blue-800">About Chema Campaigns</h3>
+                    <div class="mt-2 text-sm text-blue-700">
+                        <p>A Chema campaign helps collect contributions for funeral and memorial expenses. You can:</p>
+                        <ul class="list-disc list-inside mt-2 space-y-1">
+                            <li>Set a target amount and optional deadline</li>
+                            <li>Track contributions transparently</li>
+                            <li>Record and share how funds are used</li>
+                            <li>Keep contributors updated on progress</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form method="post" class="bg-white rounded-lg shadow">
+            {% csrf_token %}
+
+            {% if form.errors %}
+            <div class="p-6 bg-red-50 border-b border-red-200">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">Please correct the following errors:</h3>
+                        <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <li>{{ field }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="p-6 space-y-8">
+                
+                <!-- Memorial Selection (if multiple exist) -->
+                {% if has_multiple_memorials %}
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
+                        Select Deceased Member
+                    </h2>
+                    
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-purple-700">
+                                    This group has multiple memorials. Please select which deceased member this campaign is for.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ form.memorial.label }} <span class="text-red-500">*</span>
+                        </label>
+                        {{ form.memorial }}
+                        {% if form.memorial.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.memorial.errors.0 }}</p>
+                        {% else %}
+                            <p class="mt-1 text-xs text-gray-500">{{ form.memorial.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Display selected memorial info -->
+                    <div id="memorial-info" class="mt-4 hidden">
+                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <h4 class="font-medium text-gray-900 mb-2">Campaign will be for:</h4>
+                            <p class="text-sm text-gray-700" id="memorial-name"></p>
+                        </div>
+                    </div>
+                </div>
+                {% elif memorials.count == 1 %}
+                <div>
+                    {{ form.memorial }}
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <svg class="h-5 w-5 text-purple-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-medium text-purple-900">Campaign for {{ memorials.first.deceased_name }}</p>
+                                <p class="text-xs text-purple-700 mt-1">This campaign will be linked to this memorial</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Basic Information -->
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
+                        Campaign Information
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ form.title.label }} <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.title }}
+                            <p class="mt-1 text-xs text-gray-500">A clear, descriptive title for your campaign</p>
+                            {% if form.title.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.title.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ form.description.label }} <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.description }}
+                            <p class="mt-1 text-xs text-gray-500">
+                                Explain what the contributions will be used for. Be transparent about expenses.
+                            </p>
+                            {% if form.description.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Goals -->
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
+                        Financial Goals
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ form.target_amount.label }} <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.target_amount }}
+                            <p class="mt-1 text-xs text-gray-500">The amount you aim to raise</p>
+                            {% if form.target_amount.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.target_amount.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ form.currency.label }} <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.currency }}
+                            <p class="mt-1 text-xs text-gray-500">Currency for contributions</p>
+                            {% if form.currency.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.currency.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!------------------- Important Dates ------------------------>
+
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
+                        Important Dates
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ form.funeral_date.label }}
+                            </label>
+                            {{ form.funeral_date }}
+                            <p class="mt-1 text-xs text-gray-500">When is the funeral/memorial service?</p>
+                            {% if form.funeral_date.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.funeral_date.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ form.deadline.label }}
+                            </label>
+                            {{ form.deadline }}
+                            <p class="mt-1 text-xs text-gray-500">Last date to accept contributions (optional)</p>
+                            {% if form.deadline.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.deadline.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!---------------------- Transparency & Settings ---------------------->
+
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
+                        Campaign Settings
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ form.expense_breakdown.label }}
+                            </label>
+                            {{ form.expense_breakdown }}
+                            <p class="mt-1 text-xs text-gray-500">
+                                Optional: JSON format breakdown of expected expenses
+                                <br>Example: {"coffin": 5000, "venue": 3000, "catering": 2000}
+                            </p>
+                            {% if form.expense_breakdown.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.expense_breakdown.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                {{ form.public_updates }}
+                                <label for="{{ form.public_updates.id_for_label }}" class="ml-3 text-sm text-gray-700">
+                                    {{ form.public_updates.label }}
+                                    <p class="text-xs text-gray-500">
+                                        Allow all contributors to see updates about how funds are used
+                                    </p>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!------------------------- Footer ---------------->
+
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg flex justify-between items-center">
+                <a href="{% url 'group_detail' group.slug %}" 
+                    class="text-gray-700 hover:text-gray-900">
+                    Cancel
+                </a>
+                <button type="submit" 
+                        class="bg-indigo-700 hover:bg-indigo-500 text-white px-6 py-3 rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
+                    Create Campaign
+                </button>
+            </div>
+
+        </form>
+
+        <!---------------------- Preview Box --------------------------->
+
+        <div class="mt-8 bg-white rounded-lg shadow p-6">
+            <h3 class="font-semibold text-gray-900 mb-3">💡 Tips for a Successful Campaign</h3>
+            <ul class="space-y-2 text-sm text-gray-700">
+                <li class="flex items-start">
+                    <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span><strong>Share widely:</strong> Use social media to reach more potential contributors</span>
+                </li>
+                <li class="flex items-start">
+                    <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span><strong>Thank contributors:</strong> Show appreciation through updates and messages</span>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span><strong>Be transparent:</strong> Clearly explain what the money will be used for</span>
+                </li>
+                <li class="flex items-start">
+                    <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span><strong>Set realistic goals:</strong> Research typical costs for funeral expenses</span>
+                </li>
+                <li class="flex items-start">
+                    <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span><strong>Update regularly:</strong> Keep contributors informed about progress and expenses</span>
+                </li>
+                <li class="flex items-start">
+                    <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span><strong>Be transparent:</strong> Clearly explain what the money will be used for</span>
+                </li>
+{% endblock %}                

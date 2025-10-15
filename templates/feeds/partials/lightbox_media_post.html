@@ -1,0 +1,68 @@
+<!-- Enhanced media display with lightbox functionality -->
+
+{% if post.media.exists %}
+<div class="mb-4 flex justify-center" data-post-id="{{ post.id }}">
+    {% if post.media.count == 1 %}
+    <!-- Single Media -->
+    {% for media in post.media.all %}
+    <div data-media-url="{{ media.file.url }}" data-media-alt="{{ media.alt_text }}"
+        data-media-type="{{ media.media_type }}" data-media-caption="{{ media.caption }}">
+        {% if media.media_type == 'image' %}
+        <img src="{{ media.file.url }}" alt="{{ media.alt_text }}"
+            class="rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+            style="max-width:450px;width:100%;display:block;margin:auto;"
+            onclick="openLightbox('{{ post.id }}', {{ forloop.counter0 }})">
+        {% elif media.media_type == 'video' %}
+        <video class="rounded-lg cursor-pointer" style="max-width:450px;width:100%;display:block;margin:auto;"
+            onclick="openLightbox('{{ post.id }}', {{ forloop.counter0 }})">
+            <source src="{{ media.file.url }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    {% else %}
+    <!-- Multiple Media Grid -->
+    <div class="grid grid-cols-3 gap-1 justify-center" style="max-width:450px;margin:auto;">
+        {% for media in post.media.all %}
+        <div class="relative group" data-media-url="{{ media.file.url }}" data-media-alt="{{ media.alt_text }}"
+            data-media-type="{{ media.media_type }}" data-media-caption="{{ media.caption }}">
+            {% if media.media_type == 'image' %}
+            <img src="{{ media.file.url }}" alt="{{ media.alt_text }}"
+                class="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                style="max-width:220px;display:block;margin:auto;"
+                onclick="openLightbox('{{ post.id }}', {{ forloop.counter0 }})">
+
+            <!-- Overlay on hover -->
+            <div
+                class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-lg flex items-center justify-center pointer-events-none">
+                <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                </svg>
+            </div>
+
+            {% elif media.media_type == 'video' %}
+            <video class="w-full h-32 object-cover rounded-lg cursor-pointer"
+                onclick="openLightbox('{{ post.id }}', {{ forloop.counter0 }})">
+                <source src="{{ media.file.url }}" type="video/mp4">
+            </video>
+            <!-- Play icon overlay -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div class="bg-black bg-opacity-50 rounded-full p-3">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endif %}

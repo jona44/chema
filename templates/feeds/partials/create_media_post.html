@@ -1,0 +1,242 @@
+<!-- templates/feeds/modals/create_media_post.html -->
+
+<div class="relative bg-white rounded-lg shadow">
+    <!-- Modal header -->
+    <div class="flex items-start justify-between p-4 border-b border-sky-200 rounded-t">
+        <h3 class="text-xl font-semibold text-sky-600">
+            Share Media
+        </h3>
+        <button type="button"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+            data-modal-hide="htmx-modal">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            <span class="sr-only">Close modal</span>
+        </button>
+    </div>
+    <!-- Modal body -->
+    <form id="media-post-form" hx-post="{% url 'feeds:create_media_post' group.slug %}" hx-target="#posts-container"
+        hx-swap="afterbegin"
+        hx-on::after-request="if(event.detail.successful && window.htmxModalInstance) { window.htmxModalInstance.hide(); }"
+        hx-encoding="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="modal-body p-6 space-y-4">
+            <!-- Post Type Selection -->
+            <div class="flex space-x-4 mb-4">
+                <label class="flex items-center">
+                    <input type="radio" name="post_type" value="photo" checked
+                        class="mr-2 text-sky-600 focus:ring-sky-500">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    Photos
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="post_type" value="video" class="mr-2 text-sky-600 focus:ring-sky-500">
+                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    Video
+                </label>
+            </div>
+
+            <!-- File Upload Area -->
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <div id="file-drop-zone" class="space-y-2">
+                    <svg class="mx-auto h-12 w-12 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02">
+                        </path>
+                    </svg>
+                    <div class="text-gray-600">
+                        <label for="media_files" class="cursor-pointer text-sky-600 hover:text-sky-500">
+                            Click to upload
+                        </label>
+                        or drag and drop
+                    </div>
+                    <p class="text-xs text-sky-500">
+                        <span id="file-type-text">PNG, JPG, GIF up to 10MB</span>
+                    </p>
+                </div>
+
+                <input type="file" id="media_files" name="media_files" multiple accept="image/*" class="hidden"
+                    onchange="handleFileSelection(this)">
+            </div>
+
+            <!-- Preview Area -->
+            <div id="file-preview" class="hidden space-y-4">
+                <!-- Files will be dynamically added here -->
+            </div>
+
+            <!-- Title -->
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Title (optional)</label>
+                <input type="text" id="title" name="title"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                    placeholder="Add a title...">
+            </div>
+
+            <!-- Content -->
+            <div>
+                <label for="content" class="block text-sm font-medium text-gray-700 mb-2">Caption</label>
+                <textarea id="content" name="content" rows="3"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                    placeholder="Write a caption..."></textarea>
+            </div>
+
+            <!-- Options -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Privacy Level -->
+                <div>
+                    <label for="privacy_level" class="block text-sm font-medium text-gray-700 mb-2">Privacy</label>
+                    <select id="privacy_level" name="privacy_level"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                        <option value="public">Public to Group</option>
+                        <option value="members_only">Members Only</option>
+                        <option value="close_friends">Close Friends</option>
+                    </select>
+                </div>
+
+                <!-- Anonymous Option -->
+                <div class="flex items-center">
+                    <input type="checkbox" id="is_anonymous" name="is_anonymous"
+                        class="mr-2 rounded text-sky-600 focus:ring-sky-500">
+                    <label for="is_anonymous" class="text-sm text-gray-700">Post anonymously</label>
+                </div>
+            </div>
+
+            <!-- Urgent Option -->
+            <div class="flex items-center">
+                <input type="checkbox" id="is_urgent" name="is_urgent"
+                    class="mr-2 rounded text-red-600 focus:ring-red-500">
+                <label for="is_urgent" class="text-sm text-gray-700 flex items-center">
+                    <svg class="w-4 h-4 mr-1 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    Mark as urgent
+                </label>
+            </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b">
+            <button type="button" data-modal-hide="htmx-modal"
+                class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-sky-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">
+                Cancel
+            </button>
+            <button type="submit"
+                class="text-white bg-sky-600 hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-sky-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                Share Media
+            </button>
+        </div>
+    </form>
+</div>
+
+<script hx-boost="false">
+    function handleFileSelection(input) {
+        const files = Array.from(input.files);
+        const previewArea = document.getElementById('file-preview');
+        const dropZone = document.querySelector('#file-drop-zone');
+
+        if (files.length > 0) {
+            previewArea.classList.remove('hidden');
+            dropZone.classList.add('hidden');
+            previewArea.innerHTML = '';
+
+            files.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'flex items-center space-x-3 p-3 bg-gray-50 rounded-lg';
+
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.className = 'w-16 h-16 object-cover rounded';
+                    img.src = URL.createObjectURL(file);
+                    fileItem.appendChild(img);
+                } else {
+                    const icon = document.createElement('div');
+                    icon.className = 'w-16 h-16 bg-gray-200 rounded flex items-center justify-center';
+                    icon.innerHTML = `<svg class="w-8 h-8 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
+                </svg>`;
+                    fileItem.appendChild(icon);
+                }
+
+                const fileInfo = document.createElement('div');
+                fileInfo.className = 'flex-1';
+                fileInfo.innerHTML = `
+                <div class="text-sm font-medium text-gray-900">${file.name}</div>
+                <div class="text-xs text-gray-500">${formatFileSize(file.size)}</div>
+                <div class="mt-2 space-y-1">
+                    <input type="text" name="captions[]" placeholder="Caption for this file..." 
+                        class="w-full px-2 py-1 text-xs border border-gray-300 rounded">
+                    <input type="text" name="alt_texts[]" placeholder="Alt text for accessibility..." 
+                        class="w-full px-2 py-1 text-xs border border-gray-300 rounded">
+                </div>
+            `;
+                fileItem.appendChild(fileInfo);
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'text-red-500 hover:text-red-700';
+                removeBtn.innerHTML = `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>`;
+                removeBtn.onclick = () => removeFile(index);
+                fileItem.appendChild(removeBtn);
+
+                previewArea.appendChild(fileItem);
+            });
+        } else {
+            previewArea.classList.add('hidden');
+            dropZone.classList.remove('hidden');
+        }
+    }
+
+    function removeFile(index) {
+        const input = document.getElementById('media_files');
+        const dt = new DataTransfer();
+        const files = Array.from(input.files);
+
+        files.forEach((file, i) => {
+            if (i !== index) dt.items.add(file);
+        });
+
+        input.files = dt.files;
+        handleFileSelection(input);
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Update file type text and accept attribute based on post type
+    document.querySelectorAll('input[name="post_type"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            const fileInput = document.getElementById('media_files');
+            const fileTypeText = document.getElementById('file-type-text');
+
+            if (this.value === 'photo') {
+                fileInput.accept = 'image/*';
+                fileTypeText.textContent = 'PNG, JPG, GIF up to 10MB';
+            } else if (this.value === 'video') {
+                fileInput.accept = 'video/*';
+                fileTypeText.textContent = 'MP4, WebM, AVI up to 50MB';
+            }
+        });
+    });
+
+</script>

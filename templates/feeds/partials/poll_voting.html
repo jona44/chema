@@ -1,0 +1,12 @@
+<!-- templates/feeds/partials/poll_voting.html -->
+<!-- This template shows the poll options for voting -->
+
+<div class="poll-container bg-gray-50 rounded-lg p-4 mt-3" id="poll-{{ poll.id }}">
+    <div class="poll-header mb-4">
+        <h4 class="font-medium text-gray-900">{{ poll.question }}</h4>
+        <div class="flex items-center text-xs text-gray-500 mt-2">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {% if poll.is_expired %}
+                <span class="text-red-600 font-medium

@@ -1,0 +1,11 @@
+{% load comment_extras %}
+{% load feeds_extras %}
+<button hx-post="{% url 'feeds:toggle_comment_like' comment.id %}" 
+        hx-target="#comment-like-button-{{ comment.id }}"
+        hx-swap="outerHTML"
+        class="flex items-center space-x-1 text-xs {% if user in comment.likes.all|get_users %}text-blue-600{% else %}text-gray-500 hover:text-blue-600{% endif %} transition-colors">
+    <i class="{% if user in comment.likes.all|get_users %}fas{% else %}far{% endif %} fa-thumbs-up"></i>
+    {% if comment.likes_count > 0 %}
+    <span>{{ comment.likes_count }}</span>
+    {% endif %}
+</button>

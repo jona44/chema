@@ -52,16 +52,16 @@ class PostMediaInline(admin.TabularInline):
     readonly_fields = ['uploaded_at', 'file_size']
 
 
-class PollOptionInline(admin.TabularInline):
-    model = PollOption
-    extra = 2
-    readonly_fields = ['votes_count']
+# class PollOptionInline(admin.TabularInline):
+#     model = PollOption
+#     extra = 2
+#     readonly_fields = ['votes_count']
 
 
-class PollInline(admin.StackedInline):
-    model = Poll
-    extra = 0
-    readonly_fields = ['created_at', 'total_votes']
+# class PollInline(admin.StackedInline):
+#     model = Poll
+#     extra = 0
+#     readonly_fields = ['created_at', 'total_votes']
 
 
 @admin.register(Post)
@@ -117,7 +117,7 @@ class PostAdmin(admin.ModelAdmin):
         })
     )
     
-    inlines = [PostMediaInline, PollInline]
+ 
     
     actions = [
         'approve_posts', 'reject_posts', 'pin_posts', 
@@ -235,14 +235,15 @@ class CommentAdmin(admin.ModelAdmin):
 @admin.register(Poll)
 class PollAdmin(admin.ModelAdmin):
     list_display = [
-        'question', 'post', 'is_multiple_choice', 
-        'total_votes', 'is_expired', 'created_at'
-    ]
+    'question', 'is_multiple_choice', 
+    'total_votes', 'is_expired', 'created_at'
+]
+
     list_filter = ['is_multiple_choice', 'created_at']
-    search_fields = ['question', 'post__title']
+    search_fields = ['question', ]
     readonly_fields = ['created_at', 'total_votes']
     
-    inlines = [PollOptionInline]
+    
     
     def is_expired(self, obj):
         return obj.is_expired
