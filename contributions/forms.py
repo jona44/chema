@@ -1,4 +1,3 @@
-
 # contributions/forms.py
 
 from django import forms
@@ -13,63 +12,43 @@ class ContributionCampaignForm(forms.ModelForm):
     class Meta:
         model = ContributionCampaign
         fields = [
-            'title', 'description', 'target_amount', 
-            'deadline', 'funeral_date', 
-            'public_updates', 'status'
+            'memorial', 'title', 'description', 'target_amount', 
+            'deadline', 'funeral_date', 'public_updates'
         ]
         widgets = {
+            'memorial': forms.Select(attrs={
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+            }),
             'title': forms.TextInput(attrs={
-                'class': 'w-full px-3 py-2 '
-                'border border-gray-300 '
-                'rounded-md focus:outline-none focus:ring-2       '
-                'focus:ring-blue-500',
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
                 'placeholder': 'e.g., Funeral Expenses for John Doe'
             }),
             'description': forms.Textarea(attrs={
-                'class': 'w-full px-3 py-2 '
-                'border border-gray-300 '
-                'rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
                 'rows': 5,
                 'placeholder': 'Explain what the contributions will be used for...'
             }),
             'target_amount': forms.NumberInput(attrs={
-                'class': 'w-full px-3 py-2 '
-                'border border-gray-300 '
-                'rounded-md focus:outline-none '
-                'focus:ring-2 focus:ring-blue-500',
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
                 'placeholder': '10000.00',
                 'step': '0.01'
             }),
             
-            
             'deadline': forms.DateTimeInput(attrs={
-                'class': 'w-full px-3 py-2 '
-                'border border-gray-300 '
-                'rounded-md focus:outline-none '
-                'focus:ring-2 focus:ring-blue-500',
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
                 'type': 'datetime-local'
             }),
             'funeral_date': forms.DateTimeInput(attrs={
-                'class': 'w-full px-3 py-2 '
-                'border border-gray-300 '
-                'rounded-md focus:outline-none '
-                'focus:ring-2 focus:ring-blue-500',
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
                 'type': 'datetime-local'
             }),
-           
+            
             'public_updates': forms.CheckboxInput(attrs={
-                'class': 'h-4 w-4 text-blue-600 '
-                'focus:ring-blue-500 '
-                'border-gray-300 rounded'
-            }),
-            'status': forms.Select(attrs={
-                'class': 'w-full px-3 py-2 '
-                'border border-gray-300 '
-                'rounded-md focus:outline-none '
-                'focus:ring-2 focus:ring-blue-500'
+                'class': 'h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
             }),
         }
         labels = {
+            'memorial': 'Deceased Member (Memorial)',
             'title': 'Campaign Title',
             'description': 'Campaign Description',
             'target_amount': 'Target Amount',
@@ -78,8 +57,35 @@ class ContributionCampaignForm(forms.ModelForm):
             'funeral_date': 'Funeral Date (Optional)',
             'expense_breakdown': 'Expected Expense Breakdown (JSON)',
             'public_updates': 'Allow public to see updates',
-            'status': 'Campaign Status',
         }
+        help_texts = {
+            'memorial': 'Select which deceased member this campaign is for. This is required if the group has multiple memorials.',
+        }
+
+    def __init__(self, *args, **kwargs):
+        group = kwargs.pop('group', None)
+        super().__init__(*args, **kwargs)
+        
+        # Filter memorial choices to only show memorials from this group
+        if group:
+            from memorial.models import Memorial
+            self.fields['memorial'].queryset = Memorial.objects.filter(associated_group=group) # type: ignore
+            
+            # If only one memorial exists, pre-select it
+            memorial_count = self.fields['memorial'].queryset.count() # type: ignore
+            if memorial_count == 1:
+                self.fields['memorial'].initial = self.fields['memorial'].queryset.first() # type: ignore
+            elif memorial_count == 0:
+                # No memorials exist, make field optional
+                self.fields['memorial'].required = False
+                self.fields['memorial'].widget = forms.HiddenInput()
+            else:
+                # Multiple memorials - require selection
+                self.fields['memorial'].required = True
+        else:
+            # No group provided, hide memorial field
+            self.fields['memorial'].widget = forms.HiddenInput()
+            self.fields['memorial'].required = False
 
 
 class ContributionForm(forms.ModelForm):

@@ -26,7 +26,7 @@ from .forms import (
 # ============================================================================
 
 @login_required
-def campaign_detail_view(request, group_slug):
+def campaign_detail_view(request, group_slug): # type: ignore
     """View campaign details and contribution form"""
     group = get_object_or_404(Group, slug=group_slug)
     
@@ -89,36 +89,43 @@ def create_campaign_view(request, group_slug):
         return redirect('contributions:campaign_detail', group_slug=group_slug)
     
     if request.method == 'POST':
-        form = ContributionCampaignForm(request.POST)
+        form = ContributionCampaignForm(request.POST, group=group)
         if form.is_valid():
             campaign = form.save(commit=False)
             campaign.group = group
             campaign.created_by = request.user
+            campaign.status = 'active' # Explicitly set status on creation
             
-            # Link memorial if exists
-            if hasattr(group, 'memorial'):
-                campaign.memorial = group.memorial # type: ignore
+            # Link memorial if selected
+            memorial = form.cleaned_data.get('memorial')
+            if memorial:
+                campaign.memorial = memorial
             
             campaign.save()
             
             messages.success(request, "Contribution campaign created successfully!")
             return redirect('contributions:campaign_detail', group_slug=group_slug)
-        # If form is invalid, it will fall through and be rendered with errors
-    else: # This block now only handles GET requests
-        # Pre-fill some defaults for a new form
+    else:
+        # Pre-fill some defaults
         initial = {
             'title': f"Support for {group.name}",
-            'currency': 'ZAR',
             'public_updates': True,
         }
-        form = ContributionCampaignForm(initial=initial)
+        form = ContributionCampaignForm(initial=initial, group=group)
+    
+    # Get memorials for context
+    from memorial.models import Memorial
+    memorials = Memorial.objects.filter(associated_group=group)
     
     context = {
         'group': group,
         'form': form,
+        'memorials': memorials,
+        'has_multiple_memorials': memorials.count() > 1,
     }
     
     return render(request, 'contributions/create_campaign.html', context)
+
 
 @login_required
 @require_http_methods(["GET", "POST"])
@@ -133,13 +140,13 @@ def edit_campaign_view(request, group_slug):
         return redirect('contributions:campaign_detail', group_slug=group_slug)
     
     if request.method == 'POST':
-        form = ContributionCampaignForm(request.POST, instance=campaign)
+        form = ContributionCampaignForm(request.POST, instance=campaign, group=group)
         if form.is_valid():
             form.save()
             messages.success(request, "Campaign updated successfully!")
             return redirect('contributions:campaign_detail', group_slug=group_slug)
     else:
-        form = ContributionCampaignForm(instance=campaign)
+        form = ContributionCampaignForm(instance=campaign, group=group)
     
     context = {
         'group': group,
@@ -169,7 +176,7 @@ def make_contribution_view(request, group_slug):
         if form.is_valid():
             contribution = form.save(commit=False)
             contribution.campaign = campaign
-            contribution.currency = campaign.currency
+            
             
             # Set contributor if logged in
             if request.user.is_authenticated:
@@ -186,8 +193,8 @@ def make_contribution_view(request, group_slug):
             
             # Redirect to payment page (or success page for now)
             return redirect('contributions:contribution_success', 
-                          group_slug=group_slug, 
-                          contribution_id=contribution.id)
+                        group_slug=group_slug, 
+                        contribution_id=contribution.id)
     else:
         initial = {}
         if request.user.is_authenticated:
@@ -295,7 +302,6 @@ def record_expense_view(request, group_slug):
             expense = form.save(commit=False)
             expense.campaign = campaign
             expense.recorded_by = request.user
-            expense.currency = campaign.currency
             expense.save()
             
             messages.success(request, "Expense recorded successfully!")
@@ -343,7 +349,6 @@ def quick_contribute_view(request, group_slug):
         contributor_name=request.user.profile.full_name if hasattr(request.user, 'profile') else request.user.email,
         contributor_email=request.user.email,
         amount=amount,
-        currency=campaign.currency,
         message=message,
         is_anonymous=is_anonymous,
         status='pending',  # Would be 'pending' until payment confirmed
