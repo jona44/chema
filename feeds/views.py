@@ -78,7 +78,11 @@ def group_feed_view(request, slug):
         'is_admin': group.is_admin(request.user),
     }
     
-    return render(request, 'feeds/group_feed.html', context)
+    if request.htmx:
+        # If it's an HTMX request, only render the partial containing the posts
+        return render(request, 'feeds/partials/post_list_with_create_button.html', context)
+        
+    return render(request, 'feeds/_group_feed.html', context)
 
 
 @login_required

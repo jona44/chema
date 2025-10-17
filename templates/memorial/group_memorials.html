@@ -1,20 +1,4 @@
-<!-- memorials/templates/memorials/group_memorials.html -->
-{% extends 'base.html' %}
-{% load static %}
 
-{% block title %}Memorials - {{ group.name }} - {{ block.super }}{% endblock %}
-
-{% block content %}
-<!-- Breadcrumb -->
-<nav class="text-sm breadcrumbs mb-6">
-    <ol class="list-none p-0 inline-flex">
-        <li class="flex items-center">
-            <a href="{% url 'group_detail' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">{{ group.name }}</a>
-            <span class="mx-2 text-gray-400">/</span>
-        </li>
-        <li class="text-gray-600">Memorials</li>
-    </ol>
-</nav>
 
 <!-- Header -->
 <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
@@ -37,7 +21,7 @@
 <!-- templates/group/group_detail.html -->
 
 <!-- In sidebar or main content -->
-{% include 'contributions/campaign_widget.html' with campaign=group.contribution_campaign %}
+
 <!-- Memorials Grid -->
 {% if memorials %}
 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -110,4 +94,3 @@
 </div>
 {% endif %}
 
-{% endblock %}

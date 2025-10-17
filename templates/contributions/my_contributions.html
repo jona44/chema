@@ -1,9 +1,5 @@
 <!-- templates/contributions/my_contributions.html -->
-{% extends 'base.html' %}
 
-{% block title %}My Contributions{% endblock %}
-
-{% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -155,7 +151,7 @@
                                         </div>
                                         <div class="w-full bg-gray-300 rounded-full h-1.5">
                                             <div class="bg-blue-600 h-1.5 rounded-full" 
-                                                 style="width: {{ contribution.campaign.progress_percentage }}%">
+                                                style="width: {{ contribution.campaign.progress_percentage }}%">
                                             </div>
                                         </div>
                                     </div>
@@ -209,7 +205,8 @@
 
         </div>
 
-        <!-- Impact Statement -->
+        <!-------------- Impact Statement ----------------->
+        
         {% if contributions %}
         <div class="mt-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-lg p-8 text-white text-center">
             <h3 class="text-2xl font-bold mb-2">🙏 Thank You for Your Generosity</h3>
@@ -250,4 +247,3 @@ function downloadReceipt(contributionId) {
 }
 </script>
 
-{% endblock %}

@@ -1,7 +1,4 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block title %}Leave {{ group.name }} - {{ block.super }}{% endblock %}
-{% block content %}
+
 
     <div class="max-w-2xl mx-auto px-4 py-8">
         <!-- Header -->
@@ -149,7 +146,7 @@
             <p>You've been a member of {{ group.member_count }} other groups</p>
         </div>
     </div>
-{% endblock %}
+
     <script>
         // Enable/disable leave button based on confirmation checkbox
         const confirmCheckbox = document.getElementById('confirm-leave');
@@ -179,5 +176,3 @@
             submitBtn.disabled = true;
         });
     </script>
-</body>
-</html>

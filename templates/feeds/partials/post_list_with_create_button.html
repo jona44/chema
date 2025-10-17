@@ -1,0 +1,33 @@
+<!-- Create Post Box -->
+{% if can_post %}
+<div class="bg-white rounded-lg shadow mb-6 p-4">
+    <div class="flex items-start space-x-3">
+        <div class="flex-shrink-0">
+            {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Your profile picture"
+                class="h-10 w-10 rounded-full object-cover">
+            {% else %}
+            <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
+                <span class="text-white font-medium text-sm">{{
+                    user.profile.full_name|default:user.email|first|upper }}</span>
+            </div>
+            {% endif %}
+        </div>
+        <div class="flex-1">
+            <button data-modal-target="create-post-modal" data-modal-toggle="create-post-modal"
+                class="w-full text-left bg-gray-100 hover:bg-gray-200 rounded-full px-4 py-3 text-gray-500 transition-colors">
+                What's on your mind?
+            </button>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        {% include 'feeds/partials/post_create_button.html' %}
+    </div>
+</div>
+{% endif %}
+
+<!------------------------- Posts List ---------------->
+        <div id="posts-container">
+            {% include 'feeds/partials/post_list.html' %}
+        </div>

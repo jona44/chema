@@ -1,28 +1,20 @@
-<!-- groups/templates/groups/create_group.html -->
-{% extends "base.html" %}
-{% load static %}
 
-{% block title %}Create a Group{% endblock %}
+        <!-- -----------------------------Form ------------------------>
 
-{% block content %}
-    <div class="max-w-4xl mx-auto px-4 py-8">
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-200 mb-2">Create Your Group</h1>
-            <p class="text-gray-600">Build a community around your passion</p>
-        </div>
-
-        <!-- Form -->
         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-            <form method="post" enctype="multipart/form-data" class="p-8 space-y-6">
+            <div class="text-center mb-3">
+                <h1 class="text-3xl font-bold text-gray-400 mt-6">Create Your Group</h1>
+                <p class="text-gray-600">Build a community around your passion</p>
+            </div>
+            <form method="post" enctype="multipart/form-data" class="p-5 space-y-6">
                 {% csrf_token %}
 
-                <!-- Basic Information Section -->
+                <!------------ Basic Information Section --------------->
                 <div>
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Basic Information</h2>
                     
                     <div class="grid md:grid-cols-2 gap-6">
-                        <!-- Group Name -->
+                        <!-- ------Group Name ------->
                         <div class="md:col-span-2">
                             <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
                                 Group Name *
@@ -34,7 +26,7 @@
                             <p class="text-gray-500 text-sm mt-1">Choose a clear, descriptive name for your group</p>
                         </div>
 
-                        <!-- Category -->
+                        <!----------------------- Category ---------------->
                         <div>
                             <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
                                 Category
@@ -45,7 +37,7 @@
                             {% endif %}
                         </div>
 
-                        <!-- Tags -->
+                        <!---------------- Tags ------------------->
                         <div>
                             <label for="{{ form.tags.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
                                 Tags
@@ -57,7 +49,7 @@
                             <p class="text-gray-500 text-sm mt-1">Separate tags with commas (max 10)</p>
                         </div>
 
-                        <!-- Description -->
+                        <!--------------- Description ------------------>
                         <div class="md:col-span-2">
                             <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
                                 Description *
@@ -71,12 +63,12 @@
                     </div>
                 </div>
 
-                <!-- Location Section -->
+                <!--------------- Location Section ------------------------>
                 <div>
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Location</h2>
                     
                     <div class="grid md:grid-cols-2 gap-6">
-                        <!-- City -->
+                        <!------------------- City ------------------------->
                         <div>
                             <label for="{{ form.city.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
                                 City
@@ -87,7 +79,7 @@
                             {% endif %}
                         </div>
 
-                        <!-- Country -->
+                        <!-------------------------- Country -------------------->
                         <div>
                             <label for="{{ form.country.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
                                 Country
@@ -98,7 +90,7 @@
                             {% endif %}
                         </div>
 
-                        <!-- Online Only -->
+                        <!-------------------- Online Only -------------------->
                         <div class="md:col-span-2">
                             <label class="flex items-center space-x-3">
                                 {{ form.is_online_only }}
@@ -180,7 +172,7 @@
                 <!-- Action Buttons -->
                 <div class="flex justify-between items-center pt-6 border-t">
                     <a href="" 
-                       class="text-gray-600 hover:text-gray-800 font-medium">
+                        class="text-gray-600 hover:text-gray-800 font-medium">
                         Cancel
                     </a>
                     <button type="submit" 
@@ -256,4 +248,3 @@
             }
         });
     </script>
-{% endblock %}

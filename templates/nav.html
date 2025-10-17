@@ -1,0 +1,36 @@
+    <nav class=" bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-gray-900">Chema</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                    <span class="text-sm text-gray-600">
+                        
+                        <a href="{% url 'profile' %}" class="text-sm text-gray-600 hover:text-gray-900">Welcome, {{ user.profile.first_name|default:user.email }}!</a>
+                    </span>
+                    <div class="relative">
+                        {% if user.profile.profile_picture %}
+                        <img src="{{ user.profile.profile_picture.url }}" alt="Profile"
+                            class="w-8 h-8 rounded-full object-cover">
+                        {% else %}
+                        <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-medium">
+                                {{ user.email|first|upper }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'my_groups' %}" class="text-sm text-gray-600 hover:text-gray-900">My Groups</a>
+                    
+                    <a href="{% url 'logout' %}" class="text-sm text-gray-600 hover:text-gray-900">Logout</a>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="text-sm text-gray-600 hover:text-gray-900">Login</a>
+                    <a href="{% url 'register' %}" class="text-sm text-gray-600 hover:text-gray-900">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+  

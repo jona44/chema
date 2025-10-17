@@ -15,7 +15,7 @@
                 <button type="button"
                     class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
                     data-modal-hide="create-post-modal">
-                    <i class="fas fa-times"></i>
+                    <i class="bi bi-x-lg"></i>
                 </button>
             </div>
 
@@ -45,11 +45,8 @@
 
                 <!---------------- Post Form --------------------->
 
-                <form hx-post="{% url 'feeds:create_post' group.slug %}" 
-                    hx-target="#posts-container"
-                    hx-swap="afterbegin" 
-                    id="post-form" 
-                    class="space-y-4">
+                <form hx-post="{% url 'feeds:create_post' group.slug %}" hx-target="#posts-container"
+                    hx-swap="afterbegin" id="post-form" class="space-y-4">
                     {% csrf_token %}
 
                     <!------------------ Post Type Selection ------------->
@@ -161,16 +158,16 @@
             <div class="flex items-center justify-between p-6 space-x-2 border-t border-gray-200 rounded-b">
                 <div class="flex items-center space-x-4">
                     <button type="button" class="text-gray-500 hover:text-blue-600 transition-colors">
-                        <i class="far fa-image text-xl"></i>
+                        <i class="bi bi-image text-xl"></i>
                     </button>
                     <button type="button" class="text-gray-500 hover:text-purple-600 transition-colors">
-                        <i class="fas fa-poll text-xl"></i>
+                        <i class="bi bi-bar-chart-line text-xl"></i>
                     </button>
                     <button type="button" class="text-gray-500 hover:text-green-600 transition-colors">
-                        <i class="far fa-calendar text-xl"></i>
+                        <i class="bi bi-calendar-event text-xl"></i>
                     </button>
                     <button type="button" class="text-gray-500 hover:text-orange-600 transition-colors">
-                        <i class="fas fa-map-marker-alt text-xl"></i>
+                        <i class="bi bi-geo-alt text-xl"></i>
                     </button>
                 </div>
 

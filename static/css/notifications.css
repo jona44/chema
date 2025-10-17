@@ -1,0 +1,49 @@
+.notification-item {
+    border-left: 4px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.notification-item.unread {
+    border-left-color: #0d6efd;
+    background-color: #f8f9fa;
+}
+
+.notification-item.priority-high {
+    border-left-color: #fd7e14;
+}
+
+.notification-item.priority-urgent {
+    border-left-color: #dc3545;
+}
+
+.notification-item:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.notification-count {
+    font-size: 0.75rem;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.priority-badge {
+    font-size: 0.7rem;
+}
+
+.quiet-hours-info {
+    background-color: #e3f2fd;
+    border: 1px solid #bbdefb;
+}
+
+.notification-actions {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.notification-item:hover .notification-actions {
+    opacity: 1;
+}

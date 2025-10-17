@@ -1,9 +1,5 @@
 <!-- templates/contributions/campaign_detail.html -->
-{% extends 'base.html' %}
 
-{% block title %}{{ campaign.title }} - Contribution Campaign{% endblock %}
-
-{% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <!-- Breadcrumb -->
     <nav class="mb-6">
@@ -297,24 +293,40 @@
                     </div>
                 </div>
 
-                <!-- Admin Actions -->
+                <!---------------- Admin Actions ---------------------->
+                
                 {% if can_manage %}
                 <div class="bg-white rounded-lg shadow p-6">
                     <h3 class="font-semibold text-gray-900 mb-4">Campaign Management</h3>
                     
                     <div class="space-y-2">
-                        <a href="{% url 'contributions:edit_campaign' group.slug %}"
-                            class="block w-full text-center px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors">
-                            Edit Campaign
-                        </a>
-                        <a href="{% url 'contributions:create_update' group.slug %}"
-                            class="block w-full text-center px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors">
-                            Post Update
-                        </a>
-                        <a href="{% url 'contributions:record_expense' group.slug %}"
-                            class="block w-full text-center px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors">
-                            Record Expense
-                        </a>
+                        <button 
+                            hx-get="{% url 'contributions:edit_campaign' group.slug %}"
+                            hx-target="#group-related"
+                            hx-swap="innerHTML"
+                            hx-trigger="click"
+                            hx-indicator="#loading-indicator"
+                            class="block w-full text-center px-4 py-2 bg-orange-100 hover:bg-orange-200 rounded-lg text-sm font-medium transition-colors">
+                            <i id="loading-indicator" class="hidden bi bi-loader"></i> <i class="bi bi-pencil-fill"></i> Edit Campaign
+                        </button>
+                        <button 
+                            hx-get="{% url 'contributions:create_update' group.slug %}"
+                            hx-target="#group-related"
+                            hx-swap="innerHTML"
+                            hx-trigger="click"
+                            hx-indicator="#loading-indicator-1"
+                            class="block w-full text-center px-4 py-2 bg-indigo-100 hover:bg-indigo-200 rounded-lg text-sm font-medium transition-colors">
+                            <i id="loading-indicator-1"class="hidden bi bi-loader" ></i> <i class="bi bi-pencil-fill"></i> Post Update
+                        </button>
+                        <button 
+                            hx-get="{% url 'contributions:record_expense' group.slug %}"
+                            hx-target="#group-related"
+                            hx-swap="innerHTML"
+                            hx-trigger="click"
+                            hx-indicator="#loading-indicator-2"
+                            class="block w-full text-center px-4 py-2 bg-green-100 hover:bg-green-200 rounded-lg text-sm font-medium transition-colors">
+                            <i id="loading-indicator-2" class="hidden bi bi-loader"></i> <i class="bi bi-receipt-fill"></i> Record Expense
+                        </button>
                     </div>
                 </div>
                 {% endif %}
@@ -353,7 +365,7 @@
 
     </div>
 </div>
-{% endblock %}
+
 <script>
 function setAmount(amount) {
     document.getElementById('quick-amount').value = amount;
