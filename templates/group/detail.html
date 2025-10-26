@@ -7,79 +7,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}User Account{% endblock %}</title>
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Flowbite CDN -->
     <script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100">
 
-    <!-- #---------------------- HEADER WITH COVER IMAGE -------------------- # -->
-
-    <div class="fixed top-0 left-0 right-0 z-30" id="group-header">
+    <!-- Fixed Banner with Nav and Group Info -->
+    <div class="fixed top-0 left-0 right-0 z-30 h-40" id="group-header">
+        <!-- Background Image or Gradient -->
         {% if group.cover_image %}
-        <div class="h-64 bg-cover bg-center" style="background-image: url('{{ group.cover_image.url }}');">
-
-            <!----------------- Include the standard nav here -------------->
-
-            <nav class="bg-transparent relative z-10">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between items-center h-16">
-                        <div class="flex items-center">
-                            <h1 class="text-xl font-bold text-orange-500">Chema</h1>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            {% if user.is_authenticated %}
-                            <span class="text-sm text-gray-600">
-                        
-                        <a href="{% url 'profile' %}" class="text-sm text-white bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-md transition-colors">Welcome, {{ user.profile.first_name|default:user.email }}!</a>
-                    </span>
-                            <div class="relative">
-                                {% if user.profile.profile_picture %}
-                                <img src="{{ user.profile.profile_picture.url }}" alt="Profile"
-                                    class="w-8 h-8 rounded-full object-cover border-2 border-white/50">
-                                {% else %}
-                                <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                                    <span class="text-white text-sm font-medium">
-                                        {{ user.email|first|upper }}
-                                    </span>
-                                </div>
-                                {% endif %}
-                            </div>
-                            <a href="{% url 'my_groups' %}"
-                                class="text-sm text-white bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-md transition-colors">My
-                                Groups
-                            </a>
-                            <a href="{% url 'logout' %}"
-                                class="text-sm text-white bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-md transition-colors">Logout</a>
-                            {% else %}
-                            <a href="{% url 'login' %}"
-                                class="text-sm text-white bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-md transition-colors">Login</a>
-                            <a href="{% url 'register' %}"
-                                class="text-sm text-white bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-md transition-colors">Register</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ group.cover_image.url }}');">
             <div class="absolute inset-0 bg-black bg-opacity-40"></div>
         </div>
         {% else %}
-        <!----------- Fallback for when there is no cover image ------->
-        <div class="h-64 bg-gradient-to-br from-blue-500 to-purple-600 relative">
-            <!-- ------Include the standard nav here since there's no image -------->
-
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600">
             <div class="absolute inset-0 bg-black bg-opacity-20"></div>
         </div>
         {% endif %}
 
-        <div class="absolute bottom-0 left-0 right-0 text-white p-8">
+        <!-- Nav Bar -->
+        <nav class="relative z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <h1 class="text-xl font-bold text-orange-500">Chema</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'profile' %}"
+                            class="text-sm text-white bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-md transition-colors">
+                            Welcome, {{ user.profile.first_name|default:user.email }}!
+                        </a>
+                        <div class="relative">
+                            {% if user.profile.profile_picture %}
+                            <img src="{{ user.profile.profile_picture.url }}" alt="Profile"
+                                class="w-8 h-8 rounded-full object-cover border-2 border-white/50">
+                            {% else %}
+                            <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
+                                <span class="text-white text-sm font-medium">
+                                    {{ user.email|first|upper }}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'my_groups' %}"
+                            class="text-sm text-white bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-md transition-colors">
+                            My Groups
+                        </a>
+                        <a href="{% url 'logout' %}"
+                            class="text-sm text-white bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-md transition-colors">
+                            Logout
+                        </a>
+                        {% else %}
+                        <a href="{% url 'login' %}"
+                            class="text-sm text-white bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-md transition-colors">
+                            Login
+                        </a>
+                        <a href="{% url 'register' %}"
+                            class="text-sm text-white bg-black/20 hover:bg-black/40 px-3 py-1.5 rounded-md transition-colors">
+                            Register
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Group Info Section -->
+        <div class="absolute bottom-0 left-0 right-0 text-white p-3">
             <div class="max-w-7xl mx-auto">
                 <div class="flex items-end justify-between">
                     <div>
@@ -113,15 +112,17 @@
                                 <i class="bi bi-plus-circle mr-2"></i>
                                 <span>Create Group</span>
                             </button>
-
+                            <button data-modal-target="about-group-modal" data-modal-toggle="about-group-modal"
+                                class="flex items-center bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                                <i class="bi bi-info-circle mr-2"></i>
+                                <span>About Group</span>
+                            </button>
                         </div>
                     </div>
 
                     {% if user.is_authenticated %}
                     {% if not user_membership %}
-                    <button
-                        hx-get="{% url 'join_group' slug=group.slug %}"
-                        hx-target="#group-related" 
+                    <button hx-get="{% url 'join_group' slug=group.slug %}" hx-target="#group-related"
                         hx-swap="innerHTML"
                         class="flex items-center justify-center bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-medium transition-colors">
                         <i class="bi bi-person-plus-fill mr-2"></i>
@@ -135,23 +136,14 @@
                     </span>
                     {% elif user_membership.status == 'active' %}
                     {% if is_admin %}
-                    <button 
-                        hx-get="{% url 'group_manage' slug=group.slug %}"
-                        hx-target="#manage_group" 
+                    <button hx-get="{% url 'group_manage' slug=group.slug %}" hx-target="#manage_group"
                         hx-swap="innerHTML"
                         class="flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium transition-colors">
                         <i class="bi bi-gear-fill mr-2"></i>
                         <span>Manage Group</span>
                     </button>
                     {% else %}
-                    <button 
-                        hx-get="{% url 'leave_group' slug=group.slug %}"
-                        hx-target="#group-related" 
-                        hx-swap="innerHTML"
-                        class="flex items-center justify-center bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 font-medium transition-colors">
-                        <i class="bi bi-box-arrow-right mr-2"></i>
-                        <span>Leave Group</span>
-                    </button>
+                    
                     {% endif %}
                     {% endif %}
                     {% else %}
@@ -166,34 +158,21 @@
         </div>
     </div>
 
-    <!---------------------- ABOUT THIS GROUP-------------------- -->
+    <!-- Main Content Area with Fixed Sidebar -->
+    <div class="max-w-7xl mx-auto px-4 pt-64 pb-8">
+        <div class="flex gap-8">
 
-    <div class="max-w-7xl mx-auto px-4 py-8 mt-64" id="manage_group">
-        <div class="grid lg:grid-cols-3 gap-8">
-
-            <div class="lg:col-span-1 relative z-20">
-                <div class="lg:sticky lg:top-72 space-y-6">
-
-                    <!-- =============================================================== -->
-                    <!--                            Left Sidebar                         -->
-                    <!-- =============================================================== -->
-
-                    <!--------------------- CHEMA HUB ------------------->
-
+            <!-- Fixed Left Sidebar -->
+            <div class="w-80 flex-shrink-0">
+                <div class="fixed w-80 space-y-6">
                     <div class="bg-white rounded-xl shadow-sm p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Chema Hub</h3>
                         <div class="space-y-3">
-
-                            <!--------------------- In group sidebar ----------------------->
-
                             {% include 'contributions/campaign_widget.html' %}
 
-                            <button 
-                                hx-get="{% url 'memorial:group_memorials' slug=group.slug %}"
-                                hx-target="#group-related" 
-                                hx-swap="innerHTML" 
-                                hx-indicator="#memorials-loader"
-                                class="flex items-center w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                            <button hx-get="{% url 'memorial:group_memorials' slug=group.slug %}"
+                                hx-target="#group-related" hx-swap="innerHTML" hx-indicator="#memorials-loader"
+                                class="flex items-center w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-300 rounded-lg bg-gray-100">
                                 <i class="bi bi-heart-fill w-5 h-5 mr-3 text-red-500"></i>
                                 <span>Memorials</span>
                                 {% if memorials_count %}
@@ -206,132 +185,148 @@
                             </button>
 
                             {% if group.contribution_campaign %}
-                            <button 
-                                hx-get="{% url 'contributions:campaign_detail' group_slug=group.slug %}"
-                                hx-target="#group-related" 
-                                hx-swap="innerHTML" 
-                                hx-indicator="#campaign-loader"
-                                class="flex items-center w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                            <button hx-get="{% url 'contributions:campaign_detail' group_slug=group.slug %}"
+                                hx-target="#group-related" hx-swap="innerHTML" hx-indicator="#campaign-loader"
+                                class="flex items-center w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-300 rounded-lg bg-gray-100">
                                 <i class="bi bi-wallet2 w-5 h-5 mr-3 text-indigo-500"></i>
                                 <span>Contribution Campaign</span>
                                 <i id="campaign-loader"
-                                class="bi bi-arrow-clockwise animate-spin ml-auto htmx-indicator"></i>
+                                    class="bi bi-arrow-clockwise animate-spin ml-auto htmx-indicator"></i>
                             </button>
                             {% endif %}
 
-                            <button
-                                hx-get="{% url 'contributions:my_contributions' %}"
-                                hx-target="#group-related" 
-                                hx-swap="innerHTML" 
-                                hx-indicator="#contributions-loader"
-                                class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                            <button hx-get="{% url 'contributions:my_contributions' %}" hx-target="#group-related"
+                                hx-swap="innerHTML" hx-indicator="#contributions-loader"
+                                class="flex items-center w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-300 rounded-lg bg-gray-100">
                                 <i class="bi bi-cash-coin w-5 h-5 mr-3 text-blue-500"></i>
                                 My Contributions
                             </button>
 
-                            <button
-                                hx-get="{#}"
-                                hx-target="#group-related" 
-                                hx-swap="innerHTML" 
+                            <button hx-get="{#}" hx-target="#group-related" hx-swap="innerHTML"
                                 hx-indicator="#notifications-loader"
-                                class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                                class="flex items-center w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-300 rounded-lg bg-gray-100">
                                 <i class="bi bi-bell-fill w-5 h-5 mr-3 text-yellow-500"></i>
                                 Notifications
                             </button>
 
                             {% if is_admin %}
-                            <button 
-                                hx-get="{% url 'contributions:create_campaign' group.slug %}"
-                                hx-target="#group-related" 
-                                hx-swap="innerHTML" 
-                                hx-indicator="#create-campaign-loader"
-                                class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                                <i></i>
+                            <button hx-get="{% url 'contributions:create_campaign' group.slug %}"
+                                hx-target="#group-related" hx-swap="innerHTML" hx-indicator="#create-campaign-loader"
+                                class="flex items-center w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-300 rounded-lg bg-gray-100">
                                 <i class="bi bi-plus-circle-fill w-5 h-5 mr-3 text-green-500"></i>
                                 Create Campaign
                             </button>
                             {% endif %}
-                            {% include 'contributions/campaign_widget.html' with campaign=group.contribution_campaign %}
                         </div>
                     </div>
-
                 </div>
             </div>
-            <!-- =============================================================== -->
-            <!--                            Main Content                         -->
-            <!-- =============================================================== -->
 
-            <div class="lg:col-span-2 min-h-[calc(100vh-18rem)]" id="group-related">
-                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">About This Group</h2>
-                    <div class="prose prose-gray max-w-none">
-                        {{ group.description|linebreaks }}
+            <!-- Scrollable Main Content -->
+            <div class="flex-1 min-h-screen" id="manage_group">
+                <div id="group-related">
+                </div>
 
-                    </div>
-                    <div class="space-y-3 mt-4 pt-4 border-t border-gray-200">
-                        {% if group.category %}
-                        <div class="flex items-center">
-                            <span class="text-gray-600 text-sm w-24 flex-shrink-0">Category:</span>
-                            <span class="text-sm">{{ group.category.icon }} {{ group.category.name }}</span>
+                <!-- Main modal -->
+                <div id="about-group-modal" tabindex="-1" aria-hidden="true"
+                    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+                    <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
+                        <!-- Modal content -->
+                        <div class="relative bg-white rounded-lg shadow">
+                            <!-- Modal header -->
+                            <div class="flex justify-between items-start p-4 rounded-t border-b">
+                                <h3 class="text-xl font-semibold text-gray-900">
+                                    About This Group
+                                </h3>
+                                <button type="button"
+                                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+                                    data-modal-toggle="about-group-modal">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <!-- Modal body -->
+                            <div class="p-6">
+                                <div class="prose prose-gray max-w-none">
+                                    {{ group.description|linebreaks }}
+                                </div>
+                                <div class="space-y-3 mt-4 pt-4 border-t border-gray-200">
+                                    {% if group.category %}
+                                    <div class="flex items-center">
+                                        <span class="text-gray-600 text-sm w-24 flex-shrink-0">Category:</span>
+                                        <span class="text-sm">{{ group.category.icon }} {{ group.category.name }}</span>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="flex items-center">
+                                        <span class="text-gray-600 text-sm w-24 flex-shrink-0">Privacy:</span>
+                                        <span class="text-sm capitalize">{{ group.privacy }}</span>
+                                    </div>
+
+                                    {% if group.max_members %}
+                                    <div class="flex items-center">
+                                        <span class="text-gray-600 text-sm w-24 flex-shrink-0">Capacity:</span>
+                                        <span class="text-sm">{{ group.num_members }}/{{ group.max_members }}</span>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="flex items-center">
+                                        <span class="text-gray-600 text-sm w-24 flex-shrink-0">Approval:</span>
+                                        <span class="text-sm">{% if group.requires_approval %}Required{% else %}Not
+                                            Required
+                                            {% endif %}</span>
+                                    </div>
+
+                                    <div class="flex items-center">
+                                        <span class="text-gray-600 text-sm w-24 flex-shrink-0">Created:</span>
+                                        <span class="text-sm">{{ group.created_at|date:"M d, Y" }}</span>
+                                    </div>
+                                </div>
+                                {% if group.tag_list %}
+                                <div class="mt-3 pt-6">
+                                    <h3 class="text-sm font-medium text-gray-700 mb-3">Tags</h3>
+                                    <div class="flex flex-wrap gap-2">
+                                        {% for tag in group.tag_list %}
+                                        <span
+                                            class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm">{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <!-- Modal footer -->
+                            <div
+                                class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 p-6 border-t border-gray-200 rounded-b">
+                                <button onclick="copyGroupLink()"
+                                    class="flex-1 flex items-center justify-center bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 text-sm font-medium transition-colors">
+                                    <i class="bi bi-clipboard mr-2"></i>
+                                    <span>Copy Link</span>
+                                </button>
+                                <button onclick="shareGroup()"
+                                    class="flex-1 flex items-center justify-center bg-blue-100 text-blue-700 px-3 py-2 rounded-lg hover:bg-blue-200 text-sm font-medium transition-colors">
+                                    <i class="bi bi-share mr-2"></i>
+                                    <span>Share</span>
+                                </button>
+                                <button hx-get="{% url 'browse_groups' %}" hx-target="#group-related" hx-swap="innerHTML"
+                                    hx-indicator="#browse-loader" data-modal-toggle="about-group-modal"
+                                    class="flex-1 flex items-center justify-center bg-green-100 text-green-700 px-3 py-2 rounded-lg hover:bg-green-200 text-sm font-medium transition-colors">
+                                    <i id="browser-loader" class="hidden bi bi-loader"></i>
+                                    <i class="bi bi-search mr-2"></i>
+                                    <span>Browse Groups</span>
+                                </button>
+                                <button
+                                    hx-get="{% url 'leave_group' slug=group.slug %}" hx-target="#group-related"
+                                    hx-swap="innerHTML" data-modal-toggle="about-group-modal"
+                                    class="flex items-center justify-center bg-red-200 text-red-700 px-4 py-2 rounded-lg hover:bg-red-300 font-medium transition-colors">
+                                    <i class="bi bi-box-arrow-right mr-2"></i>
+                                    <span>Leave Group</span>
+                                </button>
+                            </div>
                         </div>
-                        {% endif %}
-
-                        <div class="flex items-center">
-                            <span class="text-gray-600 text-sm w-24 flex-shrink-0">Privacy:</span>
-                            <span class="text-sm capitalize">{{ group.privacy }}</span>
-                        </div>
-
-                        {% if group.max_members %}
-                        <div class="flex items-center">
-                            <span class="text-gray-600 text-sm w-24 flex-shrink-0">Capacity:</span>
-                            <span class="text-sm">{{ group.num_members }}/{{ group.max_members }}</span>
-                        </div>
-                        {% endif %}
-
-                        <div class="flex items-center">
-                            <span class="text-gray-600 text-sm w-24 flex-shrink-0">Approval:</span>
-                            <span class="text-sm">{% if group.requires_approval %}Required{% else %}Not Required
-                                {% endif%}</span>
-
-
-                        </div>
-
-                        <div class="flex items-center">
-                            <span class="text-gray-600 text-sm w-24 flex-shrink-0">Created:</span>
-                            <span class="text-sm">{{ group.created_at|date:"M d, Y" }}</span>
-                        </div>
-                    </div>
-                    {% if group.tag_list %}
-                    <div class="mt-3 pt-6 ">
-                        <h3 class="text-sm font-medium text-gray-700 mb-3">Tags</h3>
-                        <div class="flex flex-wrap gap-2">
-                            {% for tag in group.tag_list %}
-                            <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm">{{ tag }}</span>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-4 pt-4 border-t">
-                        <button onclick="copyGroupLink()"
-                            class="flex-1 flex items-center justify-center bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 text-sm font-medium transition-colors">
-                            <i class="bi bi-clipboard mr-2"></i>
-                            <span>Copy Link</span>
-                        </button>
-                        <button onclick="shareGroup()"
-                            class="flex-1 flex items-center justify-center bg-blue-100 text-blue-700 px-3 py-2 rounded-lg hover:bg-blue-200 text-sm font-medium transition-colors">
-                            <i class="bi bi-share mr-2"></i>
-                            <span>Share</span>
-                        </button>
-                        <button 
-                            hx-get="{% url 'browse_groups' %}"
-                            hx-target="#group-related" 
-                            hx-swap="innerHTML" 
-                            hx-indicator="#browse-loader"
-                            class="flex-1 flex items-center justify-center bg-green-100 text-green-700 px-3 py-2 rounded-lg hover:bg-green-200 text-sm font-medium transition-colors">
-                            <i id="browser-loader" class="hidden bi bi-loader"></i>
-                            <i class="bi bi-search mr-2"></i>
-                            <span>Browse Groups</span>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -367,7 +362,6 @@
 
         // Re-attach JS event handlers after HTMX swaps
         document.body.addEventListener('htmx:afterSwap', function (evt) {
-            // Re-attach copy/share handlers if buttons are replaced
             var copyBtn = document.querySelector('button[onclick="copyGroupLink()"]');
             if (copyBtn) {
                 copyBtn.onclick = copyGroupLink;
@@ -377,20 +371,16 @@
                 shareBtn.onclick = shareGroup;
             }
         });
-    </script>
-    <!-- Scripts -->
-    <script>
+
         // Store a global reference to the active HTMX modal instance
         window.htmxModalInstance = null;
 
         // Re-initialize Flowbite after HTMX swaps
         document.body.addEventListener('htmx:afterSwap', function (event) {
             if (window.initFlowbite) {
-                // Check if the swap was into our htmx-modal-content
                 if (event.detail.target.id === 'htmx-modal-content') {
                     const modalEl = document.getElementById('htmx-modal');
                     if (modalEl) {
-                        // Define a unique ID for each modal instance to avoid conflicts
                         const instanceId = `htmx-modal-${Date.now()}`;
                         modalEl.setAttribute('data-modal-id', instanceId);
 
@@ -400,15 +390,10 @@
                             backdropClasses: 'bg-gray-900 bg-opacity-50 fixed inset-0 z-50',
                             closable: true,
                             onHide: () => {
-                                // Clean up when modal is hidden, but restore a placeholder
-                                // to prevent htmx:targetError on subsequent clicks.
                                 const modalContent = document.getElementById('htmx-modal-content');
                                 if (modalContent) {
                                     modalContent.innerHTML = `<div class="p-8 text-center"><p>Loading...</p></div>`;
                                 }
-
-                                // Flowbite's hide() method sometimes leaves the backdrop.
-                                // This ensures the backdrop is removed.
                                 document.querySelector(`[data-modal-backdrop="${instanceId}"]`)?.remove();
                             }
                         };
@@ -417,8 +402,6 @@
                         modal.show();
                     }
                 }
-
-                // General re-initialization for other components
                 window.initFlowbite();
             }
         });
@@ -479,13 +462,7 @@
             }
         }
 
-        // CSRF token for HTMX
-        document.body.addEventListener('htmx:configRequest', (event) => {
-            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            event.detail.headers['X-CSRFToken'] = token;
-        });
-
-        // Lightbox JavaScript (from previous artifact)
+        // Lightbox JavaScript
         let currentPostMedia = [];
         let currentMediaIndex = 0;
         let currentPostId = null;
@@ -598,3 +575,5 @@
     </script>
 
 </body>
+
+</html>

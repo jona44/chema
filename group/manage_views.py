@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Count
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
 from django.urls import reverse
@@ -197,6 +197,28 @@ def group_members_view(request, slug):
     }
     
     return render(request, 'group/manage/members.html', context)
+
+@login_required
+def group_manage_member_modal(request, slug, membership_id):
+    """Render the management modal for a single member."""
+    group = get_object_or_404(Group, slug=slug)
+    membership = get_object_or_404(GroupMembership.objects.select_related('user__profile'), id=membership_id, group=group)
+
+    # Permission check
+    if not group.is_admin(request.user):
+        messages.error(request, "You don't have permission to manage members.")
+        # HTMX requests might need a different response type, but for now, this is safe.
+        return HttpResponse(status=403)
+
+    context = {
+        'group': group,
+        'membership': membership,
+        'is_creator': request.user == group.creator,
+    }
+    
+    # This will be a new template we create next.
+    return render(request, 'group/manage/partials/member_manage_modal.html', context)
+
 
 @login_required
 def group_manage_view(request, slug):

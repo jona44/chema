@@ -79,8 +79,8 @@ def group_feed_view(request, slug):
     }
     
     if request.htmx:
-        # If it's an HTMX request, only render the partial containing the posts
-        return render(request, 'feeds/partials/post_list_with_create_button.html', context)
+        # For the initial feed load, render the whole feed partial.
+        return render(request, 'feeds/_group_feed.html', context)
         
     return render(request, 'feeds/_group_feed.html', context)
 
@@ -553,14 +553,12 @@ def load_comments(request, post_id):
         parent__isnull=True,
         is_approved=True
     ).select_related('author', 'author__profile').prefetch_related('replies__author')
-    
-    html = render_to_string('feeds/partials/comments_list.html', {
+
+    return render(request, 'feeds/partials/comments_modal.html', {
         'comments': comments,
         'post': post,
         'user': request.user
-    }, request=request)
-    
-    return render(request, 'feeds/partials/comments_list.html', {'comments': comments, 'post': post})
+    })
 
 
 @login_required

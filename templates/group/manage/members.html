@@ -1,26 +1,3 @@
-<!-- groups/templates/groups/manage/members.html -->
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Manage Members - {{ group.name }} - {{ block.super }}{% endblock %}
-
-{% block content %}    
-
-<!-- Breadcrumb -->
-<nav class="text-sm breadcrumbs mb-6">
-    <ol class="list-none p-0 inline-flex">
-        <li class="flex items-center">
-            <a href="{% url 'group_detail' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">{{ group.name }}</a>
-            <span class="mx-2 text-gray-400">/</span>
-        </li>
-        <li class="flex items-center">
-            <a href="{% url 'group_manage' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">Manages</a>
-            <span class="mx-2 text-gray-400">/</span>
-        </li>
-        <li class="text-gray-600">Members</li>
-    </ol>
-</nav>
-<div id="modal"></div>
 
 <!-- Header -->
 <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
@@ -71,20 +48,24 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member
+                    </th>
                     <th scope="col"
                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                     <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status
+                    </th>
                     <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined
+                    </th>
                     <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions
+                    </th>
                 </tr>
             </thead>
             <tbody id="members-table-body" class="bg-white divide-y divide-gray-200">
                 {% for membership in memberships %}
-                {% include "group/manage/partials/member_row.html" %}  <!-- Fixed path -->
+                {% include "group/manage/partials/member_row.html" %} <!-- Fixed path -->
                 {% empty %}
                 <tr>
                     <td colspan="5" class="text-center py-12 px-6">
@@ -98,9 +79,17 @@
     </div>
 </div>
 
-{% endblock %}
+<!-- Modal Container -->
+<div id="table-modal-content" tabindex="-1" aria-hidden="true"
+    class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center bg-gray-900 bg-opacity-50">
+    <!-- HTMX will load modal content here -->
+    <div id="table-modal-content">
+    </div>
+</div>
 
-{% block extra_js %}
+
+
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('search-input');
@@ -129,7 +118,7 @@
                 );
 
                 const roleMatch = (
-                    !roleTerm || 
+                    !roleTerm ||
                     role === roleTerm
                 );
 
@@ -193,10 +182,9 @@
             if (modal) {
                 modal.innerHTML = '';
             }
-            
+
             // Re-run the filter to include the updated row
             filterMembers();
         }
     });
 </script>
-{% endblock %}

@@ -171,113 +171,113 @@
         {% endif %}
 
         <!------------- Media Attachments ------------>
-            <div id="like-button-{{ post.id }}">
-                {% include 'feeds/partials/lightbox_media_post.html' with post=post user=user %}
-            </div>
-
-    <!---------------- Post Stats ----------------->
-
-    <div class="px-4 py-2 border-t border-gray-100">
-        <div class="flex items-center justify-between text-sm text-gray-500">
-            <div class="flex items-center space-x-4">
-                {% if post.likes_count > 0 %}
-                <span class="flex items-center">
-                    <i class="fas fa-thumbs-up text-blue-600 mr-1"></i>
-                    {{ post.likes_count }}
-                </span>
-                {% endif %}
-
-                {% if post.comments_count > 0 %}
-                <span>{{ post.comments_count }} comment{{ post.comments_count|pluralize }}</span>
-                {% endif %}
-
-                {% if post.shares_count > 0 %}
-                <span>{{ post.shares_count }} share{{ post.shares_count|pluralize }}</span>
-                {% endif %}
-            </div>
-
-            <div class="flex items-center space-x-2">
-                <span>{{ post.views_count }} view{{ post.views_count|pluralize }}</span>
-            </div>
+        <div id="like-button-{{ post.id }}">
+            {% include 'feeds/partials/lightbox_media_post.html' with post=post user=user %}
         </div>
-    </div>
 
-    <!----------------- Post Actions ----------->
+        <!---------------- Post Stats ----------------->
 
-    <div class="px-4 py-3 border-t border-gray-100">
-        <div class="flex items-center justify-between">
+        <div class="px-4 py-2 border-t border-gray-100">
+            <div class="flex items-center justify-between text-sm text-gray-500">
+                <div class="flex items-center space-x-4">
+                    {% if post.likes_count > 0 %}
+                    <span class="flex items-center">
+                        <i class="fas fa-thumbs-up text-blue-600 mr-1"></i>
+                        {{ post.likes_count }}
+                    </span>
+                    {% endif %}
 
-            <!----------- Like Button ----------->
+                    {% if post.comments_count > 0 %}
+                    <span>{{ post.comments_count }} comment{{ post.comments_count|pluralize }}</span>
+                    {% endif %}
 
-            <div id="like-button-{{ post.id }}">
-                {% include 'feeds/partials/like_button.html' with post=post user=user %}
-            </div>
-
-            <!------------ Comment Button ---------->
-
-            <button hx-get="{% url 'feeds:load_comments' post.id %}" hx-target="#comments-modal-content"
-                hx-swap="innerHTML" data-modal-target="comments-modal" data-modal-toggle="comments-modal"
-                class="flex items-center space-x-2 px-4 py-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                <i class="far fa-comment"></i>
-                <span>Comment</span>
-            </button>
-
-            <!--------------- Share Button ---------->
-
-            <button onclick="sharePost(this)"
-                data-post-url="{{ request.scheme }}://{{ request.get_host }}{{ post.feed.group.get_absolute_url }}#post-{{ post.id }}"
-                data-post-title="{{ post.title|default:'A post from '|add:post.feed.group.name }}"
-                class="flex items-center space-x-2 px-4 py-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
-                <i class="far fa-share"></i>
-                <span class="share-text">Share</span>
-                <span class="share-success-text hidden text-green-600">Copied!</span>
-            </button>
-
-        </div>
-    </div>
-
-    <!--------------- Quick Comments Preview ------------->
-
-    {% if post.comments_count > 0 %}
-    <div class="px-4 pb-4">
-        <div class="bg-gray-300 rounded-lg p-3">
-            <div class="space-y-2">
-                {% for comment in post.comments.all|slice:":3" %}
-                <div class="flex items-start space-x-2">
-                    <div class="flex-shrink-0">
-                        {% if comment.author.profile.profile_picture %}
-                        <img src="{{ comment.author.profile.profile_picture.url }}"
-                            alt="{{ comment.author.profile.full_name }}" class="h-6 w-6 rounded-full object-cover">
-                        {% else %}
-                        <div class="h-6 w-6 rounded-full bg-gray-400 flex items-center justify-center">
-                            <span class="text-white text-xs">
-                                {{ comment.author.profile.full_name.0|default:comment.author.email.0|upper }}
-                            </span>
-                        </div>
-                        {% endif %}
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-sm">
-                            <span class="font-medium text-gray-900">
-                                {{ comment.author.profile.full_name|default:comment.author.email }}
-                            </span>
-                            <span class="text-gray-700">{{ comment.content|truncatewords:15 }}</span>
-                        </p>
-                    </div>
+                    {% if post.shares_count > 0 %}
+                    <span>{{ post.shares_count }} share{{ post.shares_count|pluralize }}</span>
+                    {% endif %}
                 </div>
-                {% endfor %}
 
-                {% if post.comments_count > 2 %}
-                <button hx-get="{% url 'feeds:load_comments' post.id %}" hx-target="#comments-modal-content"
-                    hx-swap="innerHTML" data-modal-target="comments-modal" data-modal-toggle="comments-modal"
-                    class="text-sm text-blue-600 hover:underline">
-                    View all {{ post.comments_count }} comments
-                </button>
-                {% endif %}
+                <div class="flex items-center space-x-2">
+                    <span>{{ post.views_count }} view{{ post.views_count|pluralize }}</span>
+                </div>
             </div>
         </div>
-    </div>
-    {% endif %}
 
-</div>
+        <!----------------- Post Actions ----------->
+
+        <div class="px-4 py-3 border-t border-gray-100">
+            <div class="flex items-center justify-between">
+
+                <!----------- Like Button ----------->
+
+                <div id="like-button-{{ post.id }}">
+                    {% include 'feeds/partials/like_button.html' with post=post user=user %}
+                </div>
+
+                <!------------ Comment Button ---------->
+
+                <button hx-get="{% url 'feeds:load_comments' post.id %}" hx-target="#htmx-modal-content"
+                    hx-swap="innerHTML" data-modal-target="htmx-modal" data-modal-toggle="htmx-modal"
+                    class="flex items-center space-x-2 px-4 py-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                    <i class="far fa-comment"></i>
+                    <span>Comment</span>
+                </button>
+
+                <!--------------- Share Button ---------->
+
+                <button onclick="sharePost(this)"
+                    data-post-url="{{ request.scheme }}://{{ request.get_host }}{{ post.feed.group.get_absolute_url }}#post-{{ post.id }}"
+                    data-post-title="{{ post.title|default:'A post from '|add:post.feed.group.name }}"
+                    class="flex items-center space-x-2 px-4 py-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
+                    <i class="far fa-share"></i>
+                    <span class="share-text">Share</span>
+                    <span class="share-success-text hidden text-green-600">Copied!</span>
+                </button>
+
+            </div>
+        </div>
+
+        <!--------------- Quick Comments Preview ------------->
+
+        {% if post.comments_count > 0 %}
+        <div class="px-4 pb-4">
+            <div class="bg-gray-300 rounded-lg p-3">
+                <div class="space-y-2">
+                    {% for comment in post.comments.all|slice:":3" %}
+                    <div class="flex items-start space-x-2">
+                        <div class="flex-shrink-0">
+                            {% if comment.author.profile.profile_picture %}
+                            <img src="{{ comment.author.profile.profile_picture.url }}"
+                                alt="{{ comment.author.profile.full_name }}" class="h-6 w-6 rounded-full object-cover">
+                            {% else %}
+                            <div class="h-6 w-6 rounded-full bg-gray-400 flex items-center justify-center">
+                                <span class="text-white text-xs">
+                                    {{ comment.author.profile.full_name.0|default:comment.author.email.0|upper }}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm">
+                                <span class="font-medium text-gray-900">
+                                    {{ comment.author.profile.full_name|default:comment.author.email }}
+                                </span>
+                                <span class="text-gray-700">{{ comment.content|truncatewords:15 }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    {% if post.comments_count > 2 %}
+                    <button hx-get="{% url 'feeds:load_comments' post.id %}" hx-target="#htmx-modal-content"
+                        hx-swap="innerHTML" data-modal-target="htmx-modal" data-modal-toggle="htmx-modal"
+                        class="text-sm text-blue-600 hover:underline">
+                        View all {{ post.comments_count }} comments
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
 </div>

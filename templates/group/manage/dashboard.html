@@ -1,290 +1,187 @@
-<!-- Breadcrumb -->
-<nav class="text-sm breadcrumbs mb-6">
-    <ol class="list-none p-0 inline-flex">
-        <li class="flex items-center">
-            <a href="{% url 'group_detail' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">{{ group.name
-                }}</a>
-            <span class="mx-2 text-gray-400">/</span>
+
+
+
+
+<!-- Quick Actions -->
+<div class="mb-8 border-b border-gray-200">
+    <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="manage-tabs" role="tablist">
+        <li class="me-2" role="presentation">
+            <button class="inline-block p-4 border-b-2 rounded-t-lg" id="members-tab" data-tabs-target="#members-content"
+                type="button" role="tab" aria-controls="members-content" aria-selected="false"
+                hx-get="{% url 'group_manage_members' slug=group.slug %}" hx-target="#manage-content-area"
+                hx-swap="innerHTML">
+                <i class="bi bi-people-fill mr-2"></i>Manage Members
+            </button>
         </li>
-        <li class="text-gray-600">Manage</li>
-    </ol>
-</nav>
-
-<!-- Header -->
-<div class="bg-white rounded-xl shadow-sm p-6 mb-8">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">Manage {{ group.name }}</h1>
-            <p class="text-gray-600 mt-1">Group administration and member management</p>
-        </div>
-        <div class="flex items-center space-x-3">
-            {% if is_creator %}
-            <span class="bg-blue-100 text-blue-600 text-sm px-3 py-1 rounded-full">Creator</span>
-            {% else %}
-            <span class="bg-green-100 text-green-600 text-sm px-3 py-1 rounded-full">Admin</span>
-            {% endif %}
-        </div>
-    </div>
-</div>
-
-<!-- Quick Stats -->
-<div class="grid md:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white rounded-xl p-6 shadow-sm">
-        <div class="flex items-center">
-            <div class="p-3 bg-blue-100 rounded-lg">
-                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-            </div>
-            <div class="ml-4">
-                <p class="text-sm text-gray-600">Total Members</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ total_members }}</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-white rounded-xl p-6 shadow-sm">
-        <div class="flex items-center">
-            <div class="p-3 bg-green-100 rounded-lg">
-                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-            </div>
-            <div class="ml-4">
-                <p class="text-sm text-gray-600">Active Members</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ active_members }}</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-white rounded-xl p-6 shadow-sm">
-        <div class="flex items-center">
-            <div class="p-3 bg-yellow-100 rounded-lg">
-                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
-            <div class="ml-4">
-                <p class="text-sm text-gray-600">Pending Approval</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ pending_members }}</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-white rounded-xl p-6 shadow-sm">
-        <div class="flex items-center">
-            <div class="p-3 bg-purple-100 rounded-lg">
-                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M8 7V3a4 4 0 118 0v4m-4 8a4 4 0 01-8 0V7a4 4 0 014-4h4m0 0v4.01" />
-                </svg>
-            </div>
-            <div class="ml-4">
-                <p class="text-sm text-gray-600">Privacy</p>
-                <p class="text-lg font-semibold text-gray-900 capitalize">{{ group.privacy }}</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="grid lg:grid-cols-3 gap-8">
-    <!-- Main Content -->
-    <div class="lg:col-span-2 space-y-8">
-        <!-- Pending Approval Requests -->
-        {% if pending_requests %}
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-lg font-semibold text-gray-900">Pending Approval Requests</h2>
-                <span class="bg-yellow-100 text-yellow-600 text-sm px-3 py-1 rounded-full">
-                    {{ pending_requests.count }} pending
-                </span>
-            </div>
-
-            <div class="space-y-4">
-                {% for membership in pending_requests %}
-                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                    <div class="flex items-center">
-                        {% if membership.user.profile.profile_picture %}
-                        <img src="{{ membership.user.profile.profile_picture.url }}"
-                            alt="{{ membership.user.profile.full_name }}"
-                            class="w-10 h-10 rounded-full object-cover mr-3">
-                        {% else %}
-                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                            <span class="text-white font-medium">{{ membership.user.email|first|upper }}</span>
-                        </div>
-                        {% endif %}
-
-                        <div>
-                            <p class="font-medium text-gray-900">
-                                {{ membership.user.profile.full_name|default:membership.user.email }}
-                            </p>
-                            <p class="text-sm text-gray-600">
-                                Requested {{ membership.joined_at|timesince }} ago
-                            </p>
-                            {% if membership.join_message %}
-                            <p class="text-sm text-gray-700 mt-1 italic">"{{ membership.join_message|truncatewords:15
-                                }}"</p>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="flex items-center space-x-2">
-                        <form method="post"
-                            action="{% url 'approve_member' slug=group.slug membership_id=membership.id %}"
-                            class="inline">
-                            {% csrf_token %}
-                            <button type="submit"
-                                class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 text-sm">
-                                Approve
-                            </button>
-                        </form>
-                        <form method="post"
-                            action="{% url 'reject_member' slug=group.slug membership_id=membership.id %}"
-                            class="inline">
-                            {% csrf_token %}
-                            <button type="submit"
-                                class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 text-sm">
-                                Reject
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
-            {% if pending_requests.count > 3 %}
-            <div class="mt-4 text-center">
-                <a href="{% url 'group_manage_members' slug=group.slug %}?status=pending"
-                    class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                    View All Pending Requests →
-                </a>
-            </div>
-            {% endif %}
-        </div>
+        <li class="me-2" role="presentation">
+            <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300"
+                id="invitations-tab" data-tabs-target="#invitations-content" type="button" role="tab"
+                aria-controls="invitations-content" aria-selected="false"
+                hx-get="{% url 'group_manage_invitations' slug=group.slug %}" hx-target="#manage-content-area"
+                hx-swap="innerHTML">
+                <i class="bi bi-person-plus-fill mr-2"></i>Send Invitations
+            </button>
+        </li>
+        <li class="me-2" role="presentation">
+            <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300"
+                id="edit-tab" data-tabs-target="#edit-content" type="button" role="tab" aria-controls="edit-content"
+                aria-selected="false" hx-get="{% url 'group_manage_edit' slug=group.slug %}"
+                hx-target="#manage-content-area" hx-swap="innerHTML">
+                <i class="bi bi-pencil-square mr-2"></i>Edit Group
+            </button>
+        </li>
+        {% if is_creator %}
+        <li class="me-2" role="presentation">
+            <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300"
+                id="settings-tab" data-tabs-target="#settings-content" type="button" role="tab"
+                aria-controls="settings-content" aria-selected="false"
+                hx-get="{% url 'group_manage_settings' slug=group.slug %}" hx-target="#manage-content-area"
+                hx-swap="innerHTML">
+                <i class="bi bi-gear-fill mr-2"></i>Advanced Settings
+            </button>
+        </li>
         {% endif %}
+    </div>
+</div>
 
-        <!----------------- Recent Activity ------------------------->
+<!-- Main Content Area -->
+<div id="manage-content-area" class="space-y-8">
 
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-6">Recent Member Activity</h2>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabsElement = document.getElementById('manage-tabs');
+        const tabButtons = tabsElement.querySelectorAll('button');
 
-            {% if recent_memberships %}
-            <div class="space-y-4">
-                {% for membership in recent_memberships %}
+        // Set the first tab as active by default if no other tab is selected
+        let activeTabFound = false;
+        tabButtons.forEach(button => {
+            if (button.getAttribute('aria-selected') === 'true') {
+                activeTabFound = true;
+            }
+        });
+
+        if (!activeTabFound && tabButtons.length > 0) {
+            tabButtons[0].classList.add('text-blue-600', 'border-blue-600');
+            tabButtons[0].setAttribute('aria-selected', 'true');
+            // Trigger HTMX load for the first tab's content
+            htmx.trigger(tabButtons[0], 'click');
+        }
+    });
+</script>
+
+<!-- Initial content for the manage-content-area (e.g., dashboard or first tab's content) -->
+<div id="initial-manage-content" class="space-y-8">
+    <!-- Pending Approval Requests -->
+    {% if pending_requests %}
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-semibold text-gray-900">Pending Approval Requests</h2>
+            <span class="bg-yellow-100 text-yellow-600 text-sm px-3 py-1 rounded-full">
+                {{ pending_requests.count }} pending
+            </span>
+        </div>
+
+        <div class="space-y-4">
+            {% for membership in pending_requests %}
+            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div class="flex items-center">
                     {% if membership.user.profile.profile_picture %}
                     <img src="{{ membership.user.profile.profile_picture.url }}"
-                        alt="{{ membership.user.profile.full_name }}" class="w-8 h-8 rounded-full object-cover mr-3">
+                        alt="{{ membership.user.profile.full_name }}" class="w-10 h-10 rounded-full object-cover mr-3">
                     {% else %}
-                    <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                        <span class="text-white text-sm">{{ membership.user.email|first|upper }}</span>
+                    <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-3">
+                        <span class="text-white font-medium">{{ membership.user.email|first|upper }}</span>
                     </div>
                     {% endif %}
 
-                    <div class="flex-1">
-                        <p class="text-sm text-gray-900">
-                            <span class="font-medium">{{ membership.user.profile.full_name|default:membership.user.email
-                                }}</span>
-                            joined the group
+                    <div>
+                        <p class="font-medium text-gray-900">
+                            {{ membership.user.profile.full_name|default:membership.user.email }}
                         </p>
-                        <p class="text-xs text-gray-500">{{ membership.joined_at|timesince }} ago</p>
+                        <p class="text-sm text-gray-600">
+                            Requested {{ membership.joined_at|timesince }} ago
+                        </p>
+                        {% if membership.join_message %}
+                        <p class="text-sm text-gray-700 mt-1 italic">"{{ membership.join_message|truncatewords:15
+                            }}"</p>
+                        {% endif %}
                     </div>
-
-                    {% if membership.role != 'member' %}
-                    <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">
-                        {{ membership.role|title }}
-                    </span>
-                    {% endif %}
                 </div>
-                {% endfor %}
+
+                <div class="flex items-center space-x-2">
+                    <form method="post" action="{% url 'approve_member' slug=group.slug membership_id=membership.id %}"
+                        class="inline">
+                        {% csrf_token %}
+                        <button type="submit"
+                            class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 text-sm">
+                            Approve
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'reject_member' slug=group.slug membership_id=membership.id %}"
+                        class="inline">
+                        {% csrf_token %}
+                        <button type="submit"
+                            class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 text-sm">
+                            Reject
+                        </button>
+                    </form>
+                </div>
             </div>
-            {% else %}
-            <div class="text-center py-8 text-gray-500">
-                <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                <p>No recent activity</p>
-            </div>
-            {% endif %}
+            {% endfor %}
         </div>
+
+        {% if pending_requests.count > 3 %}
+        <div class="mt-4 text-center">
+            <a href="{% url 'group_manage_members' slug=group.slug %}?status=pending"
+                class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                View All Pending Requests →
+            </a>
+        </div>
+        {% endif %}
     </div>
+    {% endif %}
 
-    <!-- ======================================= -->
-    <!--          Sidebar                       -->
-    <!-- ======================================= -->
+    <!----------------- Recent Activity ------------------------->
 
-    <div class="space-y-6">
-        <!-- Quick Actions -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-            <div class="space-y-3">
-                <a href="{% url 'group_manage_members' slug=group.slug %}"
-                    class="flex items-center w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <span class="text-gray-900">Manage Members</span>
-                </a>
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-6">Recent Member Activity</h2>
 
-                <a href="{% url 'group_manage_invitations' slug=group.slug %}"
-                    class="flex items-center w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    <span class="text-gray-900">Send Invitations</span>
-                </a>
+        {% if recent_memberships %}
+        <div class="space-y-4">
+            {% for membership in recent_memberships %}
+            <div class="flex items-center">
+                {% if membership.user.profile.profile_picture %}
+                <img src="{{membership.user.profile.profile_picture.url}}" alt="{{membership.user.profile.full_name}}"
+                    class="w-8 h-8 rounded-full object-cover mr-3">
+                {% else %}
+                <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
+                    <span class="text-white text-sm">{{membership.user.email|first|upper}}</span>
+                </div>
+                {% endif %}
 
-                <a href="{% url 'group_manage_edit' slug=group.slug %}"
-                    class="flex items-center w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    <span class="text-gray-900">Edit Group</span>
-                </a>
+                <div class="flex-1">
+                    <p class="text-sm text-gray-900">
+                        <span
+                            class="font-medium">{{membership.user.profile.full_name|default:membership.user.email}}</span>
+                        </span>
+                        joined the group
+                    </p>
+                    <p class="text-xs text-gray-500">{{membership.joined_at|timesince}} ago</p>
+                </div>
 
-                {% if is_creator %}
-                <a href="{% url 'group_manage_settings' slug=group.slug %}"
-                    class="flex items-center w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span class="text-gray-900">Advanced Settings</span>
-                </a>
+                {% if membership.role != 'member' %}
+                <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">
+                    {{membership.role|title }}
+                </span>
                 {% endif %}
             </div>
+            {% endfor %}
         </div>
-
-        <!-------------------- Admin Tips -------------------->
-
-        <div class="bg-blue-50 rounded-xl p-6">
-            <h3 class="text-lg font-semibold text-blue-900 mb-3">💡 Admin Tips</h3>
-            <ul class="space-y-2 text-blue-800 text-sm">
-                <li class="flex items-start">
-                    <span class="text-blue-600 mr-2">•</span>
-                    <span>Review pending members regularly to maintain group quality</span>
-                </li>
-                <li class="flex items-start">
-                    <span class="text-blue-600 mr-2">•</span>
-                    <span>Send invitations to grow your community</span>
-                </li>
-                <li class="flex items-start">
-                    <span class="text-blue-600 mr-2">•</span>
-                    <span>Keep group information updated to attract relevant members</span>
-                </li>
-                <li class="flex items-start">
-                    <span class="text-blue-600 mr-2">•</span>
-                    <span>Assign moderators to help manage larger groups</span>
-                </li>
-            </ul>
+        {% else %}
+        <div class="text-center py-8 text-gray-500">
+            <i class="bi bi-people-fill w-12 h-12 mx-auto mb-3 text-gray-300"></i>
+            <p>No recent activity</p>
         </div>
+        {% endif %}
     </div>
 </div>

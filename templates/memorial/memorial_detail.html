@@ -1,20 +1,23 @@
-<!-- memorials/templates/memorials/memorial_detail.html -->
-{% extends 'base.html' %}
-{% load static %}
 
-{% block title %}Memorial - {{ memorial.deceased.full_name }} - {{ block.super }}{% endblock %}
-
-{% block content %}
 <!-- Breadcrumb -->
 <nav class="text-sm breadcrumbs mb-6">
     <ol class="list-none p-0 inline-flex">
         <li class="flex items-center">
-            <a href="{% url 'group_detail' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">{{ group.name
-                }}</a>
+            <a href="{% url 'group_detail' slug=group.slug %}" 
+                hx-get="{% url 'group_detail' slug=group.slug %}"
+                hx-target="#manage_group"
+                hx-swap="innerHTML"
+                hx-indicator="#create-campaign-loader"
+                class="text-blue-600 hover:text-blue-700">
+                {{ group.name }}</a>
+                
             <span class="mx-2 text-gray-400">/</span>
         </li>
         <li class="flex items-center">
             <a href="{% url 'memorial:group_memorials' slug=group.slug %}"
+                hx-target="#group-related"
+                hx-swap="innerHTML"
+                hx-indicator="#create-campaign-loader"
                 class="text-blue-600 hover:text-blue-700">Memorials</a>
             <span class="mx-2 text-gray-400">/</span>
         </li>
@@ -211,4 +214,3 @@
     </div>
 </div>
 
-{% endblock %}

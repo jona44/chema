@@ -60,13 +60,17 @@
                 <span class="text-xs text-gray-500">
                     Created {{ memorial.created_at|timesince }} ago
                 </span>
-                <a href="{% url 'memorial:memorial_detail' pk=memorial.pk %}" 
+                <button 
+                    hx-get="{% url 'memorial:memorial_detail' pk=memorial.pk %}"
+                    hx-target="#group-related" 
+                    hx-swap="innerHTML" 
+                    hx-indicator="#create-campaign-loader"  
                     class="inline-flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium">
                     View Memorial
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
-                </a>
+                </button>
             </div>
         </div>
     </div>

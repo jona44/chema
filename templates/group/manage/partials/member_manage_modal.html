@@ -1,0 +1,29 @@
+
+{% load static %}
+
+<div class="p-4">
+    <h3 class="text-lg font-semibold mb-2">Manage Member: {{ membership.user.profile.full_name }}</h3>
+    <p class="text-sm text-gray-600 mb-4">Email: {{ membership.user.email }}</p>
+
+    <div class="space-y-4">
+        <div>
+            <p><strong>Role:</strong> {{ membership.get_role_display }}</p>
+            <p><strong>Status:</strong> {{ membership.get_status_display }}</p>
+            <p><strong>Joined:</strong> {{ membership.joined_at|date:"Y-m-d" }}</p>
+        </div>
+
+        <div class="flex justify-end space-x-2">
+            {% if is_creator and membership.user != group.creator %}
+                <button class="btn btn-sm btn-outline-primary">Make Owner</button>
+            {% endif %}
+            
+            {% if membership.status == 'active' %}
+                <button class="btn btn-sm btn-warning">Suspend</button>
+            {% endif %}
+
+            <button hx-post="{% url 'remove_member' group.slug membership.id %}" hx-confirm="Are you sure you want to remove this member?" hx-target="closest tr" hx-swap="outerHTML" class="btn btn-sm btn-danger">
+                Remove
+            </button>
+        </div>
+    </div>
+</div>

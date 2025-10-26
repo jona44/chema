@@ -1,0 +1,28 @@
+<!-- templates/feeds/partials/comment_form.html -->
+<form hx-post="{% url 'feeds:create_comment' post.id %}" hx-target="#comments-list" hx-swap="beforeend"
+    hx-on::after-request="this.reset()" class="space-y-3">
+    {% csrf_token %}
+    <div class="flex items-start space-x-3">
+        <div class="flex-shrink-0">
+            {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Your profile picture"
+                class="h-8 w-8 rounded-full object-cover">
+            {% else %}
+            <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+                <span class="text-white text-sm">{{ user.profile.full_name.0|default:user.email.0|upper }}</span>
+            </div>
+            {% endif %}
+        </div>
+        <div class="flex-1">
+            <textarea name="content" rows="2"
+                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                placeholder="Write a comment..." required></textarea>
+            <div class="flex items-center justify-end mt-2">
+                <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    Comment
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

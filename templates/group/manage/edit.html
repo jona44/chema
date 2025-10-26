@@ -1,23 +1,6 @@
-<!-- groups/templates/groups/manage/edit.html -->
-{% extends 'base.html' %}
 
-{% block title %}Edit {{ group.name }} - {{ block.super }}{% endblock %}
-
-{% block content %}
     <!-- Breadcrumb -->
-    <nav class="text-sm breadcrumbs mb-6">
-        <ol class="list-none p-0 inline-flex">
-            <li class="flex items-center">
-                <a href="{% url 'group_detail' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">{{ group.name }}</a>
-                <span class="mx-2 text-gray-400">/</span>
-            </li>
-            <li class="flex items-center">
-                <a href="{% url 'group_manage' slug=group.slug %}" class="text-blue-600 hover:text-blue-700">Manage</a>
-                <span class="mx-2 text-gray-400">/</span>
-            </li>
-            <li class="text-gray-600">Edit Group</li>
-        </ol>
-    </nav>
+  
 
     <!-- Header -->
     <div class="text-center mb-8">
@@ -275,4 +258,3 @@
             });
         }
     </script>
-{% endblock %}

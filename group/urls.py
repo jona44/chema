@@ -23,6 +23,9 @@ urlpatterns = [
     path('<slug:slug>/manage/settings/', manage_views.group_settings_view, name='group_manage_settings'),
     
     # Member actions
+    # Modal for managing a single member (HTMX)
+    path('<slug:slug>/manage/member/<uuid:membership_id>/modal/', manage_views.group_manage_member_modal, name='group_manage_member_modal'),
+
     path('<slug:slug>/approve/<uuid:membership_id>/', views.approve_member_view, name='approve_member'),
     path('<slug:slug>/reject/<uuid:membership_id>/', views.reject_member_view, name='reject_member'),
     path('<slug:slug>/remove/<uuid:membership_id>/', views.remove_member_view, name='remove_member'),

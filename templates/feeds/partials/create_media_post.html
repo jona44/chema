@@ -9,11 +9,7 @@
         <button type="button"
             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
             data-modal-hide="htmx-modal">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clip-rule="evenodd"></path>
-            </svg>
+            <i class="bi bi-x-lg w-5 h-5"></i>
             <span class="sr-only">Close modal</span>
         </button>
     </div>
@@ -30,20 +26,12 @@
                 <label class="flex items-center">
                     <input type="radio" name="post_type" value="photo" checked
                         class="mr-2 text-sky-600 focus:ring-sky-500">
-                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                        </path>
-                    </svg>
+                    <i class="bi bi-image w-5 h-5 mr-1"></i>
                     Photos
                 </label>
                 <label class="flex items-center">
                     <input type="radio" name="post_type" value="video" class="mr-2 text-sky-600 focus:ring-sky-500">
-                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
-                        </path>
-                    </svg>
+                    <i class="bi bi-camera-video w-5 h-5 mr-1"></i>
                     Video
                 </label>
             </div>
@@ -51,11 +39,7 @@
             <!-- File Upload Area -->
             <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                 <div id="file-drop-zone" class="space-y-2">
-                    <svg class="mx-auto h-12 w-12 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 48 48">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02">
-                        </path>
-                    </svg>
+                    <i class="bi bi-cloud-arrow-up mx-auto h-12 w-12 text-sky-400"></i>
                     <div class="text-gray-600">
                         <label for="media_files" class="cursor-pointer text-sky-600 hover:text-sky-500">
                             Click to upload
@@ -118,11 +102,7 @@
                 <input type="checkbox" id="is_urgent" name="is_urgent"
                     class="mr-2 rounded text-red-600 focus:ring-red-500">
                 <label for="is_urgent" class="text-sm text-gray-700 flex items-center">
-                    <svg class="w-4 h-4 mr-1 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                            clip-rule="evenodd"></path>
-                    </svg>
+                    <i class="bi bi-exclamation-triangle-fill w-4 h-4 mr-1 text-red-500"></i>
                     Mark as urgent
                 </label>
             </div>
@@ -165,9 +145,7 @@
                 } else {
                     const icon = document.createElement('div');
                     icon.className = 'w-16 h-16 bg-gray-200 rounded flex items-center justify-center';
-                    icon.innerHTML = `<svg class="w-8 h-8 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
-                </svg>`;
+                    icon.innerHTML = `<i class="bi bi-film w-8 h-8 text-gray-500"></i>`;
                     fileItem.appendChild(icon);
                 }
 
@@ -188,9 +166,7 @@
                 const removeBtn = document.createElement('button');
                 removeBtn.type = 'button';
                 removeBtn.className = 'text-red-500 hover:text-red-700';
-                removeBtn.innerHTML = `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-            </svg>`;
+                removeBtn.innerHTML = `<i class="bi bi-x-circle-fill w-5 h-5"></i>`;
                 removeBtn.onclick = () => removeFile(index);
                 fileItem.appendChild(removeBtn);
 
