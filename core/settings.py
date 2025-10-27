@@ -1,5 +1,3 @@
-
-
 import os
 from pathlib import Path
 
@@ -168,3 +166,19 @@ AUTHENTICATION_BACKENDS = [
 
 
 DEFAULT_FROM_EMAIL = "webmaster@localhost"
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+        },
+    },
+}

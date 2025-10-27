@@ -15,7 +15,7 @@ urlpatterns = [
     path('<slug:slug>/leave/', views.leave_group_view, name='leave_group'),
     
     # Group administration
-    path('<slug:slug>/', manage_views.group_detail_view, name='group_detail'),
+    path('dashboard/', manage_views.group_dashboard_view, name='group_dashboard'),
     path('<slug:slug>/manage/', manage_views.group_manage_view, name='group_manage'),
     path('<slug:slug>/manage/edit/', manage_views.group_edit_view, name='group_manage_edit'),
     path('<slug:slug>/manage/members/', manage_views.group_members_view, name='group_manage_members'),

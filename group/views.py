@@ -423,13 +423,6 @@ def change_member_role_view(request, slug, membership_id):
 
 
 
-# In your views.py (or wherever mark_deceased_view is located)
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-from django.template.loader import render_to_string
-from django.contrib.auth.decorators import login_required
-from .models import  Group, GroupMembership # Assuming your models are here
-from .forms import MarkDeceasedForm # Your form
 
 @login_required
 def mark_deceased_view(request, slug, pk):

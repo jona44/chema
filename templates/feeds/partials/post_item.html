@@ -10,17 +10,22 @@
 
                 <div class="flex-shrink-0">
                     {% if post.is_anonymous %}
-                    <div class="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center">
-                        <span class="text-white font-bold text-lg">?</span>
-                    </div>
-                    {% elif post.author.profile.profile_picture %}
-                    <img src="{{ post.author.profile.profile_picture.url }}" alt="{{ post.author.profile.full_name }}"
-                        class="h-10 w-10 rounded-full object-cover">
+                        <div class="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">?</span>
+                        </div>
+                    {% elif post.author.profile and post.author.profile.profile_picture %}
+                        <img src="{{ post.author.profile.profile_picture.url }}" alt="{% if post.author.profile %}{{ post.author.profile.full_name }}{% endif %}"
+                            class="h-10 w-10 rounded-full object-cover">
                     {% else %}
-                    <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
-                        <span class="text-white font-medium text-sm">{{
-                            post.author.profile.full_name.0|default:post.author.email.0|upper }}</span>
-                    </div>
+                        <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
+                            <span class="text-white font-medium text-sm">
+                                {% if post.author.profile %}
+                                    {{ post.author.profile.full_name|first|default:post.author.email|first|upper }}
+                                {% else %}
+                                    {{ post.author.email|first|upper }}
+                                {% endif %}
+                            </span>
+                        </div>
                     {% endif %}
                 </div>
 
@@ -30,9 +35,11 @@
                     <div class="flex items-center space-x-2">
                         <h4 class="text-sm font-semibold text-gray-900">
                             {% if post.is_anonymous %}
-                            Anonymous
+                                Anonymous
+                            {% elif post.author.profile %}
+                                {{ post.author.profile.full_name|default:post.author.email }}
                             {% else %}
-                            {{ post.author.profile.full_name|default:post.author.email }}
+                                {{ post.author.email }}
                             {% endif %}
                         </h4>
 
@@ -245,21 +252,29 @@
                     {% for comment in post.comments.all|slice:":3" %}
                     <div class="flex items-start space-x-2">
                         <div class="flex-shrink-0">
-                            {% if comment.author.profile.profile_picture %}
-                            <img src="{{ comment.author.profile.profile_picture.url }}"
-                                alt="{{ comment.author.profile.full_name }}" class="h-6 w-6 rounded-full object-cover">
+                            {% if comment.author.profile and comment.author.profile.profile_picture %}
+                                <img src="{{ comment.author.profile.profile_picture.url }}"
+                                    alt="{% if comment.author.profile %}{{ comment.author.profile.full_name }}{% endif %}" class="h-6 w-6 rounded-full object-cover">
                             {% else %}
-                            <div class="h-6 w-6 rounded-full bg-gray-400 flex items-center justify-center">
-                                <span class="text-white text-xs">
-                                    {{ comment.author.profile.full_name.0|default:comment.author.email.0|upper }}
-                                </span>
-                            </div>
+                                <div class="h-6 w-6 rounded-full bg-gray-400 flex items-center justify-center">
+                                    <span class="text-white text-xs">
+                                        {% if comment.author.profile %}
+                                            {{ comment.author.profile.full_name|first|default:comment.author.email|first|upper }}
+                                        {% else %}
+                                            {{ comment.author.email|first|upper }}
+                                        {% endif %}
+                                    </span>
+                                </div>
                             {% endif %}
                         </div>
                         <div class="flex-1">
                             <p class="text-sm">
                                 <span class="font-medium text-gray-900">
-                                    {{ comment.author.profile.full_name|default:comment.author.email }}
+                                    {% if comment.author.profile %}
+                                        {{ comment.author.profile.full_name|default:comment.author.email }}
+                                    {% else %}
+                                        {{ comment.author.email }}
+                                    {% endif %}
                                 </span>
                                 <span class="text-gray-700">{{ comment.content|truncatewords:15 }}</span>
                             </p>

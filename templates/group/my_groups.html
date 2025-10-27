@@ -49,7 +49,7 @@
                     <div class="flex items-center justify-between text-sm">
                         <div class="text-gray-500">Joined {{ g.joined_at|timesince }} ago</div>
                         <div class="flex items-center space-x-2">
-                            <a href="{% url 'group_detail' slug=g.group.slug %}" class="text-blue-600 hover:text-blue-700 font-medium">View</a>
+                            <a href="{% url 'group_dashboard' %}?group_slug={{ g.group.slug }}" class="text-blue-600 hover:text-blue-700 font-medium">View</a>
                             {% if g.role != 'creator' %}
                                 <a href="{% url 'leave_group' slug=g.group.slug %}" class="text-red-600 hover:text-red-700 font-medium">Leave</a>
                             {% endif %}

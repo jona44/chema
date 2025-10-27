@@ -3,22 +3,15 @@ from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Sum
 from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator
 from django.core.mail import send_mail
 from django.urls import reverse
-from contributions.models import Contribution
+from contributions.models import Contribution, ExpenseRecord, ContributionCampaign
 from group.forms import GroupCreationForm, GroupInvitationForm, GroupJoinForm, GroupSearchForm, GroupEditForm
 from memorial.models import Memorial
 from .models import Group, GroupMembership, GroupInvitation, Category
-
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.db.models import Sum, Count, Q
-from django.utils import timezone
-from contributions.models import ExpenseRecord, ContributionCampaign
 
 from datetime import timedelta
 # Ensure all models are imported
@@ -32,7 +25,7 @@ def group_settings_view(request, slug):
     
     if request.user != group.creator:
         messages.error(request, "Only the group creator can access advanced settings.")
-        return redirect('group_detail', slug=slug)
+        return redirect(f"{reverse('group_dashboard')}?group_slug={slug}")
     
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -57,7 +50,7 @@ def group_settings_view(request, slug):
                     membership.save()
                     
                     messages.success(request, f'Ownership transferred to {new_owner.email}')
-                    return redirect('group_detail', slug=slug)
+                    return redirect(f"{reverse('group_dashboard')}?group_slug={slug}")
                     
             except CustomUser.DoesNotExist:
                 messages.error(request, "User not found.")
@@ -96,7 +89,7 @@ def group_invitations_view(request, slug):
     
     if not group.is_admin(request.user):
         messages.error(request, "You don't have permission to manage invitations.")
-        return redirect('group_detail', slug=slug)
+        return redirect(f"{reverse('group_dashboard')}?group_slug={slug}")
     
     # Handle invitation form
     if request.method == 'POST':
@@ -168,7 +161,7 @@ def group_members_view(request, slug):
     
     if not group.is_admin(request.user):
         messages.error(request, "You don't have permission to manage members.")
-        return redirect('group_detail', slug=slug)
+        return redirect(f"{reverse('group_dashboard')}?group_slug={slug}")
     
     # Get filter values to pass to the template
     search_query = request.GET.get('search', '')
@@ -228,7 +221,7 @@ def group_manage_view(request, slug):
     # Check if user has admin permissions
     if not group.is_admin(request.user):
         messages.error(request, "You don't have permission to manage this group.")
-        return redirect('group_detail', slug=slug)
+        return redirect(f"{reverse('group_dashboard')}?group_slug={slug}")
     
     # Get membership statistics
     total_members = group.memberships.filter(is_active=True).count() # type: ignore
@@ -260,36 +253,45 @@ def group_manage_view(request, slug):
 
 
 @login_required
-def group_detail_view(request, slug):
+def group_dashboard_view(request):
     """
-    Enhanced group detail view.
+    Group dashboard view allowing toggling between user's groups.
     """
-    group = get_object_or_404(
-        Group.objects.annotate(
-            num_members=Count('memberships', filter=Q(memberships__is_active=True, memberships__status='active'))
-        ),
-        slug=slug,
-        is_active=True
-    )
+    user_memberships = GroupMembership.objects.filter(
+        user=request.user,
+        is_active=True,
+        status='active'
+    ).select_related('group')
+
+    user_groups = [m.group for m in user_memberships]
+
+    if not user_groups:
+        # If user is not a member of any group, redirect them
+        return redirect('browse_groups')
+
+    # Determine the current group
+    current_slug = request.GET.get('group_slug')
+    if current_slug:
+        group = next((g for g in user_groups if g.slug == current_slug), None)
+        if not group:
+            # If slug is invalid, redirect to the dashboard without slug
+            return redirect('group_dashboard')
+    else:
+        group = user_groups[0]
+
+    # Annotate the current group with member count
+    group = Group.objects.annotate(
+        num_members=Count('memberships', filter=Q(memberships__is_active=True, memberships__status='active'))
+    ).get(pk=group.pk)
 
     # User's relationship with the group
-    user_membership = GroupMembership.objects.filter(
-        group=group,
-        user=request.user,
-        is_active=True
-    ).first()
-
-    # Determine if user can join
-    can_join, join_message = False, ""
-    if not user_membership:
-        can_join, join_message = group.can_join(request.user)
+    user_membership = next((m for m in user_memberships if m.group == group), None)
 
     # Initialize context with basic group and user info
     context = {
         'group': group,
+        'user_groups': user_groups,  # For the toggler
         'user_membership': user_membership,
-        'can_join': can_join,
-        'join_message': join_message,
         'is_admin': group.is_admin(request.user),
         'memorials_count': Memorial.objects.filter(associated_group=group).count(),
     }
@@ -302,98 +304,102 @@ def group_detail_view(request, slug):
     ).select_related('user__profile').order_by('-joined_at')[:10]
     context['recent_members'] = recent_members
 
-    # Only fetch detailed stats and recent activity for group members
-    if user_membership:
-        # Get financial statistics
-        contributions_stats = Contribution.objects.filter(
-            campaign__group=group
-        ).aggregate(
-            total_amount=Sum('amount'),
-            total_contributions=Count('id')
-        )
-        expenses_stats = ExpenseRecord.objects.filter(
-            campaign__group=group
-        ).aggregate(
-            total_expenses=Sum('amount')
-        )
+    # The rest of the logic is for members only, which is guaranteed here
+    
+    # Get financial statistics
+    contributions_stats = Contribution.objects.filter(
+        campaign__group=group
+    ).aggregate(
+        total_amount=Sum('amount'),
+        total_contributions=Count('id')
+    )
+    expenses_stats = ExpenseRecord.objects.filter(
+        campaign__group=group
+    ).aggregate(
+        total_expenses=Sum('amount')
+    )
 
-        # Active campaigns
-        active_campaigns_count = ContributionCampaign.objects.filter(
-            group=group,
-            status='active',
-            deadline__gt=timezone.now()
-        ).count()
-        
-        # Recent activities (last 30 days)
-        recent_activities = []
-        recent_date = timezone.now() - timedelta(days=30)
-        
-        # Using a single query to fetch all relevant recent activities
-        recent_contributions = Contribution.objects.filter(
-            campaign__group=group,
-            created_at__gte=recent_date
-        ).order_by('-created_at')[:5]
+    # Active campaigns
+    active_campaigns_count = ContributionCampaign.objects.filter(
+        group=group,
+        status='active',
+        deadline__gt=timezone.now()
+    ).count()
+    
+    # Recent activities (last 30 days)
+    recent_activities = []
+    recent_date = timezone.now() - timedelta(days=30)
+    
+    recent_contributions = Contribution.objects.filter(
+        campaign__group=group,
+        created_at__gte=recent_date
+    ).order_by('-created_at')[:5]
 
-        recent_expenses = ExpenseRecord.objects.filter(
-            campaign__group=group,
-            created_at__gte=recent_date
-        ).order_by('-created_at')[:3]
-        
-        recent_members_joined = GroupMembership.objects.filter(
-            group=group,
-            joined_at__gte=recent_date,
-            status='active'
-        ).order_by('-joined_at')[:3]
+    recent_expenses = ExpenseRecord.objects.filter(
+        campaign__group=group,
+        created_at__gte=recent_date
+    ).order_by('-created_at')[:3]
+    
+    recent_members_joined = GroupMembership.objects.filter(
+        group=group,
+        joined_at__gte=recent_date,
+        status='active'
+    ).order_by('-joined_at')[:3]
 
-        for contrib in recent_contributions:
-            recent_activities.append({
-                'type': 'contribution',
-                'icon': 'bi-cash',
-                'color': 'success',
-                'title': f'New contribution of R{contrib.amount}',
-                'description': f'by {contrib.contributor.get_full_name() or contrib.contributor.username}', # type: ignore
-                'timestamp': contrib.created_at,
-                'url': f'/contributions/{contrib.id}/'
-            })
-
-        for expense in recent_expenses:
-            recent_activities.append({
-                'type': 'expense',
-                'icon': 'bi-receipt',
-                'color': 'warning',
-                'title': f'Expense recorded: R{expense.amount}',
-                'description': expense.description[:50] + '...' if len(expense.description) > 50 else expense.description,
-                'timestamp': expense.created_at,
-                'url': f'/expenses/{expense.id}/'
-            })
-            
-        for membership in recent_members_joined:
-            recent_activities.append({
-                'type': 'member_joined',
-                'icon': 'bi-person-plus',
-                'color': 'info',
-                'title': 'New member joined',
-                'description': membership.user.email or membership.user.username,
-                'timestamp': membership.joined_at,
-                'url': f'/groups/{group.id}/members/'
-            })
-
-        # Sort and limit all activities
-        recent_activities.sort(key=lambda x: x['timestamp'], reverse=True)
-        recent_activities = recent_activities[:10]
-
-        # Add all member-only data to the context
-        context.update({
-            'total_contributions': contributions_stats['total_contributions'] or 0,
-            'total_amount': contributions_stats['total_amount'] or 0,
-            'total_expenses': expenses_stats['total_expenses'] or 0,
-            'active_campaigns': active_campaigns_count,
-            'net_amount': (contributions_stats['total_amount'] or 0) - (expenses_stats['total_expenses'] or 0),
-            'recent_activities': recent_activities,
+    for contrib in recent_contributions:
+        contributor = getattr(contrib, 'contributor', None)
+        if contributor:
+            # prefer full name, fall back to first_name, then username
+            name = contributor.get_full_name() or getattr(contributor, 'first_name', '') or getattr(contributor, 'username', 'Anonymous')
+        else:
+            name = 'Anonymous'
+        recent_activities.append({
+            'type': 'contribution',
+            'icon': 'bi-cash',
+            'color': 'success',
+            'title': f'New contribution of R{contrib.amount}',
+            'description': f'by {name}',
+            'timestamp': contrib.created_at,
+            'url': f'/contributions/{contrib.id}/'
         })
 
+    for expense in recent_expenses:
+        recent_activities.append({
+            'type': 'expense',
+            'icon': 'bi-receipt',
+            'color': 'warning',
+            'title': f'Expense recorded: R{expense.amount}',
+            'description': expense.description[:50] + '...' if len(expense.description) > 50 else expense.description,
+            'timestamp': expense.created_at,
+            'url': f'/expenses/{expense.id}/'
+        })
+        
+    for membership in recent_members_joined:
+        recent_activities.append({
+            'type': 'member_joined',
+            'icon': 'bi-person-plus',
+            'color': 'info',
+            'title': 'New member joined',
+            'description': membership.user.email or membership.user.username,
+            'timestamp': membership.joined_at,
+            'url': f'/groups/{group.id}/members/'
+        })
 
-    return render(request, 'group/detail.html', context)
+    # Sort and limit all activities
+    recent_activities.sort(key=lambda x: x['timestamp'], reverse=True)
+    recent_activities = recent_activities[:10]
+
+    # Add all member-only data to the context
+    context.update({
+        'total_contributions': contributions_stats['total_contributions'] or 0,
+        'total_amount': contributions_stats['total_amount'] or 0,
+        'total_expenses': expenses_stats['total_expenses'] or 0,
+        'active_campaigns': active_campaigns_count,
+        'net_amount': (contributions_stats['total_amount'] or 0) - (expenses_stats['total_expenses'] or 0),
+        'recent_activities': recent_activities,
+    })
+
+    return render(request, 'group/group_dashboard.html', context)
 
 
 @login_required
@@ -403,7 +409,7 @@ def group_edit_view(request, slug):
     
     if not group.is_admin(request.user):
         messages.error(request, "You don't have permission to edit this group.")
-        return redirect('group_detail', slug=slug)
+        return redirect(f"{reverse('group_dashboard')}?group_slug={slug}")
     
     if request.method == 'POST':
         form = GroupEditForm(request.POST, request.FILES, instance=group)

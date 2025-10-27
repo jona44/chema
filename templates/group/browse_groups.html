@@ -145,10 +145,11 @@
                                 {% endif %}
                             </div>
 
-                            <a href="{% url 'group_detail' slug=group.slug %}" 
-                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                                View Group
-                            </a>
+                            <button data-modal-target="about-group-modal" data-modal-toggle="about-group-modal"
+                                class="flex items-center bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                                <i class="bi bi-info-circle mr-2"></i>
+                                <span>About Group</span>
+                            </button>
                         </div>
                     </div>
                 </div>
