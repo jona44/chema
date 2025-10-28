@@ -6,20 +6,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}User Account{% endblock %}</title>
-    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Flowbite CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.0.0/flowbite.min.js"></script>
     <script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.0.0/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 
-<body>
-    <div class="main-container" id="main-container">
-        <div class="relative">
+<body class="bg-gray-700 min-h-screen flex flex-col">
+    
+        <div class="fixed top-0 left-0 right-0 z-30">
             <!-- Banner -->
             <div class="h-64 bg-cover bg-center {% if group.cover_image %}bg-gray-500{% else %}bg-gradient-to-br from-blue-500 to-purple-600{% endif %}"
                 {% if group.cover_image %}style="background-image: url('{{ group.cover_image.url }}')" {% endif %}>
@@ -49,7 +48,7 @@
                                 </div>
                                 <!-- Add the modal trigger button here -->
                                 <button data-modal-target="groupDetailsModal" data-modal-toggle="groupDetailsModal"
-                                    class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition duration-150">
+                                    class="bg-white/10 hover:bg-white/20 border border-white/30 text-white px-4 py-2 rounded-lg transition duration-150">
                                     <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -78,20 +77,19 @@
                                     Online Group
                                 </div>
                                 {% endif %}
-                                <span class="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Member
-                                </span>
-                                <a href="{% url 'feeds:group_feed' slug=group.slug %}"
-                                    class="bg-fuchsia-500 text-300 text-white px-4 py-2 rounded-lg hover:bg-fuchsia-700">
+                                
+                                <button 
+                                    hx-get="{% url 'feeds:group_feed' slug=group.slug %}"
+                                    hx-target="#main-content"
+                                    hx-swap="innerHTML"
+                                    hx-trigger="click"
+                                    hx-push-url="true"
+                                    hx-indicator="#loading-indicator" 
+                                    class="bg-fuchsia-500/50 border border-fuchsia-600 text-300 text-white px-4 py-2 rounded-lg hover:bg-fuchsia-700">
+                                    <span id="loading-indicator" class="hidden">Loading...</span>
                                     Group Feeds
-                                </a>
-                                <a href="{% url 'create_group' %}"
-                                    class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">Create
-                                    Group</a>
+                                </button>
+                                
 
                             </div>
                         </div>
@@ -130,10 +128,10 @@
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8" style="margin-top: 16rem;">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Main content -->
-                <div class="lg:col-span-2">
+                <div class="lg:col-span-2"id="main-content">
                     <section class="bg-white rounded-xl shadow-sm p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Group Content</h3>
                         <div class="space-y-4">
@@ -143,11 +141,12 @@
                     </section>
                 </div>
 
-                <!-- Sidebar -->
+                <!--------------- Sidebar-------------------->
+
                 <div class="lg:col-span-1">
-                    <div class="sticky top-6 space-y-6">
+                    <div class="sticky space-y-6" style="top: 17.5rem;">
                         <!-------------- CHEMA HUB ---------------->
-                        <aside class="bg-white rounded-xl shadow-sm p-6" role="complementary" aria-labelledby="chema-hub-heading">
+                        <aside class="bg-gray-800 text-white  text-white rounded-xl shadow-sm p-6" role="complementary" aria-labelledby="chema-hub-heading">
                             <h3 id="chema-hub-heading" class="text-lg font-semibold text-gray-900 mb-4">Chema Hub</h3>
                             <div class="space-y-3">
 
@@ -162,10 +161,7 @@
 
                                 <a href="{% url 'memorial:group_memorials' slug=group.slug %}"
                                     class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                    </svg>
+                                    <i class="bi bi-suit-heart-fill mr-3 text-red-500"></i>
                                     <span>Memorials</span>
                                     {% if memorials_count %}
                                     <span class="ml-auto bg-red-100 text-red-600 px-2 py-1 rounded-full text-xs">
@@ -175,43 +171,33 @@
                                 </a>
 
                                 <a href="" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
+                                    <i class="bi bi-plus-circle-fill mr-3 text-green-500"></i>
                                     <span>Create Memorial</span>
                                 </a>
 
                                 {% if group.contribution_campaign %}
                                 <a href="{% url 'contributions:campaign_detail' group_slug=group.slug %}"
                                     class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
-                                        </path>
-                                    </svg>
+                                    <i class="bi bi-box2-heart-fill mr-3 text-purple-500"></i>
                                     <span>Contribution Campaign</span>
                                 </a>
                                 {% endif %}
 
                                 <a href="{% url 'contributions:my_contributions' %}"
                                     class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                        </path>
-                                    </svg>
+                                    <i class="bi bi-currency-dollar mr-3 text-yellow-500"></i>
                                     <span>My Contributions</span>
                                 </a>
 
                                 <a href="{% url 'group_notifications' group_slug=group.slug %}"
                                     class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
-                                        </path>
-                                    </svg>
+                                    <i class="bi bi-bell-fill mr-3 text-blue-500"></i>
                                     <span>Group Notifications</span>
+                                </a>
+                                <a href="{% url 'create_group' %}"
+                                    class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                                    <i class="bi bi-plus-lg mr-3 text-green-500"></i>
+                                    Create Group
                                 </a>
 
                             </div>
