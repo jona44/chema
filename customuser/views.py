@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
+from group.models import GroupMembership
 
 from .models import CustomUser, Profile
 from .forms import CustomUserCreationForm, CustomUserLoginForm, ProfileUpdateForm
@@ -152,10 +153,13 @@ def logout_view(request):
 @login_required
 def profile_view(request):
     """User profile view"""
-    profile = request.user.profile
+    profile = request.user.profile # type: ignore
+    group_memberships = GroupMembership.objects.filter(user=request.user).select_related('group')
+    print(group_memberships)
     return render(request, 'customuser/profile.html', {
         'user': request.user, # type: ignore
         'profile': profile,
+        'group_memberships': group_memberships,
     })
 
 

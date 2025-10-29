@@ -6,9 +6,9 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     {% if user.is_authenticated %}
-                    <span class="text-sm bg-white bg-opacity-50 text-white hover:text-gray-900 px-2 py-2 rounded">
-                        Welcome, {{ user.profile.first_name|default:user.email }}!
-                    </span>
+                    <a href="{% url 'profile' %}" class="text-sm bg-white bg-opacity-50 text-white hover:text-gray-900 px-2 py-2 rounded">
+                        <span>Welcome, {{ user.profile.first_name|default:user.email }}!
+                    </span></a>
                     <div class="relative">
                         {% if user.profile.profile_picture %}
                         <img src="{{ user.profile.profile_picture.url }}" alt="Profile"
@@ -22,7 +22,6 @@
                         {% endif %}
                     </div>
                     <a href="{% url 'my_groups' %}" class="text-sm bg-white bg-opacity-50 text-white hover:text-gray-900 px-2 py-2 rounded">My Groups</a>
-                    <a href="{% url 'profile' %}" class="text-sm bg-white bg-opacity-50 text-white hover:text-gray-900 px-2 py-2 rounded">Profile</a>
                     <a href="{% url 'logout' %}" class="text-sm bg-white bg-opacity-50 text-white hover:text-gray-900 px-2 py-2 rounded">Logout</a>
                     {% else %}
                     <a href="{% url 'login' %}" class="text-sm bg-white bg-opacity-50 text-white hover:text-gray-900 px-2 py-2 rounded">Login</a>

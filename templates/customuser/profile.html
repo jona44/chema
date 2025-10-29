@@ -230,6 +230,29 @@
                 </div>
             </div>
             {% endif %}
+
+            <!-- My Groups Card -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">My Groups ({{ group_memberships|length }})</h3>
+                <div class="space-y-4">
+                    {% for g in group_memberships %}
+                    <div class="flex items-center space-x-3">
+                        {% if g.group.cover_image %}
+                        <img src="{{ g.group.cover_image.url }}" alt="{{ g.group.name }}" class="w-10 h-10 rounded-full object-cover">
+                        {% else %}
+                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-medium">
+                            {{ g.group.name|first }}
+                        </div>
+                        {% endif %}
+                        <div>
+                            <a href="{% url 'group_detail' slug=g.group.slug %}" class="text-gray-800 font-medium hover:text-blue-600">{{ g.group.name }}</a>
+                            <p class="text-sm text-gray-500">Joined {{ g.joined_at|timesince }} ago</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
         </div>
     </div>
 </div>
