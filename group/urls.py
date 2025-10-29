@@ -15,7 +15,8 @@ urlpatterns = [
     path('<slug:slug>/leave/', views.leave_group_view, name='leave_group'),
     
     # Group administration
-    path('<slug:slug>/', manage_views.group_detail_view, name='group_detail'),
+    path('<slug:slug>/detail/', manage_views.group_detail_view, name='group_detail'),
+    path('<slug:slug>/', manage_views.chema_hub_view, name='chema_hub'),
     path('<slug:slug>/manage/', manage_views.group_manage_view, name='group_manage'),
     path('<slug:slug>/manage/edit/', manage_views.group_edit_view, name='group_manage_edit'),
     path('<slug:slug>/manage/members/', manage_views.group_members_view, name='group_manage_members'),
@@ -32,10 +33,5 @@ urlpatterns = [
     # AJAX endpoints
     path('api/search-suggestions/', views.group_search_suggestions, name='group_search_suggestions'),
     path("groups/<slug:slug>/members/deceased/<int:pk>/",views.mark_deceased_view, name="mark-deceased"),
-    
-    
-   
-
-
     
 ]

@@ -2,25 +2,25 @@
 {% load static %}
 {% block content %}
 
-<div class="max-w-7xl mx-auto px-4 py-8">
+<div class="max-w-7xl mx-auto px-4 py-8 bg-gray-900 text-gray-200">
     <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-200 mb-2">My Groups</h1>
-        <p class="text-gray-600">Manage your group memberships and communities</p>
+        <h1 class="text-3xl font-bold text-gray-200 mb-2 dark:text-gray-100">My Groups</h1>
+        <p class="text-gray-600 dark:text-gray-400">Manage your group memberships and communities</p>
     </div>
 
     <!-- Quick Stats -->
     <div class="grid md:grid-cols-3 gap-4 mb-8">
-        <div class="bg-white rounded-xl p-6 text-center shadow-sm">
-            <div class="text-2xl font-bold text-blue-600">{{ my_groups|length }}</div>
-            <div class="text-sm text-gray-600">My Groups</div>
+        <div class="bg-gray-800 rounded-xl p-6 text-center shadow-sm">
+            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ my_groups|length }}</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">My Groups</div>
         </div>
-        <div class="bg-white rounded-xl p-6 text-center shadow-sm">
-            <div class="text-2xl font-bold text-yellow-600">{{ pending_groups.count }}</div>
-            <div class="text-sm text-gray-600">Pending Approval</div>
+        <div class="bg-gray-800 rounded-xl p-6 text-center shadow-sm">
+            <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ pending_groups.count }}</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">Pending Approval</div>
         </div>
-        <div class="bg-white rounded-xl p-6 text-center shadow-sm">
-            <div class="text-2xl font-bold text-purple-600">{{ total_groups }}</div>
-            <div class="text-sm text-gray-600">Total Groups</div>
+        <div class="bg-gray-800 rounded-xl p-6 text-center shadow-sm">
+            <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ total_groups }}</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400">Total Groups</div>
         </div>
     </div>
 
@@ -28,31 +28,32 @@
     {% if my_groups %}
         <div>
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-semibold text-gray-900">My Groups</h2>
-                <span class="text-sm text-gray-500">{{ my_groups|length }} group{{ my_groups|length|pluralize }}</span>
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">My Groups</h2>
+                <span class="text-sm text-gray-500 dark:text-gray-400">{{ my_groups|length }} group{{ my_groups|length|pluralize }}</span>
             </div>
 
             <div class="grid md:grid-cols-2 gap-4">
                 {% for g in my_groups %}
-                <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                <div class="bg-gray-800 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
                     <div class="flex items-start justify-between mb-3">
-                        <h3 class="text-lg font-medium text-gray-900">{{ g.group.name }}</h3>
+                        <h3 class="text-lg font-medium text-gray-300 dark:text-gray-100">{{ g.group.name }}</h3>
                         {% if g.role == 'creator' %}
-                            <span class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">Creator</span>
+                            <span class="bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300 text-xs px-2 py-1 rounded-full">Creator</span>
                         {% elif g.role != 'member' %}
-                            <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-full">{{ g.role|title }}</span>
+                            <span class="bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300 text-xs px-2 py-1 rounded-full">{{ g.role|title }}</span>
                         {% endif %}
                     </div>
 
-                    <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ g.group.description|truncatewords:15 }}</p>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">{{ g.group.description|truncatewords:15 }}</p>
 
                     <div class="flex items-center justify-between text-sm">
-                        <div class="text-gray-500">Joined {{ g.joined_at|timesince }} ago</div>
+                        <div class="text-gray-500 dark:text-gray-400">Joined {{ g.joined_at|timesince }} ago</div>
                         <div class="flex items-center space-x-2">
-                            <a href="{% url 'group_detail' slug=g.group.slug %}" class="text-blue-600 hover:text-blue-700 font-medium">View</a>
+                            <a href="{% url 'group_detail' slug=g.group.slug %}" class="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">View</a>
                             {% if g.role != 'creator' %}
-                                <a href="{% url 'leave_group' slug=g.group.slug %}" class="text-red-600 hover:text-red-700 font-medium">Leave</a>
+                            <a href="{% url 'leave_group' slug=g.group.slug %}" class="text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 font-medium">Leave</a>
                             {% endif %}
+                            <a href="{% url 'chema_hub' slug=g.group.slug %}" class="bg-gray-500 rounded-full text-orange-500 hover:text-orange-700 dark:text-gray-400 dark:hover:text-gray-300 font-medium px-2 py-2">Chema Hub</a>
                         </div>
                     </div>
                 </div>
@@ -65,18 +66,18 @@
     {% if pending_groups %}
     <div class="mt-8">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-semibold text-gray-900">Pending Approval</h2>
-            <span class="text-sm text-gray-500">{{ pending_groups.count }} group{{ pending_groups.count|pluralize }}</span>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Pending Approval</h2>
+            <span class="text-sm text-gray-500 dark:text-gray-400">{{ pending_groups.count }} group{{ pending_groups.count|pluralize }}</span>
         </div>
 
         <div class="space-y-4">
             {% for membership in pending_groups %}
-            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-yellow-400">
-                <h3 class="text-lg font-medium text-gray-900 mb-1">{{ membership.group.name }}</h3>
-                <p class="text-gray-600 text-sm mb-2">{{ membership.group.description|truncatewords:20 }}</p>
-                <div class="text-sm text-gray-500">Requested {{ membership.joined_at|timesince }} ago</div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border-l-4 border-yellow-400 dark:border-yellow-500">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">{{ membership.group.name }}</h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">{{ membership.group.description|truncatewords:20 }}</p>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Requested {{ membership.joined_at|timesince }} ago</div>
                 <div class="mt-2">
-                    <span class="bg-yellow-100 text-yellow-600 text-sm px-3 py-1 rounded-full">Awaiting Approval</span>
+                    <span class="bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-400 text-sm px-3 py-1 rounded-full">Awaiting Approval</span>
                 </div>
             </div>
             {% endfor %}
@@ -86,11 +87,11 @@
 
     {% if not my_groups and not pending_groups %}
         <div class="text-center py-12">
-            <h3 class="text-lg font-medium text-gray-900 mb-2">No groups yet</h3>
-            <p class="text-gray-600 mb-4">You haven't joined or created any groups yet.</p>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No groups yet</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">You haven't joined or created any groups yet.</p>
             <div class="flex items-center justify-center space-x-4">
-                <a href="{% url 'browse_groups' %}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Browse Groups</a>
-                <a href="{% url 'create_group' %}" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">Create Group</a>
+                <a href="{% url 'browse_groups' %}" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-6 py-2 rounded-lg">Browse Groups</a>
+                <a href="{% url 'create_group' %}" class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-6 py-2 rounded-lg">Create Group</a>
             </div>
         </div>
     {% endif %}

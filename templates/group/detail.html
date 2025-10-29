@@ -1,328 +1,281 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}User Account{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.0.0/flowbite.min.js"></script>
-    <script src="https://unpkg.com/flowbite@latest/dist/flowbite.min.js"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.0.0/flowbite.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-</head>
+{% block title %}{{ group.name }} - Group Detail{% endblock %}
 
-<body class="bg-gray-700 min-h-screen flex flex-col">
-    
-        <div class="fixed top-0 left-0 right-0 z-30">
-            <!-- Banner -->
-            <div class="h-64 bg-cover bg-center {% if group.cover_image %}bg-gray-500{% else %}bg-gradient-to-br from-blue-500 to-purple-600{% endif %}"
-                {% if group.cover_image %}style="background-image: url('{{ group.cover_image.url }}')"     {% endif %}>
-                <div
-                    class="absolute inset-0 bg-black {% if group.cover_image %}bg-opacity-40{% else %}bg-opacity-20{% endif %}">
-                </div>
+{% block content %}
+<div class="min-h-screen bg-gray-900 py-8 text-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Group Header -->
+        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden mb-6">
+            <div class="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600">
+                {% if group.cover_image %}
+                <img src="{{ group.cover_image.url }}" alt="{{ group.name }}" class="w-full h-full object-cover opacity-75">
+                {% endif %}
             </div>
-
-            <!-- Navigation -->
-            <div class="absolute top-0 left-0 right-0 z-20">
-                {% include 'nav.html' %}
-            </div>
-
-            <!-- Header Content -->
-            <div class="absolute bottom-0 left-0 right-0 z-10 text-white p-8">
-                <div class="max-w-7xl mx-auto">
-                    <div class="flex items-end justify-between">
+            
+            <div class="px-6 py-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-center space-x-4">
+                        {% if group.logo %}
+                        <img src="{{ group.logo.url }}" alt="{{ group.name }}" class="w-20 h-20 rounded-full border-4 border-gray-800 shadow-lg -mt-10">
+                        {% else %}
+                        <div class="w-20 h-20 rounded-full border-4 border-gray-800 shadow-lg -mt-10 bg-blue-500 flex items-center justify-center text-white text-2xl font-bold">
+                            {{ group.name|first|upper }}
+                        </div>
+                        {% endif %}
+                        
                         <div>
-                            <h1 class="text-4xl font-bold mb-2">{{ group.name }}</h1>
-                            <div class="flex items-center space-x-4 text-white/90">
-                                <div class="flex items-center">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                    </svg>
-                                    {{ group.num_members }} member{{ group.num_members|pluralize }}
-                                </div>
-                                <!-- Add the modal trigger button here -->
-                                <button data-modal-target="groupDetailsModal" data-modal-toggle="groupDetailsModal"
-                                    class="bg-white/10 hover:bg-white/20 border border-white/30 text-white px-4 py-2 rounded-lg transition duration-150">
-                                    <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    Group Info & Hub
-                                </button>
-                                {% if group.city %}
-                                <div class="flex items-center">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    {{ group.city }}{% if group.country != "South Africa" %}, {{ group.country }}
-                                    {%endif %}
-                                </div>
-                                {% endif %}
-                                {% if group.is_online_only %}
-                                <div class="flex items-center">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
-                                    </svg>
-                                    Online Group
-                                </div>
-                                {% endif %}
-                                
-                                <button 
-                                    hx-get="{% url 'feeds:group_feed' slug=group.slug %}"
-                                    hx-target="#main-content"
-                                    hx-swap="innerHTML"
-                                    hx-trigger="click"
-                                    hx-push-url="true"
-                                    hx-indicator="#loading-indicator" 
-                                    class="bg-fuchsia-500/50 border border-fuchsia-600 text-300 text-white px-4 py-2 rounded-lg hover:bg-fuchsia-700">
-                                    <span id="loading-indicator" class="hidden">Loading...</span>
-                                    Group Feeds
-                                </button>
-                                
-
-                            </div>
+                            <h1 class="text-3xl font-bold text-white">{{ group.name }}</h1>
+                            <p class="text-gray-400 mt-1">
+                                <i class="bi bi-people-fill"></i> {{ group.num_members }} member{{ group.num_members|pluralize }}
+                            </p>
                         </div>
-
-                        {% if user.is_authenticated %}
-                        {% if not user_membership %}
-                        <a href="{% url 'join_group' slug=group.slug %}"
-                            class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-medium">
-                            Join Group
-                        </a>
-                        {% elif user_membership.status == 'pending' %}
-                        <span class="bg-yellow-600 text-white px-4 py-2 rounded-lg">
-                            Pending Approval
-                        </span>
-                        {% elif user_membership.status == 'active' %}
-                        {% if is_admin %}
-                        <a hx-get="{% url 'group_manage' slug=group.slug %}"
-                            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                            Manage Group
-                        </a>
-                        {% else %}
-                        <a href="{% url 'leave_group' slug=group.slug %}"
-                            class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
-                            Leave Group
-                        </a>
-                        {% endif %}
-                        {% endif %}
-                        {% else %}
-                        <a href="{% url 'login' %}"
-                            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium">
-                            Login to Join
-                        </a>
-                        {% endif %}
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8" style="margin-top: 16rem;">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Main content -->
-                <div class="lg:col-span-2"id="main-content">
-                    {% include 'feeds/group_feed.html' with slug=group.slug %}
-                </div>
-
-                <!--------------- Sidebar-------------------->
-
-                <div class="lg:col-span-1">
-                    <div class="sticky space-y-6" style="top: 17.5rem;">
-                        <!-------------- CHEMA HUB ---------------->
-                        <aside class="bg-gray-800 text-white  text-white rounded-xl shadow-sm p-6" role="complementary" aria-labelledby="chema-hub-heading">
-                            <h3 id="chema-hub-heading" class="text-lg font-semibold text-gray-900 mb-4">Chema Hub</h3>
-                            <div class="space-y-3">
-
-                                <!-- In group sidebar -->
-                                {% include 'contributions/campaign_widget.html' %}
-
-                                {% if group.is_admin %}
-                                <a href="{% url 'contributions:create_campaign' group.slug %}" class="text-sm text-blue-600 hover:underline block">
-                                    Create Chema Campaign
-                                </a>
-                                {% endif %}
-
-                                <a href="{% url 'memorial:group_memorials' slug=group.slug %}"
-                                    class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                                    <i class="bi bi-suit-heart-fill mr-3 text-red-500"></i>
-                                    <span>Memorials</span>
-                                    {% if memorials_count %}
-                                    <span class="ml-auto bg-red-100 text-red-600 px-2 py-1 rounded-full text-xs">
-                                        {{ memorials_count }}
-                                    </span>
-                                    {% endif %}
-                                </a>
-
-                                <a href="" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                                    <i class="bi bi-plus-circle-fill mr-3 text-green-500"></i>
-                                    <span>Create Memorial</span>
-                                </a>
-
-                                {% if group.contribution_campaign %}
-                                <a href="{% url 'contributions:campaign_detail' group_slug=group.slug %}"
-                                    class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                                    <i class="bi bi-box2-heart-fill mr-3 text-purple-500"></i>
-                                    <span>Contribution Campaign</span>
-                                </a>
-                                {% endif %}
-
-                                <a href="{% url 'contributions:my_contributions' %}"
-                                    class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                                    <i class="bi bi-currency-dollar mr-3 text-yellow-500"></i>
-                                    <span>My Contributions</span>
-                                </a>
-
-                                <a href="{% url 'group_notifications' group_slug=group.slug %}"
-                                    class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                                    <i class="bi bi-bell-fill mr-3 text-blue-500"></i>
-                                    <span>Group Notifications</span>
-                                </a>
-                                <a href="{% url 'create_group' %}"
-                                    class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                                    <i class="bi bi-plus-lg mr-3 text-green-500"></i>
-                                    Create Group
-                                </a>
-
-                            </div>
-                        </aside>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Add the modal markup before the closing body tag -->
-        <div id="groupDetailsModal" tabindex="-1" aria-hidden="true"
-            class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-            <div class="relative w-full max-w-4xl max-h-full">
-                <div class="relative bg-white rounded-lg shadow">
-                    <!-- Modal header -->
-                    <div class="flex items-center justify-between p-4 border-b">
-                        <h3 class="text-xl font-semibold text-gray-900">
-                            {{ group.name }} - Details & Hub
-                        </h3>
-                        <button type="button" data-modal-hide="groupDetailsModal"
-                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center">
-                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 14 14">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                            </svg>
-                        </button>
-                    </div>
-                    <!-- Modal body -->
-                    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">About This Group</h2>
-                        <div class="prose prose-gray max-w-none">
-                            {{ group.description|linebreaks }}
-                        </div>
-
-                        {% if group.tag_list %}
-                        <div class="mt-6 pt-6 border-t">
-                            <h3 class="text-sm font-medium text-gray-700 mb-3">Tags</h3>
-                            <div class="flex flex-wrap gap-2">
-                                {% for tag in group.tag_list %}
-                                <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm">{{ tag }}</span>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                    <div class="p-6 space-y-6">
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <!-- Group Details Section -->
-                            <div class="space-y-4">
-                                <h4 class="text-lg font-semibold text-gray-900">Group Details</h4>
-                                <div class="space-y-3">
-                                    {% if group.category %}
-                                    <div class="flex items-center">
-                                        <span class="text-gray-600 text-sm w-20">Category:</span>
-                                        <span class="text-sm">{{ group.category.icon }} {{ group.category.name }}</span>
-                                    </div>
-                                    {% endif %}
-
-                                    <div class="flex items-center">
-                                        <span class="text-gray-600 text-sm w-20">Privacy:</span>
-                                        <span class="text-sm capitalize">{{ group.privacy }}</span>
-                                    </div>
-
-                                    {% if group.max_members %}
-                                    <div class="flex items-center">
-                                        <span class="text-gray-600 text-sm w-20">Capacity:</span>
-                                        <span class="text-sm">{{ group.num_members }}/{{ group.max_members }}</span>
-                                    </div>
-                                    {% endif %}
-
-                                    <div class="flex items-center">
-                                        <span class="text-gray-600 text-sm w-20">Approval:</span>
-                                        <span class="text-sm">{% if group.requires_approval %}Required{% else %}Not
-                                            Required{% endif%}
-                                            </span>
-                                    </div>
-
-                                    <div class="flex items-center">
-                                        <span class="text-gray-600 text-sm w-20">Created:</span>
-                                        <span class="text-sm">{{ group.created_at|date:"M d, Y" }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-white rounded-xl shadow-sm p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Share This Group</h3>
-                        <div class="flex space-x-2">
-                            <button onclick="copyGroupLink()"
-                                class="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 text-sm font-medium">
-                                Copy Link
-                            </button>
-                            <button
-                                class="flex-1 bg-blue-100 text-blue-700 px-3 py-2 rounded-lg hover:bg-blue-200 text-sm font-medium">
-                                Share
-                            </button>
-                            <a href="{% url 'browse_groups' %}"
-                                class="flex-1 bg-green-100 text-green-700 px-3 py-2 rounded-lg hover:bg-green-200 text-sm font-medium">
-                                Browse Groups
+                    
+                    <div class="mt-4 sm:mt-0 flex space-x-2">
+                        {% if user_membership %}
+                            {% if is_admin %}
+                            <a href="{% url 'group_manage_edit' slug=group.slug %}" class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition">
+                                <i class="bi bi-gear-fill mr-2"></i> Manage Group
                             </a>
+                            {% endif %}
+                            <span class="inline-flex items-center px-4 py-2 bg-green-800 text-green-200 font-medium rounded-lg">
+                                <i class="bi bi-check-circle-fill mr-2"></i> Member
+                            </span>
+                        {% elif can_join %}
+                            <form method="POST" action="{% url 'group_join' slug=group.slug %}">
+                                {% csrf_token %}
+                                <button type="submit" class="inline-flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition">
+                                    <i class="bi bi-plus-circle-fill mr-2"></i> Join Group
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="inline-flex items-center px-4 py-2 bg-gray-700 text-gray-300 font-medium rounded-lg">
+                                <i class="bi bi-lock-fill mr-2"></i> {{ join_message }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if group.description %}
+                <div class="mt-4 text-gray-300">
+                    {{ group.description }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                {% if user_membership %}
+                <!-- Financial Overview (Members Only) -->
+                <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-white mb-4">Financial Overview</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-green-400 font-medium">Total Contributions</p>
+                                    <p class="text-2xl font-bold text-green-300 mt-1">R{{ total_amount|floatformat:2 }}</p>
+                                    <p class="text-xs text-green-400 mt-1">{{ total_contributions }} contribution{{ total_contributions|pluralize }}</p>
+                                </div>
+                                <i class="bi bi-cash-stack text-4xl text-green-500"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-orange-400 font-medium">Total Expenses</p>
+                                    <p class="text-2xl font-bold text-orange-300 mt-1">R{{ total_expenses|floatformat:2 }}</p>
+                                </div>
+                                <i class="bi bi-receipt text-4xl text-orange-500"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-blue-400 font-medium">Net Amount</p>
+                                    <p class="text-2xl font-bold text-blue-300 mt-1">R{{ net_amount|floatformat:2 }}</p>
+                                </div>
+                                <i class="bi bi-piggy-bank-fill text-4xl text-blue-500"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-purple-400 font-medium">Active Campaigns</p>
+                                    <p class="text-2xl font-bold text-purple-300 mt-1">{{ active_campaigns }}</p>
+                                </div>
+                                <i class="bi bi-flag-fill text-4xl text-purple-500"></i>
+                            </div>
                         </div>
                     </div>
-                     
+                </div>
 
-
-                            <!-- Chema Hub Section -->
-                            <div class="space-y-4">
-                                <h4 class="text-lg font-semibold text-gray-900">Chema Hub</h4>
-                                <div class="space-y-3">
-                                    {% include 'contributions/campaign_widget.html' %}
-                                    {% if group.is_admin %}
-                                    <a href="{% url 'contributions:create_campaign' group.slug %}"
-                                        class="text-sm text-blue-600 hover:underline">
-                                        Create Chema Campaign
-                                    </a>
-                                    {% endif %}
+                <!-- Recent Activity (Members Only) -->
+                <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-white mb-4">Recent Activity</h2>
+                    
+                    {% if recent_activities %}
+                    <div class="space-y-4">
+                        {% for activity in recent_activities %}
+                        <div class="flex items-start space-x-3 pb-4 border-b border-gray-700 last:border-0 last:pb-0">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
+                                    <i class="{{ activity.icon }} text-{{ activity.color }}-400"></i>
                                 </div>
                             </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-white">{{ activity.title }}</p>
+                                <p class="text-sm text-gray-400">{{ activity.description }}</p>
+                                <p class="text-xs text-gray-500 mt-1">{{ activity.timestamp|timesince }} ago</p>
+                            </div>
+                            {% if activity.url %}
+                            <a href="{{ activity.url }}" class="flex-shrink-0 text-blue-500 hover:text-blue-400">
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-gray-500 text-center py-8">No recent activity in the last 30 days</p>
+                    {% endif %}
+                </div>
+                {% else %}
+                <!-- Public Information for Non-Members -->
+                <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-white mb-4">About This Group</h2>
+                    <div class="prose max-w-none text-gray-300">
+                        {% if group.description %}
+                            {{ group.description|linebreaks }}
+                        {% else %}
+                            <p class="text-gray-500">No description available.</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-blue-900/50 border border-blue-800 rounded-lg">
+                        <p class="text-blue-300 font-medium">
+                            <i class="bi bi-info-circle-fill mr-2"></i>
+                            Join this group to view financial information and recent activities.
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Memorials Count -->
+                <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Associated Memorials</h3>
+                            <p class="text-3xl font-bold text-blue-500 mt-2">{{ memorials_count }}</p>
+                        </div>
+                        <i class="bi bi-heart-fill text-5xl text-blue-900"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Recent Members -->
+                <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Recent Members</h3>
+                    
+                    {% if recent_members %}
+                    <div class="space-y-3">
+                        {% for membership in recent_members %}
+                        <div class="flex items-center space-x-3">
+                            {% if membership.user.profile.avatar %}
+                            <img src="{{ membership.user.profile.avatar.url }}" alt="{{ membership.user.get_full_name }}" class="w-10 h-10 rounded-full">
+                            {% else %}
+                            <div class="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center text-gray-300 font-medium">
+                                {{ membership.user.first_name|first|default:membership.user.username|first|upper }}
+                            </div>
+                            {% endif %}
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-white truncate">
+                                    {{ membership.user.get_full_name|default:membership.user.username }}
+                                </p>
+                                <p class="text-xs text-gray-500">Joined {{ membership.joined_at|timesince }} ago</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-gray-500 text-center py-4">No members yet</p>
+                    {% endif %}
+                    
+                    {% if user_membership %}
+                    <a href="{% url 'group_manage_members' slug=group.slug %}" class="block mt-4 text-center text-blue-500 hover:text-blue-400 font-medium text-sm">
+                        View all members <i class="bi bi-arrow-right"></i>
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Quick Actions (Members Only) -->
+                {% if user_membership %}
+                <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Quick Actions</h3>
+                    
+                    <div class="space-y-2">
+                        <a href="" class="flex items-center px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                            <i class="bi bi-flag-fill text-blue-500 mr-3"></i>
+                            <span class="text-white font-medium">View Campaigns</span>
+                        </a>
+                        
+                        <a href="" class="flex items-center px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                            <i class="bi bi-cash-coin text-green-500 mr-3"></i>
+                            <span class="text-white font-medium">Make Contribution</span>
+                        </a>
+                        
+                        {% if is_admin %}
+                        <a href="" class="flex items-center px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                            <i class="bi bi-receipt text-orange-500 mr-3"></i>
+                            <span class="text-white font-medium">Record Expense</span>
+                        </a>
+                        
+                        <a href="" class="flex items-center px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                            <i class="bi bi-plus-circle-fill text-purple-500 mr-3"></i>
+                            <span class="text-white font-medium">Create Campaign</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Group Info -->
+                <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Group Information</h3>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center text-gray-300">
+                            <i class="bi bi-calendar-event text-gray-500 mr-3 w-5"></i>
+                            <span>Created {{ group.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        
+                        {% if group.category %}
+                        <div class="flex items-center text-gray-300">
+                            <i class="bi bi-tag-fill text-gray-500 mr-3 w-5"></i>
+                            <span>{{ group.category.name }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="flex items-center text-gray-300">
+                            <i class="bi bi-shield-fill-check text-gray-500 mr-3 w-5"></i>
+                            <span>{{ group.get_privacy_display }}</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
-</body>
-
-
-<script>
-    function copyGroupLink() {
-        navigator.clipboard.writeText(window.location.href).then(function () {
-            alert('Group link copied to clipboard!');
-        });
-    }
-</script>
+</div>
+{% endblock %}
